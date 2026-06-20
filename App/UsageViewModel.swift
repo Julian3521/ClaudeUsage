@@ -110,8 +110,14 @@ final class UsageViewModel {
 
     // MARK: - Data
 
-    func refresh() async {
+    func refresh(force: Bool = false) async {
         guard isLoggedIn else { state = .loggedOut; return }
+        // Skip the network if we already have a recent snapshot (rate-limit guard).
+        if !force, let snapshot = SnapshotStore.load(),
+           Date().timeIntervalSince(snapshot.fetchedAt) < Config.minFetchInterval {
+            state = .loaded(snapshot)
+            return
+        }
         if case .loaded = state {} else { state = .loading }
         do {
             try await load()

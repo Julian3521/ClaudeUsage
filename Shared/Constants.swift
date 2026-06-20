@@ -26,4 +26,8 @@ enum Config {
 
     /// Refresh the widget at most this often (seconds). WidgetKit budgets refreshes.
     static let widgetRefreshInterval: TimeInterval = 20 * 60
+
+    /// Reuse a cached snapshot newer than this instead of hitting the network,
+    /// so relaunches / rapid refreshes don't trip the endpoint's rate limit.
+    static let minFetchInterval: TimeInterval = 120
 }

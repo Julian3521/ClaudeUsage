@@ -82,7 +82,7 @@ struct MenuContentView: View {
         HStack(spacing: 8) {
             if viewModel.isLoggedIn {
                 Button {
-                    Task { await viewModel.refresh() }
+                    Task { await viewModel.refresh(force: true) }
                 } label: { Image(systemName: "arrow.clockwise") }
                     .help("Aktualisieren")
                     .keyboardShortcut("r")
