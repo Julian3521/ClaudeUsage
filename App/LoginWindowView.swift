@@ -8,6 +8,10 @@ struct LoginWindowView: View {
     @ObservedObject var viewModel: UsageViewModel
     @Environment(\.dismiss) private var dismiss
 
+    /// Copies the existing Claude Code access token (which has the user:profile
+    /// scope the usage endpoint requires) to the clipboard.
+    static let tokenCommand = #"security find-generic-password -s "Claude Code-credentials" -w | python3 -c "import sys,json;print(json.load(sys.stdin)['claudeAiOauth']['accessToken'])" | pbcopy"#
+
     enum Mode: String, CaseIterable { case token = "Token", browser = "Browser" }
     @State private var mode: Mode = .token
     @State private var token = ""
@@ -43,28 +47,27 @@ struct LoginWindowView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 Text("Mit Token anmelden (empfohlen)").font(.title3.bold())
-                Text("Das erzeugt einen Login für deinen Claude-Abo-Account (Pro/Max) über deinen normalen Browser — Google-Login funktioniert dort.")
+                Text("Verwendet dein bereits vorhandenes Claude-Code-Login (es hat die nötige user:profile-Berechtigung). Alles bleibt lokal — nur der Usage-Aufruf geht an Anthropic.")
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
                 GroupBox {
                     VStack(alignment: .leading, spacing: 8) {
                         step(1, "Terminal öffnen.")
-                        HStack(spacing: 8) {
-                            step(2, "Diesen Befehl ausführen und einloggen:")
-                        }
-                        HStack {
-                            Text("claude setup-token")
-                                .font(.system(.body, design: .monospaced))
+                        step(2, "Diesen Befehl ausführen — er kopiert dein Token in die Zwischenablage:")
+                        HStack(alignment: .top) {
+                            Text(Self.tokenCommand)
+                                .font(.system(.caption, design: .monospaced))
                                 .textSelection(.enabled)
                                 .padding(6)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
                             Button("Kopieren") {
                                 NSPasteboard.general.clearContents()
-                                NSPasteboard.general.setString("claude setup-token", forType: .string)
+                                NSPasteboard.general.setString(Self.tokenCommand, forType: .string)
                             }
                         }
-                        step(3, "Das ausgegebene Token kopieren und unten einfügen.")
+                        step(3, "Unten einfügen (⌘V), dann „Speichern & verbinden\".")
                     }
                     .padding(4)
                 }

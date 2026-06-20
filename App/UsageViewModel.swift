@@ -70,12 +70,23 @@ final class UsageViewModel: ObservableObject {
                 WidgetCenter.shared.reloadAllTimelines()
                 shouldDismissLogin = true
             } catch {
-                TokenStore.clear()      // bad token: don't leave it stored
-                state = .loggedOut
                 rawJSON = error.localizedDescription
                 loginError = error.localizedDescription
+                if Self.isAuthFailure(error) {
+                    TokenStore.clear()          // token actually invalid
+                    state = .loggedOut
+                } else {
+                    state = .error(error.localizedDescription)  // keep token (e.g. 429)
+                }
             }
         }
+    }
+
+    /// True only for real auth failures (so we keep a valid token through a 429).
+    static func isAuthFailure(_ error: Error) -> Bool {
+        if case UsageError.notLoggedIn = error { return true }
+        if case let UsageError.http(status, _) = error { return status == 401 || status == 403 }
+        return false
     }
 
     /// Called when the web view (or manual paste) yields an authorization code.

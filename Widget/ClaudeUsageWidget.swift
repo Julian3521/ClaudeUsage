@@ -21,21 +21,15 @@ struct UsageProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<UsageEntry>) -> Void) {
+        // The widget does NOT call the network itself — the menu-bar app is the
+        // single fetcher (it writes the snapshot and reloads our timeline). This
+        // avoids hammering the usage endpoint (which rate-limits) from multiple
+        // widget processes in addition to the app.
         let next = Date().addingTimeInterval(Config.widgetRefreshInterval)
-
-        guard TokenStore.load() != nil else {
-            let entry = UsageEntry(date: Date(), snapshot: nil, loggedIn: false)
-            completion(Timeline(entries: [entry], policy: .after(next)))
-            return
-        }
-
-        Task {
-            // Refresh from the network; fall back to the cached snapshot on failure.
-            _ = try? await UsageAPI.fetch()
-            let snapshot = SnapshotStore.load()
-            let entry = UsageEntry(date: Date(), snapshot: snapshot, loggedIn: true)
-            completion(Timeline(entries: [entry], policy: .after(next)))
-        }
+        let entry = UsageEntry(date: Date(),
+                               snapshot: SnapshotStore.load(),
+                               loggedIn: TokenStore.load() != nil)
+        completion(Timeline(entries: [entry], policy: .after(next)))
     }
 }
 
