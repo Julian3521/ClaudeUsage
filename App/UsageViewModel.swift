@@ -23,17 +23,17 @@ final class UsageViewModel {
     /// Surfaced in the login window when a login attempt fails.
     var loginError: String?
 
-    /// PKCE material for the in-flight browser login attempt.
-    @ObservationIgnored private(set) var pkce: PKCE?
-
     var isLoggedIn: Bool { TokenStore.load() != nil }
 
-    /// Short text for the menu bar — whichever limit is closest to being hit.
-    var menuBarTitle: String {
-        if case let .loaded(s) = state {
-            return "\(Int(max(s.sessionPercent, s.weeklyPercent).rounded()))%"
+    /// The percentage to show in the menu bar, per the configured metric.
+    /// `nil` when there's no data yet.
+    var menuBarPercent: Double? {
+        guard case let .loaded(s) = state else { return nil }
+        switch AppSettings.shared.settings.menuBarMetric {
+        case .session: return s.sessionPercent
+        case .weekly: return s.weeklyPercent
+        case .highest: return max(s.sessionPercent, s.weeklyPercent)
         }
-        return isLoggedIn ? "…" : ""
     }
 
     func onAppear() {
@@ -44,14 +44,10 @@ final class UsageViewModel {
 
     // MARK: - Login
 
-    func startLogin() {
-        pkce = .generate()
+    /// Reset transient login state before showing the login window.
+    func prepareLogin() {
         shouldDismissLogin = false
         loginError = nil
-    }
-
-    var authorizeURL: URL? {
-        pkce.map(OAuthClient.authorizeURL(pkce:))
     }
 
     /// Log in by pasting an access token (e.g. the existing Claude Code token,
@@ -61,27 +57,8 @@ final class UsageViewModel {
         guard !token.isEmpty else { return }
         loginError = nil
         TokenStore.save(TokenSet(accessToken: token, refreshToken: nil, expiresAt: nil))
-        pkce = nil
         state = .loading
         Task { await fetchAfterLogin() }
-    }
-
-    /// Complete a browser OAuth login from a captured authorization code.
-    func completeLogin(rawCode: String) {
-        guard let pkce else { return }
-        loginError = nil
-        state = .loading
-        Task {
-            do {
-                let tokens = try await OAuthClient.exchangeCode(rawCode, pkce: pkce)
-                TokenStore.save(tokens)
-                self.pkce = nil
-                await fetchAfterLogin()
-            } catch {
-                loginError = error.localizedDescription
-                state = .error(error.localizedDescription)
-            }
-        }
     }
 
     private func fetchAfterLogin() async {
@@ -102,7 +79,6 @@ final class UsageViewModel {
 
     func logout() {
         TokenStore.clear()
-        pkce = nil
         rawJSON = ""
         state = .loggedOut
         WidgetCenter.shared.reloadAllTimelines()

@@ -7,29 +7,32 @@ struct UsageEntry: TimelineEntry {
     let date: Date
     let snapshot: UsageSnapshot?
     let loggedIn: Bool
+    let showOpus: Bool
 }
 
 struct UsageProvider: TimelineProvider {
     func placeholder(in context: Context) -> UsageEntry {
-        UsageEntry(date: Date(), snapshot: .placeholder, loggedIn: true)
+        UsageEntry(date: Date(), snapshot: .placeholder, loggedIn: true, showOpus: true)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (UsageEntry) -> Void) {
-        let snapshot = SnapshotStore.load() ?? .placeholder
-        completion(UsageEntry(date: Date(), snapshot: snapshot,
-                              loggedIn: TokenStore.load() != nil))
+        completion(entry(snapshot: SnapshotStore.load() ?? .placeholder))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<UsageEntry>) -> Void) {
         // The widget does NOT call the network itself — the menu-bar app is the
         // single fetcher (it writes the snapshot and reloads our timeline). This
-        // avoids hammering the usage endpoint (which rate-limits) from multiple
-        // widget processes in addition to the app.
+        // avoids hammering the rate-limited usage endpoint from multiple processes.
         let next = Date().addingTimeInterval(Config.widgetRefreshInterval)
-        let entry = UsageEntry(date: Date(),
-                               snapshot: SnapshotStore.load(),
-                               loggedIn: TokenStore.load() != nil)
-        completion(Timeline(entries: [entry], policy: .after(next)))
+        completion(Timeline(entries: [entry(snapshot: SnapshotStore.load())],
+                            policy: .after(next)))
+    }
+
+    private func entry(snapshot: UsageSnapshot?) -> UsageEntry {
+        UsageEntry(date: Date(),
+                   snapshot: snapshot,
+                   loggedIn: TokenStore.load() != nil,
+                   showOpus: SettingsStore.load().showOpus)
     }
 }
 
@@ -44,7 +47,7 @@ struct ClaudeUsageWidget: Widget {
                 .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("Claude Usage")
-        .description("Dein Session- und Wochenlimit auf einen Blick.")
+        .description("Your session and weekly limits at a glance.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
@@ -54,6 +57,12 @@ struct ClaudeUsageWidget: Widget {
 struct UsageWidgetEntryView: View {
     @Environment(\.widgetFamily) private var family
     let entry: UsageEntry
+
+    private var opus: (Double, Date?)? {
+        guard entry.showOpus, let snapshot = entry.snapshot,
+              let percent = snapshot.opusPercent else { return nil }
+        return (percent, snapshot.opusResetsAt)
+    }
 
     var body: some View {
         if !entry.loggedIn {
@@ -77,22 +86,20 @@ struct UsageWidgetEntryView: View {
                 .font(.caption.bold())
                 .foregroundStyle(.secondary)
             UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
-            UsageBar(title: "Woche", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
+            UsageBar(title: "Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
         }
     }
 
-    // Home-screen medium: two rings, like the app.
+    // Home-screen medium: rings, like the app.
     private func mediumView(_ s: UsageSnapshot) -> some View {
         HStack(spacing: 24) {
             ringColumn("Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
-            ringColumn("Woche", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
-            if let opus = s.opusPercent {
-                ringColumn("Opus", percent: opus, resetsAt: s.opusResetsAt)
-            }
+            ringColumn("Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
+            if let opus { ringColumn("Opus", percent: opus.0, resetsAt: opus.1) }
         }
     }
 
-    private func ringColumn(_ title: String, percent: Double, resetsAt: Date?) -> some View {
+    private func ringColumn(_ title: LocalizedStringKey, percent: Double, resetsAt: Date?) -> some View {
         VStack(spacing: 6) {
             UsageRing(percent: percent, lineWidth: 8)
                 .frame(width: 64, height: 64)
@@ -113,10 +120,8 @@ struct UsageWidgetEntryView: View {
             }
             HStack(spacing: 24) {
                 ringColumn("Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
-                ringColumn("Woche", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
-                if let opus = s.opusPercent {
-                    ringColumn("Opus", percent: opus, resetsAt: s.opusResetsAt)
-                }
+                ringColumn("Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
+                if let opus { ringColumn("Opus", percent: opus.0, resetsAt: opus.1) }
             }
             Spacer(minLength: 0)
             UsageBar(title: "Current session (5h)",
@@ -130,7 +135,7 @@ struct UsageWidgetEntryView: View {
         VStack(spacing: 6) {
             Image(systemName: "person.crop.circle.badge.exclamationmark")
                 .font(.title2)
-            Text("In der App anmelden")
+            Text("Sign in from the app")
                 .font(.caption2)
                 .multilineTextAlignment(.center)
         }

@@ -5,7 +5,7 @@ enum UsageFormat {
     static func resetString(_ date: Date?, now: Date = Date()) -> String? {
         guard let date else { return nil }
         let secs = Int(date.timeIntervalSince(now))
-        guard secs > 0 else { return "now" }
+        guard secs > 0 else { return String(localized: "now") }
         let h = secs / 3600
         let m = (secs % 3600) / 60
         if h > 0 { return "\(h)h \(m)m" }
@@ -14,7 +14,7 @@ enum UsageFormat {
 
     static func resetLabel(_ date: Date?, now: Date = Date()) -> String {
         guard let s = resetString(date, now: now) else { return "—" }
-        return "Resets in \(s)"
+        return String(localized: "Resets in \(s)")
     }
 
     /// Color for a usage percentage (0...100): green → orange → red.
@@ -55,7 +55,7 @@ struct UsageRing: View {
 
 /// Horizontal bar with a title, percentage, and reset countdown.
 struct UsageBar: View {
-    let title: String
+    let title: LocalizedStringKey
     let percent: Double
     let resetsAt: Date?
 

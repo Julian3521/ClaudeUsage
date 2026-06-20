@@ -64,10 +64,14 @@ App  ─▶ api.anthropic.com/api/oauth/usage   (Bearer + anthropic-beta: oauth-
 
 - **`Shared/`** — models, OAuth (PKCE), Keychain token + snapshot store, usage
   API, shared SwiftUI ring/bar views. Swift 6 language mode, `@Observable`.
-- **`App/`** — `MenuBarExtra` app + login window. The app is the single fetcher;
-  a periodic timer refreshes the value and reloads the widget timeline.
+- **`App/`** — `MenuBarExtra` app + login window + Settings window. The app is
+  the single fetcher; a periodic timer refreshes the value and reloads the widget.
 - **`Widget/`** — WidgetKit provider + Small/Medium/Large views. It only renders
   the snapshot the app writes (no network), so it never adds to endpoint load.
+
+**Settings** (menu bar → ⋯ → Settings…): choose what the menu-bar item shows
+(highest / session / weekly) and how (percentage, **progress bar**, both, or icon
+only), and toggle the Opus weekly limit. **Localized in English and German.**
 
 The app and widget share both the OAuth token and the last usage snapshot through
 a single shared **Keychain access group** (no App Group needed).

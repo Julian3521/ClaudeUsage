@@ -39,11 +39,11 @@ struct MenuContentView: View {
 
     private var loggedOut: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Melde dich mit deinem Claude-Account an, um dein Session- und Wochenlimit zu sehen.")
+            Text("Sign in to see your session and weekly limits.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-            Button("Bei Claude anmelden") { openLogin() }
+            Button("Sign in") { openLogin() }
                 .buttonStyle(.borderedProminent)
         }
     }
@@ -54,11 +54,11 @@ struct MenuContentView: View {
                      percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
-            if let opus = s.opusPercent {
+            if AppSettings.shared.settings.showOpus, let opus = s.opusPercent {
                 UsageBar(title: "Weekly · Opus (7d)",
                          percent: opus, resetsAt: s.opusResetsAt)
             }
-            Text("Stand: \(s.fetchedAt.formatted(date: .omitted, time: .shortened))")
+            Text("Updated \(s.fetchedAt.formatted(date: .omitted, time: .shortened))")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -66,13 +66,13 @@ struct MenuContentView: View {
 
     private func errorView(_ message: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("Fehler", systemImage: "exclamationmark.triangle")
+            Label("Error", systemImage: "exclamationmark.triangle")
                 .foregroundStyle(.orange)
             Text(message)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-            Button("Erneut versuchen") { Task { await viewModel.refresh() } }
+            Button("Try again") { Task { await viewModel.refresh(force: true) } }
         }
     }
 
@@ -84,12 +84,13 @@ struct MenuContentView: View {
                 Button {
                     Task { await viewModel.refresh(force: true) }
                 } label: { Image(systemName: "arrow.clockwise") }
-                    .help("Aktualisieren")
+                    .help("Refresh")
                     .keyboardShortcut("r")
 
                 Menu {
-                    Button("Rohdaten kopieren") { copyRaw() }
-                    Button("Abmelden", role: .destructive) { viewModel.logout() }
+                    SettingsLink { Text("Settings…") }
+                    Button("Copy raw response") { copyRaw() }
+                    Button("Sign out", role: .destructive) { viewModel.logout() }
                 } label: { Image(systemName: "ellipsis") }
                     .menuStyle(.borderlessButton)
                     .frame(width: 40)
@@ -98,7 +99,7 @@ struct MenuContentView: View {
             Text("v\(Self.appVersion)")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
-            Button("Beenden") { NSApp.terminate(nil) }
+            Button("Quit") { NSApp.terminate(nil) }
                 .font(.caption)
                 .keyboardShortcut("q")
         }
@@ -110,7 +111,7 @@ struct MenuContentView: View {
     // MARK: - Actions
 
     private func openLogin() {
-        viewModel.startLogin()
+        viewModel.prepareLogin()
         openWindow(id: "login")
         NSApp.activate(ignoringOtherApps: true)
     }

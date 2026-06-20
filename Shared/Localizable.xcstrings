@@ -1,0 +1,221 @@
+{
+  "sourceLanguage" : "en",
+  "version" : "1.0",
+  "strings" : {
+    "Bar + percentage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Balken + Prozent" } }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abbrechen" } }
+      }
+    },
+    "Claude" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Claude" } }
+      }
+    },
+    "Claude Usage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Claude Usage" } }
+      }
+    },
+    "Copy" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kopieren" } }
+      }
+    },
+    "Copy raw response" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Rohdaten kopieren" } }
+      }
+    },
+    "Current session (5h)" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Aktuelle Session (5 Std.)" } }
+      }
+    },
+    "Error" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fehler" } }
+      }
+    },
+    "Highest of both" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Höherer Wert" } }
+      }
+    },
+    "Icon only" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nur Symbol" } }
+      }
+    },
+    "Menu bar" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Menüleiste" } }
+      }
+    },
+    "now" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "jetzt" } }
+      }
+    },
+    "Open Terminal." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Terminal öffnen." } }
+      }
+    },
+    "Opus" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Opus" } }
+      }
+    },
+    "Paste it below (⌘V), then “Save & connect”." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Unten einfügen (⌘V), dann „Speichern & verbinden“." } }
+      }
+    },
+    "Percentage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prozent" } }
+      }
+    },
+    "Progress bar" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fortschrittsbalken" } }
+      }
+    },
+    "Quit" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Beenden" } }
+      }
+    },
+    "Refresh" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisieren" } }
+      }
+    },
+    "Resets in %@" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Reset in %@" } }
+      }
+    },
+    "Run this command — it copies your token to the clipboard:" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Diesen Befehl ausführen — er kopiert dein Token in die Zwischenablage:" } }
+      }
+    },
+    "Save & connect" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Speichern & verbinden" } }
+      }
+    },
+    "Session" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Session" } }
+      }
+    },
+    "Session (5h)" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Session (5 Std.)" } }
+      }
+    },
+    "Settings…" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einstellungen…" } }
+      }
+    },
+    "Show" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Anzeige" } }
+      }
+    },
+    "Show Opus weekly limit (when present)" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Opus-Wochenlimit anzeigen (falls vorhanden)" } }
+      }
+    },
+    "Sign in" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Anmelden" } }
+      }
+    },
+    "Sign in from the app" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "In der App anmelden" } }
+      }
+    },
+    "Sign in to Claude" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bei Claude anmelden" } }
+      }
+    },
+    "Sign in to see your session and weekly limits." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Melde dich an, um Session- und Wochenlimit zu sehen." } }
+      }
+    },
+    "Sign out" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abmelden" } }
+      }
+    },
+    "Style" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Stil" } }
+      }
+    },
+    "Token" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Token" } }
+      }
+    },
+    "Try again" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erneut versuchen" } }
+      }
+    },
+    "Updated %@" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisiert %@" } }
+      }
+    },
+    "Uses your existing Claude Code login (it already has the required user:profile scope). Everything stays local — only the usage request goes to Anthropic." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nutzt dein vorhandenes Claude-Code-Login (es hat die nötige user:profile-Berechtigung). Alles bleibt lokal — nur der Usage-Aufruf geht an Anthropic." } }
+      }
+    },
+    "Weekly" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Woche" } }
+      }
+    },
+    "Weekly (7d)" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Woche (7 Tage)" } }
+      }
+    },
+    "Weekly · all models (7d)" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Woche · alle Modelle (7 Tage)" } }
+      }
+    },
+    "Weekly · Opus (7d)" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Woche · Opus (7 Tage)" } }
+      }
+    },
+    "Widget & menu" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Widget & Menü" } }
+      }
+    },
+    "Your session and weekly limits at a glance." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dein Session- und Wochenlimit auf einen Blick." } }
+      }
+    }
+  }
+}
