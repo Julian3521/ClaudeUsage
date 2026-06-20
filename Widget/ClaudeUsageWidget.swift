@@ -7,12 +7,12 @@ struct UsageEntry: TimelineEntry {
     let date: Date
     let snapshot: UsageSnapshot?
     let loggedIn: Bool
-    let showOpus: Bool
+    let showSecondary: Bool
 }
 
 struct UsageProvider: TimelineProvider {
     func placeholder(in context: Context) -> UsageEntry {
-        UsageEntry(date: Date(), snapshot: .placeholder, loggedIn: true, showOpus: true)
+        UsageEntry(date: Date(), snapshot: .placeholder, loggedIn: true, showSecondary: true)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (UsageEntry) -> Void) {
@@ -23,7 +23,8 @@ struct UsageProvider: TimelineProvider {
         // The widget does NOT call the network itself — the menu-bar app is the
         // single fetcher (it writes the snapshot and reloads our timeline). This
         // avoids hammering the rate-limited usage endpoint from multiple processes.
-        let next = Date().addingTimeInterval(Config.widgetRefreshInterval)
+        let minutes = Double(max(5, SettingsStore.load().refreshMinutes))
+        let next = Date().addingTimeInterval(minutes * 60)
         completion(Timeline(entries: [entry(snapshot: SnapshotStore.load())],
                             policy: .after(next)))
     }
@@ -32,7 +33,7 @@ struct UsageProvider: TimelineProvider {
         UsageEntry(date: Date(),
                    snapshot: snapshot,
                    loggedIn: TokenStore.load() != nil,
-                   showOpus: SettingsStore.load().showOpus)
+                   showSecondary: SettingsStore.load().showSecondary)
     }
 }
 
@@ -59,7 +60,7 @@ struct UsageWidgetEntryView: View {
     let entry: UsageEntry
 
     private var opus: (Double, Date?)? {
-        guard entry.showOpus, let snapshot = entry.snapshot,
+        guard entry.showSecondary, let snapshot = entry.snapshot,
               let percent = snapshot.opusPercent else { return nil }
         return (percent, snapshot.opusResetsAt)
     }
@@ -128,6 +129,17 @@ struct UsageWidgetEntryView: View {
                      percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
+            if entry.showSecondary, let sonnet = s.sonnetPercent {
+                UsageBar(title: "Weekly · Sonnet (7d)",
+                         percent: sonnet, resetsAt: s.sonnetResetsAt)
+            }
+            if entry.showSecondary, let spend = s.spendText {
+                HStack {
+                    Text("Extra usage").font(.caption.weight(.semibold))
+                    Spacer()
+                    Text(spend).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                }
+            }
         }
     }
 

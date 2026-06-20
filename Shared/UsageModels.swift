@@ -10,11 +10,39 @@ struct UsageResponse: Decodable {
     let fiveHour: UsageWindow?
     let sevenDay: UsageWindow?
     let sevenDayOpus: UsageWindow?
+    let sevenDaySonnet: UsageWindow?
+    let spend: Spend?
 
     enum CodingKeys: String, CodingKey {
         case fiveHour = "five_hour"
         case sevenDay = "seven_day"
         case sevenDayOpus = "seven_day_opus"
+        case sevenDaySonnet = "seven_day_sonnet"
+        case spend
+    }
+
+    /// Extra-usage / pay-as-you-go spend, in a currency (e.g. EUR).
+    struct Spend: Decodable {
+        let used: Money?
+        let limit: Money?
+        let enabled: Bool?
+
+        struct Money: Decodable {
+            let amountMinor: Double?
+            let currency: String?
+            let exponent: Int?
+
+            enum CodingKeys: String, CodingKey {
+                case amountMinor = "amount_minor"
+                case currency, exponent
+            }
+
+            /// Value in major units (e.g. euros): amount_minor / 10^exponent.
+            var value: Double? {
+                guard let amountMinor else { return nil }
+                return amountMinor / pow(10, Double(exponent ?? 2))
+            }
+        }
     }
 }
 
@@ -69,6 +97,11 @@ struct UsageSnapshot: Codable, Equatable {
     var weeklyResetsAt: Date?
     var opusPercent: Double?        // 7d Opus window, optional
     var opusResetsAt: Date?
+    var sonnetPercent: Double?      // 7d Sonnet window, optional
+    var sonnetResetsAt: Date?
+    var spendUsed: Double?          // extra-usage spend, major units
+    var spendLimit: Double?
+    var spendCurrency: String?
     var fetchedAt: Date
 
     static func from(_ r: UsageResponse, fetchedAt: Date) -> UsageSnapshot {
@@ -79,8 +112,35 @@ struct UsageSnapshot: Codable, Equatable {
             weeklyResetsAt: r.sevenDay?.resetsAt,
             opusPercent: r.sevenDayOpus?.percentUsed,
             opusResetsAt: r.sevenDayOpus?.resetsAt,
+            sonnetPercent: r.sevenDaySonnet?.percentUsed,
+            sonnetResetsAt: r.sevenDaySonnet?.resetsAt,
+            spendUsed: r.spend?.used?.value,
+            spendLimit: r.spend?.limit?.value,
+            spendCurrency: r.spend?.limit?.currency ?? r.spend?.used?.currency,
             fetchedAt: fetchedAt
         )
+    }
+
+    /// Formatted spend, e.g. "€0.00 / €10.00", when a limit is present.
+    var spendText: String? {
+        guard let limit = spendLimit, limit > 0 else { return nil }
+        let symbol = Self.currencySymbol(spendCurrency)
+        let used = spendUsed ?? 0
+        return String(format: "%@%.2f / %@%.2f", symbol, used, symbol, limit)
+    }
+
+    private static func currencySymbol(_ code: String?) -> String {
+        switch code?.uppercased() {
+        case "EUR": return "€"
+        case "USD": return "$"
+        case "GBP": return "£"
+        default: return code.map { "\($0) " } ?? ""
+        }
+    }
+
+    /// Highest of all known percentages — used for the high-usage notification.
+    var maxPercent: Double {
+        [sessionPercent, weeklyPercent, opusPercent ?? 0, sonnetPercent ?? 0].max() ?? 0
     }
 
     static let placeholder = UsageSnapshot(
@@ -93,7 +153,9 @@ struct UsageSnapshot: Codable, Equatable {
     static let sample = UsageSnapshot(
         sessionPercent: 32, sessionResetsAt: Date().addingTimeInterval(2 * 3600),
         weeklyPercent: 68, weeklyResetsAt: Date().addingTimeInterval(5 * 3600),
-        opusPercent: 45, opusResetsAt: Date().addingTimeInterval(5 * 3600), fetchedAt: Date()
+        opusPercent: 45, opusResetsAt: Date().addingTimeInterval(5 * 3600),
+        sonnetPercent: 12, sonnetResetsAt: Date().addingTimeInterval(5 * 3600),
+        spendUsed: 0, spendLimit: 10, spendCurrency: "EUR", fetchedAt: Date()
     )
 }
 

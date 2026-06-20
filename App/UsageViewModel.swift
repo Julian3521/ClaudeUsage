@@ -106,7 +106,12 @@ final class UsageViewModel {
     private func load() async throws {
         let result = try await UsageAPI.fetch()
         rawJSON = result.rawJSON
-        if let snapshot = SnapshotStore.load() { state = .loaded(snapshot) }
+        if let snapshot = SnapshotStore.load() {
+            state = .loaded(snapshot)
+            if AppSettings.shared.settings.notifyAtHighUsage {
+                UsageNotifier.check(snapshot, threshold: Settings.notifyThreshold)
+            }
+        }
         WidgetCenter.shared.reloadAllTimelines()
     }
 

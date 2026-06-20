@@ -29,7 +29,14 @@ struct Settings: Codable, Equatable, Sendable {
     var menuBarMetric: MenuBarMetric = .highest
     var menuBarShowBar = true
     var menuBarShowPercent = true
-    var showOpus = true
+    var showSecondary = true          // Opus / Sonnet / spend rows
+    var refreshMinutes = 20
+    var notifyAtHighUsage = false
+
+    /// Allowed refresh intervals (minutes).
+    static let refreshOptions = [10, 20, 30, 60]
+    /// Notify when any limit reaches this percentage.
+    static let notifyThreshold: Double = 90
 
     init() {}
 
@@ -39,7 +46,9 @@ struct Settings: Codable, Equatable, Sendable {
         menuBarMetric = (try? c.decode(MenuBarMetric.self, forKey: .menuBarMetric)) ?? .highest
         menuBarShowBar = (try? c.decode(Bool.self, forKey: .menuBarShowBar)) ?? true
         menuBarShowPercent = (try? c.decode(Bool.self, forKey: .menuBarShowPercent)) ?? true
-        showOpus = (try? c.decode(Bool.self, forKey: .showOpus)) ?? true
+        showSecondary = (try? c.decode(Bool.self, forKey: .showSecondary)) ?? true
+        refreshMinutes = (try? c.decode(Int.self, forKey: .refreshMinutes)) ?? 20
+        notifyAtHighUsage = (try? c.decode(Bool.self, forKey: .notifyAtHighUsage)) ?? false
     }
 }
 

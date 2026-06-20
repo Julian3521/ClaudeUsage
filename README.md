@@ -69,9 +69,22 @@ App  ─▶ api.anthropic.com/api/oauth/usage   (Bearer + anthropic-beta: oauth-
 - **`Widget/`** — WidgetKit provider + Small/Medium/Large views. It only renders
   the snapshot the app writes (no network), so it never adds to endpoint load.
 
-**Settings** (menu bar → ⋯ → Settings…): choose what the menu-bar item shows
-(highest / session / weekly) and how (percentage, **progress bar**, both, or icon
-only), and toggle the Opus weekly limit. **Localized in English and German.**
+**Settings** (menu bar → ⋯ → Settings…) with a live preview:
+
+- **Menu bar** — which limit to show (highest / session / weekly / **both**) and
+  how (**progress bar** and/or **percentage**, independently).
+- **General** — **launch at login**, refresh interval (10/20/30/60 min), and a
+  **notification** when any limit reaches 90 %.
+- **Details** — show the Opus & Sonnet weekly limits and extra-usage **spend (€)**.
+
+**Localized in English and German.**
+
+## Distribution
+
+For a downloadable, double-click-to-run build, `scripts/release.sh` archives,
+signs (Developer ID), builds a DMG, and notarizes it. One-time setup: create a
+*Developer ID Application* certificate and store notary credentials (see the
+comments at the top of the script). Then attach the DMG to a GitHub release.
 
 The app and widget share both the OAuth token and the last usage snapshot through
 a single shared **Keychain access group** (no App Group needed).

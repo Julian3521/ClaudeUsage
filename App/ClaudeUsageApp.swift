@@ -26,16 +26,17 @@ struct ClaudeUsageApp: App {
     }
 }
 
-/// Drives the initial load and a periodic refresh of the menu-bar value,
-/// independent of whether the user opens the menu.
+/// Drives the initial load and a periodic refresh of the menu-bar value at the
+/// configured interval, independent of whether the user opens the menu.
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private var timer: Timer?
-
     func applicationDidFinishLaunching(_ notification: Notification) {
-        Task { @MainActor in UsageViewModel.shared.onAppear() }
-        timer = Timer.scheduledTimer(withTimeInterval: Config.widgetRefreshInterval,
-                                     repeats: true) { _ in
-            Task { @MainActor in await UsageViewModel.shared.refresh() }
+        Task { @MainActor in
+            UsageViewModel.shared.onAppear()
+            while !Task.isCancelled {
+                let minutes = Double(max(5, AppSettings.shared.settings.refreshMinutes))
+                try? await Task.sleep(for: .seconds(minutes * 60))
+                await UsageViewModel.shared.refresh()
+            }
         }
     }
 }

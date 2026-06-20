@@ -54,9 +54,20 @@ struct MenuContentView: View {
                      percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
-            if AppSettings.shared.settings.showOpus, let opus = s.opusPercent {
-                UsageBar(title: "Weekly · Opus (7d)",
-                         percent: opus, resetsAt: s.opusResetsAt)
+            if AppSettings.shared.settings.showSecondary {
+                if let opus = s.opusPercent {
+                    UsageBar(title: "Weekly · Opus (7d)", percent: opus, resetsAt: s.opusResetsAt)
+                }
+                if let sonnet = s.sonnetPercent {
+                    UsageBar(title: "Weekly · Sonnet (7d)", percent: sonnet, resetsAt: s.sonnetResetsAt)
+                }
+                if let spend = s.spendText {
+                    HStack {
+                        Text("Extra usage").font(.subheadline.weight(.semibold))
+                        Spacer()
+                        Text(spend).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
+                    }
+                }
             }
             Text("Updated \(s.fetchedAt.formatted(date: .omitted, time: .shortened))")
                 .font(.caption)

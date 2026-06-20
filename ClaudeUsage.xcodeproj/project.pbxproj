@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		01A94F27A1793DF4B3348F0F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DDB428AAF806BABE2028FE /* SettingsView.swift */; };
+		0A31BD3EE66CD460BF9C4C70 /* UsageNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FE0DC64E730BECA3F6A9AB /* UsageNotifier.swift */; };
 		1446E142166E35F0939A6394 /* UsageAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD55D9098A9467D7664BE4C /* UsageAPI.swift */; };
 		194CCAD14E059D4E429631D6 /* UsageUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220CE5C927FBA66B8E411D03 /* UsageUI.swift */; };
 		19B7D2CB4C7CAD5636D30CC2 /* LoginWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239BE937C2A61DD57A5D3F40 /* LoginWindowView.swift */; };
@@ -78,6 +79,7 @@
 		961C7E1113D9D4AAAF0BA369 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		9860FB20FD504D088B3C90DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9AD55D9098A9467D7664BE4C /* UsageAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageAPI.swift; sourceTree = "<group>"; };
+		A0FE0DC64E730BECA3F6A9AB /* UsageNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageNotifier.swift; sourceTree = "<group>"; };
 		C3DDB428AAF806BABE2028FE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C66AC3187EFDC2485362B76A /* MenuContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuContentView.swift; sourceTree = "<group>"; };
 		C8339C45BC8C940FF4BC8F1F /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 				CE895DA6708B75A81A599C0F /* MenuBarContent.swift */,
 				C66AC3187EFDC2485362B76A /* MenuContentView.swift */,
 				C3DDB428AAF806BABE2028FE /* SettingsView.swift */,
+				A0FE0DC64E730BECA3F6A9AB /* UsageNotifier.swift */,
 				70954312EAB29E15762B5609 /* UsageViewModel.swift */,
 			);
 			path = App;
@@ -272,6 +275,7 @@
 				32EDEF82B724E10707C4978C /* TokenStore.swift in Sources */,
 				2DE007E5C1369CE0205CDA0A /* UsageAPI.swift in Sources */,
 				7EF5E868AC4EC1EB1AF5CDDC /* UsageModels.swift in Sources */,
+				0A31BD3EE66CD460BF9C4C70 /* UsageNotifier.swift in Sources */,
 				194CCAD14E059D4E429631D6 /* UsageUI.swift in Sources */,
 				6BE6EC1900DB5367E34BBF9A /* UsageViewModel.swift in Sources */,
 			);

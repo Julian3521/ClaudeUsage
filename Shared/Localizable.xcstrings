@@ -1,6 +1,39 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Details" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Details" } } }
+    },
+    "Extra usage" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Zusätzliche Nutzung" } } }
+    },
+    "General" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Allgemein" } } }
+    },
+    "Launch at login" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Bei Anmeldung starten" } } }
+    },
+    "%lld min" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld Min." } } }
+    },
+    "Notify near limit" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Bei nahem Limit benachrichtigen" } } }
+    },
+    "Refresh every" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisieren alle" } } }
+    },
+    "Show Opus, Sonnet & spend" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Opus, Sonnet & Ausgaben anzeigen" } } }
+    },
+    "Sonnet" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Sonnet" } } }
+    },
+    "Usage limit almost reached" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Limit fast erreicht" } } }
+    },
+    "Weekly · Sonnet (7d)" : {
+      "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Woche · Sonnet (7 Tage)" } } }
+    },
     "%@." : {
 
     },

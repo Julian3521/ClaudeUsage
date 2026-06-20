@@ -14,6 +14,14 @@ struct SettingsView: View {
                 .padding(.vertical, 6)
             }
 
+            Section("General") {
+                Toggle("Launch at login", isOn: $appSettings.launchAtLogin)
+                Picker("Refresh every", selection: $appSettings.settings.refreshMinutes) {
+                    ForEach(Settings.refreshOptions, id: \.self) { Text("\($0) min").tag($0) }
+                }
+                Toggle("Notify near limit", isOn: $appSettings.settings.notifyAtHighUsage)
+            }
+
             Section("Menu bar") {
                 Picker("Show", selection: $appSettings.settings.menuBarMetric) {
                     ForEach(MenuBarMetric.allCases, id: \.self) {
@@ -24,13 +32,15 @@ struct SettingsView: View {
                 Toggle("Percentage", isOn: $appSettings.settings.menuBarShowPercent)
             }
 
-            Section("Widget & menu") {
-                Toggle("Show Opus weekly limit (when present)",
-                       isOn: $appSettings.settings.showOpus)
+            Section("Details") {
+                Toggle("Show Opus, Sonnet & spend", isOn: $appSettings.settings.showSecondary)
             }
         }
         .formStyle(.grouped)
         .frame(width: 420)
+        .onChange(of: appSettings.settings.notifyAtHighUsage) { _, on in
+            if on { UsageNotifier.requestAuthorization() }
+        }
     }
 
     private var menuBarPreview: some View {
@@ -56,7 +66,7 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
                 UsageBar(title: "Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
-                if appSettings.settings.showOpus, let opus = s.opusPercent {
+                if appSettings.settings.showSecondary, let opus = s.opusPercent {
                     UsageBar(title: "Opus", percent: opus, resetsAt: s.opusResetsAt)
                 }
             }
