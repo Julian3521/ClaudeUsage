@@ -82,6 +82,21 @@
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Prozent" } }
       }
     },
+    "Preview" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vorschau" } }
+      }
+    },
+    "Session + weekly" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Session + Woche" } }
+      }
+    },
+    "Widget" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Widget" } }
+      }
+    },
     "Progress bar" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Fortschrittsbalken" } }

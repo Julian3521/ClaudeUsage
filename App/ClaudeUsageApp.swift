@@ -44,44 +44,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 struct MenuBarLabel: View {
     let viewModel: UsageViewModel
 
-    private let icon = "gauge.with.dots.needle.bottom.50percent"
-
     var body: some View {
-        let percent = viewModel.menuBarPercent
-        switch AppSettings.shared.settings.menuBarStyle {
-        case .iconOnly:
-            Image(systemName: icon)
-        case .percent:
-            if let percent { Text("\(Int(percent.rounded()))%") }
-            else { Image(systemName: icon) }
-        case .bar:
-            if let percent { MenuBarGauge(percent: percent) }
-            else { Image(systemName: icon) }
-        case .barAndPercent:
-            if let percent {
-                HStack(spacing: 4) {
-                    MenuBarGauge(percent: percent)
-                    Text("\(Int(percent.rounded()))%")
-                }
-            } else {
-                Image(systemName: icon)
-            }
+        let settings = AppSettings.shared.settings
+        if let snapshot = viewModel.snapshot {
+            MenuBarContent(values: settings.menuBarMetric.values(snapshot),
+                           showBar: settings.menuBarShowBar,
+                           showPercent: settings.menuBarShowPercent)
+        } else {
+            Image(systemName: "gauge.with.dots.needle.bottom.50percent")
         }
-    }
-}
-
-/// A compact progress bar sized for the menu bar (rendered monochrome there).
-struct MenuBarGauge: View {
-    let percent: Double
-
-    var body: some View {
-        let fraction = min(1, max(0, percent / 100))
-        GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                Capsule().fill(.primary.opacity(0.3))
-                Capsule().fill(.primary).frame(width: max(2, geo.size.width * fraction))
-            }
-        }
-        .frame(width: 24, height: 6)
     }
 }

@@ -88,6 +88,13 @@ struct UsageSnapshot: Codable, Equatable {
         weeklyPercent: 12, weeklyResetsAt: Date().addingTimeInterval(7 * 3600 + 600),
         opusPercent: nil, opusResetsAt: nil, fetchedAt: Date()
     )
+
+    /// Distinct values for settings previews.
+    static let sample = UsageSnapshot(
+        sessionPercent: 32, sessionResetsAt: Date().addingTimeInterval(2 * 3600),
+        weeklyPercent: 68, weeklyResetsAt: Date().addingTimeInterval(5 * 3600),
+        opusPercent: 45, opusResetsAt: Date().addingTimeInterval(5 * 3600), fetchedAt: Date()
+    )
 }
 
 // MARK: - Snapshot persistence (shared Keychain)

@@ -25,15 +25,10 @@ final class UsageViewModel {
 
     var isLoggedIn: Bool { TokenStore.load() != nil }
 
-    /// The percentage to show in the menu bar, per the configured metric.
-    /// `nil` when there's no data yet.
-    var menuBarPercent: Double? {
-        guard case let .loaded(s) = state else { return nil }
-        switch AppSettings.shared.settings.menuBarMetric {
-        case .session: return s.sessionPercent
-        case .weekly: return s.weeklyPercent
-        case .highest: return max(s.sessionPercent, s.weeklyPercent)
-        }
+    /// The currently loaded snapshot, if any (used by the menu-bar label).
+    var snapshot: UsageSnapshot? {
+        if case let .loaded(s) = state { return s }
+        return nil
     }
 
     func onAppear() {

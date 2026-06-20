@@ -1,37 +1,46 @@
 import Foundation
 import Security
 
-/// Which usage limit drives the menu-bar readout.
+/// Which usage limit(s) drive the menu-bar readout.
 enum MenuBarMetric: String, Codable, CaseIterable, Sendable {
-    case highest, session, weekly
+    case highest, session, weekly, both
 
     var label: String {
         switch self {
         case .highest: return "Highest of both"
         case .session: return "Session (5h)"
         case .weekly: return "Weekly (7d)"
+        case .both: return "Session + weekly"
         }
     }
-}
 
-/// How the menu-bar item presents the value.
-enum MenuBarStyle: String, Codable, CaseIterable, Sendable {
-    case percent, bar, barAndPercent, iconOnly
-
-    var label: String {
+    /// The percentage value(s) to display for this metric (1 or 2).
+    func values(_ s: UsageSnapshot) -> [Double] {
         switch self {
-        case .percent: return "Percentage"
-        case .bar: return "Progress bar"
-        case .barAndPercent: return "Bar + percentage"
-        case .iconOnly: return "Icon only"
+        case .session: return [s.sessionPercent]
+        case .weekly: return [s.weeklyPercent]
+        case .highest: return [max(s.sessionPercent, s.weeklyPercent)]
+        case .both: return [s.sessionPercent, s.weeklyPercent]
         }
     }
 }
 
 struct Settings: Codable, Equatable, Sendable {
     var menuBarMetric: MenuBarMetric = .highest
-    var menuBarStyle: MenuBarStyle = .barAndPercent
+    var menuBarShowBar = true
+    var menuBarShowPercent = true
     var showOpus = true
+
+    init() {}
+
+    // Lenient decoding so older stored settings keep working.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        menuBarMetric = (try? c.decode(MenuBarMetric.self, forKey: .menuBarMetric)) ?? .highest
+        menuBarShowBar = (try? c.decode(Bool.self, forKey: .menuBarShowBar)) ?? true
+        menuBarShowPercent = (try? c.decode(Bool.self, forKey: .menuBarShowPercent)) ?? true
+        showOpus = (try? c.decode(Bool.self, forKey: .showOpus)) ?? true
+    }
 }
 
 /// Persisted in the shared Keychain group so the app and the widget agree.

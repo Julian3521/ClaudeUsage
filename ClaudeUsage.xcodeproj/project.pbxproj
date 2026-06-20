@@ -12,6 +12,7 @@
 		194CCAD14E059D4E429631D6 /* UsageUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220CE5C927FBA66B8E411D03 /* UsageUI.swift */; };
 		19B7D2CB4C7CAD5636D30CC2 /* LoginWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239BE937C2A61DD57A5D3F40 /* LoginWindowView.swift */; };
 		1DF51313033F5D173F8A2A26 /* OAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BDE777E8B3DA905A94E855 /* OAuthClient.swift */; };
+		1E600003F606459F6C02B81C /* MenuBarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE895DA6708B75A81A599C0F /* MenuBarContent.swift */; };
 		2DE007E5C1369CE0205CDA0A /* UsageAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD55D9098A9467D7664BE4C /* UsageAPI.swift */; };
 		32EDEF82B724E10707C4978C /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E523773952E01523EA9066 /* TokenStore.swift */; };
 		348A32779442F71DC10A1765 /* UsageUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220CE5C927FBA66B8E411D03 /* UsageUI.swift */; };
@@ -83,6 +84,7 @@
 		C83428CAB7277078A2677D14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C840CE1F329996CBCF0B01B6 /* ClaudeUsageWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeUsageWidgetBundle.swift; sourceTree = "<group>"; };
 		CBBE659389322DA860A65644 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		CE895DA6708B75A81A599C0F /* MenuBarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContent.swift; sourceTree = "<group>"; };
 		D2D075FEF47C5CBC62414384 /* ClaudeUsage.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClaudeUsage.entitlements; sourceTree = "<group>"; };
 		F1BDE777E8B3DA905A94E855 /* OAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,6 +99,7 @@
 				1520DE729C71CBF445CFC145 /* ClaudeUsageApp.swift */,
 				C83428CAB7277078A2677D14 /* Info.plist */,
 				239BE937C2A61DD57A5D3F40 /* LoginWindowView.swift */,
+				CE895DA6708B75A81A599C0F /* MenuBarContent.swift */,
 				C66AC3187EFDC2485362B76A /* MenuContentView.swift */,
 				C3DDB428AAF806BABE2028FE /* SettingsView.swift */,
 				70954312EAB29E15762B5609 /* UsageViewModel.swift */,
@@ -261,6 +264,7 @@
 				6689E4C7F8D857ED5425E9A0 /* ClaudeUsageApp.swift in Sources */,
 				587D896E4CE2D6328FF4D9E9 /* Constants.swift in Sources */,
 				19B7D2CB4C7CAD5636D30CC2 /* LoginWindowView.swift in Sources */,
+				1E600003F606459F6C02B81C /* MenuBarContent.swift in Sources */,
 				5817E3A2FE3F830A3F1991C9 /* MenuContentView.swift in Sources */,
 				E590066085D27EA41A0AB299 /* OAuthClient.swift in Sources */,
 				718629049AABBEB33D7CA5BB /* Settings.swift in Sources */,
