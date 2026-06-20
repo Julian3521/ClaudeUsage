@@ -1,8 +1,9 @@
 import SwiftUI
 import AppKit
 
-/// Renders the menu-bar item: an optional progress bar (drawn as an image so it
-/// renders reliably in the status bar) and/or the percentage text.
+/// Renders the menu-bar item. For each value it shows an optional progress bar
+/// (drawn as an image so it renders reliably in the status bar) next to its
+/// percentage — so "Session + weekly" appears as two bar+percent groups.
 struct MenuBarContent: View {
     let values: [Double]
     let showBar: Bool
@@ -12,12 +13,16 @@ struct MenuBarContent: View {
         if !showBar && !showPercent {
             Image(systemName: "gauge.with.dots.needle.bottom.50percent")
         } else {
-            HStack(spacing: 4) {
-                if showBar {
-                    Image(nsImage: MenuBarRenderer.image(for: values))
-                }
-                if showPercent {
-                    Text(values.map { "\(Int($0.rounded()))%" }.joined(separator: " "))
+            HStack(spacing: 7) {
+                ForEach(Array(values.enumerated()), id: \.offset) { _, value in
+                    HStack(spacing: 3) {
+                        if showBar {
+                            Image(nsImage: MenuBarRenderer.bar(for: value))
+                        }
+                        if showPercent {
+                            Text("\(Int(value.rounded()))%")
+                        }
+                    }
                 }
             }
         }
@@ -25,29 +30,25 @@ struct MenuBarContent: View {
 }
 
 enum MenuBarRenderer {
-    /// Draws 1–2 stacked rounded progress bars with traffic-light fill colors.
-    static func image(for values: [Double]) -> NSImage {
-        let width: CGFloat = 24, barHeight: CGFloat = 5, gap: CGFloat = 3
-        let count = max(1, values.count)
-        let height = CGFloat(count) * barHeight + CGFloat(count - 1) * gap
+    /// Draws a single rounded progress bar with a traffic-light fill color.
+    static func bar(for value: Double) -> NSImage {
+        let width: CGFloat = 22, height: CGFloat = 6
         let size = NSSize(width: width, height: height)
 
         let image = NSImage(size: size)
         image.lockFocus()
-        for (index, value) in values.enumerated() {
-            let y = size.height - CGFloat(index + 1) * barHeight - CGFloat(index) * gap
-            let track = NSBezierPath(roundedRect: NSRect(x: 0, y: y, width: width, height: barHeight),
-                                     xRadius: barHeight / 2, yRadius: barHeight / 2)
-            NSColor(white: 0.5, alpha: 0.35).setFill()
-            track.fill()
+        let track = NSBezierPath(roundedRect: NSRect(x: 0, y: 0, width: width, height: height),
+                                 xRadius: height / 2, yRadius: height / 2)
+        NSColor(white: 0.5, alpha: 0.35).setFill()
+        track.fill()
 
-            let fraction = min(1, max(0, value / 100))
-            let fillWidth = max(barHeight, width * fraction)
-            let fill = NSBezierPath(roundedRect: NSRect(x: 0, y: y, width: fillWidth, height: barHeight),
-                                    xRadius: barHeight / 2, yRadius: barHeight / 2)
-            color(for: value).setFill()
-            fill.fill()
-        }
+        let fraction = min(1, max(0, value / 100))
+        let fillWidth = max(height, width * fraction)
+        let fill = NSBezierPath(roundedRect: NSRect(x: 0, y: 0, width: fillWidth, height: height),
+                                xRadius: height / 2, yRadius: height / 2)
+        color(for: value).setFill()
+        fill.fill()
+
         image.unlockFocus()
         image.isTemplate = false
         return image
