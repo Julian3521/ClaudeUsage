@@ -121,6 +121,34 @@ final class UsageViewModel {
         WidgetCenter.shared.reloadAllTimelines()
     }
 
+    // MARK: - Session windows
+
+    /// Manually anchor a new 5h window now (sends a tiny request).
+    func startSessionWindow() async {
+        do {
+            try await SessionStarter.ping()
+            await refresh(force: true)
+        } catch {
+            lastFetchFailed = true
+            rawJSON = error.localizedDescription
+        }
+    }
+
+    /// Once per day, after the configured hour, anchor a new window automatically.
+    func maybeAutoStartWindow() async {
+        let settings = AppSettings.shared.settings
+        guard settings.autoStartWindow, isLoggedIn else { return }
+        let calendar = Calendar.current
+        let now = Date()
+        guard calendar.component(.hour, from: now) >= settings.autoStartHour else { return }
+        let today = calendar.startOfDay(for: now).timeIntervalSince1970
+        let key = "autoStart.lastDay"
+        guard UserDefaults.standard.double(forKey: key) < today else { return }
+        UserDefaults.standard.set(today, forKey: key)
+        try? await SessionStarter.ping()
+        await refresh(force: true)
+    }
+
     /// True only for real auth failures (so we keep a valid token through a 429).
     static func isAuthFailure(_ error: Error) -> Bool {
         if case UsageError.notLoggedIn = error { return true }

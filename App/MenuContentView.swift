@@ -132,6 +132,9 @@ struct MenuContentView: View {
                     .keyboardShortcut("r")
 
                 Menu {
+                    Button("Start session window now") {
+                        Task { await viewModel.startSessionWindow() }
+                    }
                     Link("Open usage on claude.ai", destination: Config.usagePageURL)
                     SettingsLink { Text("Settings…") }
                     Button("Copy raw response") { copyRaw() }

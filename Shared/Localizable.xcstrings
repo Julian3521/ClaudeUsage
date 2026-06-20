@@ -1,6 +1,62 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "At hour" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Um Uhrzeit" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "A la hora" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "À l’heure" } }
+      }
+    },
+    "Auto-start a window daily" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Täglich ein Fenster automatisch starten" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Iniciar una ventana a diario" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Démarrer une fenêtre chaque jour" } }
+      }
+    },
+    "Claude Usage History" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Claude Usage Verlauf" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Historial de Claude Usage" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Historique Claude Usage" } }
+      }
+    },
+    "Collecting data…" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sammle Daten…" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Recopilando datos…" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Collecte de données…" } }
+      }
+    },
+    "Sends a tiny request to anchor the 5-hour window early, so it resets earlier in your day. Uses minimal quota." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sendet eine winzige Anfrage, um das 5-Stunden-Fenster früher zu verankern, damit es früher am Tag zurücksetzt. Minimaler Verbrauch." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Envía una solicitud mínima para anclar la ventana de 5 horas antes, de modo que se restablezca más temprano. Usa cuota mínima." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Envoie une requête minime pour ancrer la fenêtre de 5 heures plus tôt, afin qu’elle se réinitialise plus tôt dans la journée. Quota minimal." } }
+      }
+    },
+    "Session windows" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sitzungsfenster" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Ventanas de sesión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Fenêtres de session" } }
+      }
+    },
+    "Start session window now" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sitzungsfenster jetzt starten" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Iniciar ventana de sesión ahora" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Démarrer la fenêtre de session" } }
+      }
+    },
+    "Utilization of the 5-hour and weekly windows over time." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Auslastung der 5-Stunden- und Wochenfenster über die Zeit." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Uso de las ventanas de 5 horas y semanal a lo largo del tiempo." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Utilisation des fenêtres de 5 heures et hebdomadaire au fil du temps." } }
+      }
+    },
     "%@ min" : {
 
     },

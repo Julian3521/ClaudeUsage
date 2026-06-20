@@ -26,6 +26,18 @@ struct SettingsView: View {
                 .disabled(!appSettings.settings.notifyAtHighUsage)
             }
 
+            Section {
+                Toggle("Auto-start a window daily", isOn: $appSettings.settings.autoStartWindow)
+                Picker("At hour", selection: $appSettings.settings.autoStartHour) {
+                    ForEach(0..<24, id: \.self) { Text(verbatim: String(format: "%02d:00", $0)).tag($0) }
+                }
+                .disabled(!appSettings.settings.autoStartWindow)
+            } header: {
+                Text("Session windows")
+            } footer: {
+                Text("Sends a tiny request to anchor the 5-hour window early, so it resets earlier in your day. Uses minimal quota.")
+            }
+
             Section("Menu bar") {
                 Picker("Show", selection: $appSettings.settings.menuBarMetric) {
                     ForEach(MenuBarMetric.allCases, id: \.self) {

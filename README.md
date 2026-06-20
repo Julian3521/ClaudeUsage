@@ -83,12 +83,29 @@ fails, and a link to open usage on claude.ai (the widget opens it on click too).
 **Localized in English, German, French, and Spanish.** Decoder covered by unit
 tests (`Tests/`, run with ⌘U or `xcodebuild test`).
 
-## Distribution
+## Download
 
-For a downloadable, double-click-to-run build, `scripts/release.sh` archives,
-signs (Developer ID), builds a DMG, and notarizes it. One-time setup: create a
-*Developer ID Application* certificate and store notary credentials (see the
-comments at the top of the script). Then attach the DMG to a GitHub release.
+Grab the latest **`ClaudeUsage.dmg`** from the [Releases](../../releases) page
+(notarized; open and drag to Applications). Or build from source below.
+
+## Distribution & CI
+
+- **`.github/workflows/ci.yml`** — builds + runs the unit tests on every push.
+- **`.github/workflows/release.yml`** — on a `vX.Y.Z` tag, signs, notarizes, and
+  attaches a DMG to a GitHub release. Add these repo secrets first:
+  `BUILD_CERTIFICATE_BASE64` (Developer ID Application .p12, base64), `P12_PASSWORD`,
+  `KEYCHAIN_PASSWORD`, `NOTARY_APPLE_ID`, `NOTARY_TEAM_ID`, `NOTARY_PASSWORD`
+  (an app-specific password). Locally, `scripts/release.sh` does the same.
+
+> CI uses a `macos-26` runner (Xcode 26 is required for the Icon Composer
+> app icon and Swift 6 mode).
+
+## Experimental: auto-start session windows
+
+The 5-hour window is anchored to your first request, so a late start means a late
+reset. *Settings → Session windows* can send a tiny request once per day at a set
+hour (or on demand via the menu) to anchor the window **earlier**, so it resets
+earlier in your day. It uses minimal quota — your own account, opt-in.
 
 The app and widget share both the OAuth token and the last usage snapshot through
 a single shared **Keychain access group** (no App Group needed).

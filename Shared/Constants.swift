@@ -15,6 +15,12 @@ enum Config {
     /// Opened when the user clicks the widget or the "Open usage" menu item.
     static let usagePageURL = URL(string: "https://claude.ai/settings/usage")!
 
+    /// Messages endpoint + tiny model used to "anchor" a new 5h window.
+    static let messagesURL = "https://api.anthropic.com/v1/messages"
+    static let pingModel = "claude-haiku-4-5-20251001"
+    /// OAuth inference requires the Claude Code identity in the system prompt.
+    static let claudeCodeSystemPrompt = "You are Claude Code, Anthropic's official CLI for Claude."
+
     // Sharing between the app and the widget extension happens entirely through
     // the Keychain. Both targets list the same single entry in
     // `keychain-access-groups`, so items saved WITHOUT an explicit access group
