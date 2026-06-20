@@ -28,50 +28,34 @@ struct UsageWindow: Decodable {
     enum CodingKeys: String, CodingKey {
         case utilization
         case resetsAt = "resets_at"
-        case remaining
-        case used
-        case limit
     }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-
-        // utilization may be a fraction (0...1) or a percent (0...100).
-        if let u = try? c.decode(Double.self, forKey: .utilization) {
-            percentUsed = u <= 1.0 ? u * 100.0 : u
-        } else if let used = try? c.decode(Double.self, forKey: .used),
-                  let limit = try? c.decode(Double.self, forKey: .limit), limit > 0 {
-            percentUsed = min(100.0, used / limit * 100.0)
-        } else if let remaining = try? c.decode(Double.self, forKey: .remaining),
-                  remaining <= 1.0 {
-            percentUsed = (1.0 - remaining) * 100.0
+        // `utilization` is a percentage 0...100 (e.g. 14.0 = 14%).
+        let u = (try? c.decode(Double.self, forKey: .utilization)) ?? 0
+        percentUsed = min(100, max(0, u))
+        if let s = try? c.decode(String.self, forKey: .resetsAt) {
+            resetsAt = UsageWindow.parseDate(s)
         } else {
-            percentUsed = 0
+            resetsAt = nil
         }
-
-        resetsAt = UsageWindow.decodeDate(from: c, key: .resetsAt)
     }
 
-    private static func decodeDate(from c: KeyedDecodingContainer<CodingKeys>,
-                                   key: CodingKeys) -> Date? {
-        if let s = try? c.decode(String.self, forKey: key) {
-            return ISO8601DateFormatter.flexible.date(from: s)
-                ?? ISO8601DateFormatter().date(from: s)
-        }
-        if let t = try? c.decode(Double.self, forKey: key) {
-            // Heuristic: seconds vs milliseconds since epoch.
-            return Date(timeIntervalSince1970: t > 4_000_000_000 ? t / 1000 : t)
+    /// Parses ISO-8601 timestamps, tolerating the API's 6-digit (microsecond)
+    /// fractional seconds, which Apple's parser otherwise rejects.
+    static func parseDate(_ s: String) -> Date? {
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let d = iso.date(from: s) { return d }
+        iso.formatOptions = [.withInternetDateTime]
+        if let d = iso.date(from: s) { return d }
+        // Strip fractional seconds (e.g. ".913060") and retry.
+        if let r = s.range(of: #"\.\d+"#, options: .regularExpression) {
+            return iso.date(from: s.replacingCharacters(in: r, with: ""))
         }
         return nil
     }
-}
-
-extension ISO8601DateFormatter {
-    static let flexible: ISO8601DateFormatter = {
-        let f = ISO8601DateFormatter()
-        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return f
-    }()
 }
 
 // MARK: - Snapshot shared with the widget
