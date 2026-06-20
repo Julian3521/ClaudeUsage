@@ -51,8 +51,7 @@ struct ClaudeUsageWidget: Widget {
         }
         .configurationDisplayName("Claude Usage")
         .description("Dein Session- und Wochenlimit auf einen Blick.")
-        .supportedFamilies([.systemSmall, .systemMedium,
-                            .accessoryCircular, .accessoryRectangular])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
 
@@ -69,8 +68,7 @@ struct UsageWidgetEntryView: View {
             switch family {
             case .systemSmall: smallView(s)
             case .systemMedium: mediumView(s)
-            case .accessoryCircular: circularView(s)
-            case .accessoryRectangular: rectangularView(s)
+            case .systemLarge: largeView(s)
             default: smallView(s)
             }
         } else {
@@ -111,24 +109,27 @@ struct UsageWidgetEntryView: View {
         }
     }
 
-    // Lock-screen circular: session gauge.
-    private func circularView(_ s: UsageSnapshot) -> some View {
-        Gauge(value: min(1, s.sessionPercent / 100)) {
-            Text("S")
-        } currentValueLabel: {
-            Text("\(Int(s.sessionPercent.rounded()))")
+    // Large: rings on top, bars below.
+    private func largeView(_ s: UsageSnapshot) -> some View {
+        VStack(spacing: 16) {
+            HStack {
+                Label("Claude Usage", systemImage: "gauge.with.dots.needle.bottom.50percent")
+                    .font(.headline)
+                Spacer()
+            }
+            HStack(spacing: 24) {
+                ringColumn("Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
+                ringColumn("Woche", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
+                if let opus = s.opusPercent {
+                    ringColumn("Opus", percent: opus, resetsAt: s.opusResetsAt)
+                }
+            }
+            Spacer(minLength: 0)
+            UsageBar(title: "Current session (5h)",
+                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
+            UsageBar(title: "Weekly · all models (7d)",
+                     percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
         }
-        .gaugeStyle(.accessoryCircular)
-    }
-
-    // Lock-screen rectangular: both limits.
-    private func rectangularView(_ s: UsageSnapshot) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text("Claude Usage").font(.headline)
-            Text("Session \(Int(s.sessionPercent.rounded()))% · \(UsageFormat.resetString(s.sessionResetsAt) ?? "—")")
-            Text("Woche \(Int(s.weeklyPercent.rounded()))% · \(UsageFormat.resetString(s.weeklyResetsAt) ?? "—")")
-        }
-        .font(.caption2)
     }
 
     private var signedOut: some View {

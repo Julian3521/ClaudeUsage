@@ -3,6 +3,8 @@ import WidgetKit
 
 @MainActor
 final class UsageViewModel: ObservableObject {
+    static let shared = UsageViewModel()
+
     enum ViewState: Equatable {
         case loggedOut
         case loading
@@ -12,12 +14,21 @@ final class UsageViewModel: ObservableObject {
 
     @Published var state: ViewState = .loggedOut
     @Published var rawJSON: String = ""
-    @Published var showingLogin = false
+    /// Toggled to true once a login succeeds, so the login window can close itself.
+    @Published var shouldDismissLogin = false
 
     /// PKCE material for the in-flight login attempt.
     private(set) var pkce: PKCE?
 
     var isLoggedIn: Bool { TokenStore.load() != nil }
+
+    /// Short text for the menu bar, e.g. "8%".
+    var menuBarTitle: String {
+        if case let .loaded(s) = state {
+            return "\(Int(s.sessionPercent.rounded()))%"
+        }
+        return isLoggedIn ? "…" : ""
+    }
 
     func onAppear() {
         if isLoggedIn {
@@ -31,9 +42,8 @@ final class UsageViewModel: ObservableObject {
     // MARK: - Login
 
     func startLogin() {
-        let pkce = PKCE.generate()
-        self.pkce = pkce
-        showingLogin = true
+        pkce = PKCE.generate()
+        shouldDismissLogin = false
     }
 
     var authorizeURL: URL? {
@@ -43,13 +53,13 @@ final class UsageViewModel: ObservableObject {
     /// Called when the web view (or manual paste) yields an authorization code.
     func completeLogin(rawCode: String) {
         guard let pkce else { return }
-        showingLogin = false
         state = .loading
         Task {
             do {
                 let tokens = try await OAuthClient.exchangeCode(rawCode, pkce: pkce)
                 TokenStore.save(tokens)
                 self.pkce = nil
+                shouldDismissLogin = true
                 await refresh()
             } catch {
                 state = .error(error.localizedDescription)

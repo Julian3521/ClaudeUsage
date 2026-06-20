@@ -139,6 +139,7 @@ enum SnapshotStore {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: Config.keychainSnapshotService,
             kSecAttrAccount as String: account,
+            kSecUseDataProtectionKeychain as String: true,
         ]
     }
 }

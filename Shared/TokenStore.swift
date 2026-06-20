@@ -52,6 +52,9 @@ enum TokenStore {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: Config.keychainService,
             kSecAttrAccount as String: account,
+            // Required on macOS so the keychain access group (sharing with the
+            // widget) behaves like iOS. Harmless on iOS.
+            kSecUseDataProtectionKeychain as String: true,
         ]
     }
 }

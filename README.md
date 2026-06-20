@@ -1,13 +1,15 @@
-# Claude Usage — iOS Widget
+# Claude Usage — macOS Menu Bar + Widget
 
-A tiny iOS app + home/lock-screen widget that shows your **Claude session (5h) and
-weekly (7d) usage limits** — the same numbers you see under `claude /usage` and in
-the Claude app's *Usage* screen.
+A tiny macOS **menu-bar app** and **WidgetKit widget** that show your **Claude
+session (5h) and weekly (7d) usage limits** — the same numbers you see under
+`claude /usage` and in the Claude app's *Usage* screen.
+
+The menu bar shows the live session percentage; clicking it opens a panel with
+bars + reset countdowns. A desktop / Notification Center widget shows the same.
 
 It signs in to **your own** Claude account and reads the limits directly from
-Anthropic's usage endpoint. No data leaves your device except the calls to
-Anthropic. The OAuth token is stored in the iOS Keychain and shared with the
-widget extension.
+Anthropic's usage endpoint. No data leaves your Mac except the calls to
+Anthropic. The OAuth token is stored in the Keychain and shared with the widget.
 
 > ⚠️ **Unofficial.** This reuses the public Claude Code OAuth client and an
 > undocumented usage endpoint (`/api/oauth/usage`). It is meant for personal use
@@ -16,35 +18,35 @@ widget extension.
 
 ## Requirements
 
-- **Xcode 16 or newer** (developed with Xcode 26).
-- A **paid Apple Developer account** (for Keychain sharing between the app and the
-  widget, and so the app runs for a year on your phone). The Team ID is already
-  set in [`project.yml`](project.yml) — change `DEVELOPMENT_TEAM` to your own.
-- An **iPhone on iOS 17+** and a Claude subscription (Pro/Max).
+- **macOS 14 (Sonoma) or newer** and **Xcode 16+** (developed with Xcode 26).
+- A **paid Apple Developer account** (for App Sandbox + Keychain sharing between
+  the app and the widget). The Team ID is set in [`project.yml`](project.yml)
+  (`DEVELOPMENT_TEAM`) — change it to your own.
+- A Claude subscription (Pro/Max).
 
 ## Build & run
 
 ```bash
-# 1. (Optional) regenerate the Xcode project from project.yml
+# (Optional) regenerate the Xcode project from project.yml
 brew install xcodegen
 xcodegen generate
 
-# 2. Open it
 open ClaudeUsage.xcodeproj
 ```
 
 In Xcode:
 
-1. Signing is preconfigured via `DEVELOPMENT_TEAM` in `project.yml`. If you use a
-   different Apple Developer account, set your own Team on both the **ClaudeUsage**
-   and **ClaudeUsageWidgetExtension** targets under *Signing & Capabilities*.
-2. Pick your iPhone as the run destination and press **▶︎ Run**.
-3. In the app, tap **"Bei Claude anmelden"** and log in with your Claude account.
-   The app captures the authorization code automatically. (If login fails in the
-   embedded web view — e.g. Google SSO — use the **"Manuell"** button: open the
-   page in Safari, log in, and paste the shown code.)
-4. Long-press your home screen → **+** → search **Claude Usage** → add the widget.
-   Lock-screen widgets are available too (circular + rectangular).
+1. Signing is preconfigured via `DEVELOPMENT_TEAM`. If you use a different
+   account, select your **Team** on both the **ClaudeUsage** and
+   **ClaudeUsageWidgetExtension** targets under *Signing & Capabilities*. On the
+   first run Xcode mints the provisioning profiles automatically.
+2. Run the **ClaudeUsage** scheme. The app is a menu-bar agent (no Dock icon) —
+   look for the gauge icon in the menu bar.
+3. Click it → **"Bei Claude anmelden"** and log in. The code is captured
+   automatically. (If the embedded web view fails — e.g. Google SSO — use
+   **"Manuell…"**: open the page in your browser and paste the shown code.)
+4. Add the widget: right-click the desktop → *Edit Widgets* (or open Notification
+   Center → *Edit Widgets*) → search **Claude Usage** → pick Small / Medium / Large.
 
 ## How it works
 
@@ -55,19 +57,23 @@ App & Widget ─▶ api.anthropic.com/api/oauth/usage     (Bearer + anthropic-be
                  → five_hour / seven_day / seven_day_opus  → rings & bars
 ```
 
-- **`Shared/`** — models, OAuth (PKCE), Keychain token store, usage API. Compiled
-  into both targets.
-- **`App/`** — SwiftUI app: login + status screen + raw-response debug view.
-- **`Widget/`** — WidgetKit timeline provider + views. Refreshes ~every 20 min
-  (WidgetKit budgets refreshes; it is not truly real-time).
+- **`Shared/`** — models, OAuth (PKCE), Keychain token + snapshot store, usage
+  API, shared SwiftUI ring/bar views. Compiled into both targets.
+- **`App/`** — `MenuBarExtra` app + login window (`WKWebView`). A periodic timer
+  refreshes the menu-bar value; an `AppDelegate` drives it on launch.
+- **`Widget/`** — WidgetKit timeline provider + Small/Medium/Large views.
+  Refreshes ~every 20 min (WidgetKit budgets refreshes; not real-time).
+
+The app and widget share both the OAuth token and the last usage snapshot through
+a single shared **Keychain access group** (no App Group needed).
 
 ## If the percentages look wrong
 
 The exact JSON shape of `/api/oauth/usage` is undocumented, so the decoder in
 [`Shared/UsageModels.swift`](Shared/UsageModels.swift) is deliberately tolerant.
-On first run, open the app's **⋯ → "Rohdaten anzeigen"** to see the real
-response, then adjust the `CodingKeys` / `UsageWindow` decoding to match (e.g. if
-`utilization` is named differently or is a 0–1 fraction vs a 0–100 percent).
+From the menu, use **⋯ → "Rohdaten kopieren"** to copy the real response, then
+adjust the `CodingKeys` / `UsageWindow` decoding to match (e.g. if `utilization`
+is named differently or is a 0–1 fraction vs a 0–100 percent).
 
 ## Making it yours
 

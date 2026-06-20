@@ -1,23 +1,23 @@
 import SwiftUI
 import WebKit
 
-/// A WKWebView that loads Anthropic's OAuth authorize page and intercepts the
-/// redirect to the callback URL to capture the authorization code.
-struct LoginWebView: UIViewRepresentable {
+/// A WKWebView (AppKit) that loads Anthropic's OAuth authorize page and
+/// intercepts the redirect to the callback URL to capture the authorization code.
+struct LoginWebView: NSViewRepresentable {
     let url: URL
     let onCode: (String) -> Void
     let onError: (String) -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
-    func makeUIView(context: Context) -> WKWebView {
+    func makeNSView(context: Context) -> WKWebView {
         let webView = WKWebView()
         webView.navigationDelegate = context.coordinator
         webView.load(URLRequest(url: url))
         return webView
     }
 
-    func updateUIView(_ webView: WKWebView, context: Context) {}
+    func updateNSView(_ webView: WKWebView, context: Context) {}
 
     final class Coordinator: NSObject, WKNavigationDelegate {
         let parent: LoginWebView
