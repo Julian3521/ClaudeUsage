@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import Charts
 
 /// The panel shown when clicking the menu-bar item.
 struct MenuContentView: View {
@@ -69,9 +70,39 @@ struct MenuContentView: View {
                     }
                 }
             }
+            sparkline
             Text("Updated \(s.fetchedAt.formatted(date: .omitted, time: .shortened))")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+        }
+    }
+
+    @ViewBuilder
+    private var sparkline: some View {
+        let history = HistoryStore.load()
+        if history.count >= 2 {
+            VStack(alignment: .leading, spacing: 3) {
+                Text("History").font(.caption2).foregroundStyle(.secondary)
+                Chart {
+                    ForEach(history) { point in
+                        LineMark(x: .value("Time", point.date),
+                                 y: .value("Usage", point.weekly),
+                                 series: .value("Series", "weekly"))
+                            .foregroundStyle(.orange)
+                    }
+                    ForEach(history) { point in
+                        LineMark(x: .value("Time", point.date),
+                                 y: .value("Usage", point.session),
+                                 series: .value("Series", "session"))
+                            .foregroundStyle(.blue.opacity(0.5))
+                    }
+                }
+                .chartXAxis(.hidden)
+                .chartYAxis(.hidden)
+                .chartYScale(domain: 0...100)
+                .frame(height: 40)
+                .accessibilityLabel("Usage history, weekly and session over time")
+            }
         }
     }
 
@@ -99,6 +130,7 @@ struct MenuContentView: View {
                     .keyboardShortcut("r")
 
                 Menu {
+                    Link("Open usage on claude.ai", destination: Config.usagePageURL)
                     SettingsLink { Text("Settings…") }
                     Button("Copy raw response") { copyRaw() }
                     Button("Sign out", role: .destructive) { viewModel.logout() }

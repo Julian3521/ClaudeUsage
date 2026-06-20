@@ -77,7 +77,11 @@ App  ─▶ api.anthropic.com/api/oauth/usage   (Bearer + anthropic-beta: oauth-
   **notification** when any limit reaches 90 %.
 - **Details** — show the Opus & Sonnet weekly limits and extra-usage **spend (€)**.
 
-**Localized in English and German.**
+The menu also shows a **usage history sparkline**, a ⚠️ marker when a fetch
+fails, and a link to open usage on claude.ai (the widget opens it on click too).
+
+**Localized in English, German, French, and Spanish.** Decoder covered by unit
+tests (`Tests/`, run with ⌘U or `xcodebuild test`).
 
 ## Distribution
 

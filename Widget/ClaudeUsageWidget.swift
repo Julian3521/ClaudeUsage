@@ -46,6 +46,7 @@ struct ClaudeUsageWidget: Widget {
         StaticConfiguration(kind: kind, provider: UsageProvider()) { entry in
             UsageWidgetEntryView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
+                .widgetURL(Config.usagePageURL)
         }
         .configurationDisplayName("Claude Usage")
         .description("Your session and weekly limits at a glance.")

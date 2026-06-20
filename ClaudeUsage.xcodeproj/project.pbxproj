@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		01A94F27A1793DF4B3348F0F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DDB428AAF806BABE2028FE /* SettingsView.swift */; };
 		0A31BD3EE66CD460BF9C4C70 /* UsageNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FE0DC64E730BECA3F6A9AB /* UsageNotifier.swift */; };
+		136A3AB7E8C451A401D426E1 /* UsageDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14BFD81E79312A48DFFDE7D8 /* UsageDecodingTests.swift */; };
 		1446E142166E35F0939A6394 /* UsageAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD55D9098A9467D7664BE4C /* UsageAPI.swift */; };
 		194CCAD14E059D4E429631D6 /* UsageUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220CE5C927FBA66B8E411D03 /* UsageUI.swift */; };
 		19B7D2CB4C7CAD5636D30CC2 /* LoginWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239BE937C2A61DD57A5D3F40 /* LoginWindowView.swift */; };
@@ -22,20 +23,32 @@
 		4E7C930ADAC4DA47A1B4894C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 561451D37D4508BD6A7717A7 /* Assets.xcassets */; };
 		5817E3A2FE3F830A3F1991C9 /* MenuContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66AC3187EFDC2485362B76A /* MenuContentView.swift */; };
 		587D896E4CE2D6328FF4D9E9 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBBE659389322DA860A65644 /* Constants.swift */; };
+		609EC7025BDBF4389E84132A /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103E1D10300117742EAF4E47 /* Settings.swift */; };
 		6689E4C7F8D857ED5425E9A0 /* ClaudeUsageApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1520DE729C71CBF445CFC145 /* ClaudeUsageApp.swift */; };
 		6BCCF276EDDE72EC21ADE795 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C8339C45BC8C940FF4BC8F1F /* Localizable.xcstrings */; };
 		6BE6EC1900DB5367E34BBF9A /* UsageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70954312EAB29E15762B5609 /* UsageViewModel.swift */; };
 		718629049AABBEB33D7CA5BB /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103E1D10300117742EAF4E47 /* Settings.swift */; };
 		77DF1AA74971689CB3058EA0 /* ClaudeUsageWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C840CE1F329996CBCF0B01B6 /* ClaudeUsageWidgetBundle.swift */; };
+		79CBE10A9CB93D1E527776F1 /* UsageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E0191E6393F22D0681FB744 /* UsageModels.swift */; };
 		7A2DFC1A09FB520E09CDE2BA /* ClaudeUsageWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 250064F1475E2F3077E3F4DA /* ClaudeUsageWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7A370ED1E65DF053DB9C4B07 /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BA831D345E4ECD720C25BF /* HistoryStore.swift */; };
 		7EF5E868AC4EC1EB1AF5CDDC /* UsageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E0191E6393F22D0681FB744 /* UsageModels.swift */; };
 		80B8112E9F6CCEBAD1F25ADC /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C8339C45BC8C940FF4BC8F1F /* Localizable.xcstrings */; };
+		8BB97342053A0E53BA21C600 /* UsageUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220CE5C927FBA66B8E411D03 /* UsageUI.swift */; };
+		908C8BEF42EF236FAB88CCC8 /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BA831D345E4ECD720C25BF /* HistoryStore.swift */; };
+		94EFFE64D757883327B7C552 /* OAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BDE777E8B3DA905A94E855 /* OAuthClient.swift */; };
+		95D27A3FE4CCBB1505E62110 /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E523773952E01523EA9066 /* TokenStore.swift */; };
+		976B1722B7D0E9869AE33A88 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBBE659389322DA860A65644 /* Constants.swift */; };
 		9D3CB93DF41E539EE48681B6 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBBE659389322DA860A65644 /* Constants.swift */; };
 		A0884818F981E01EB172D708 /* UsageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E0191E6393F22D0681FB744 /* UsageModels.swift */; };
 		A47E49B7F10611B596F6999E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9860FB20FD504D088B3C90DF /* Assets.xcassets */; };
 		BA038D11D903058344C5BECB /* ClaudeUsageWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB4851F82804202E410BB46 /* ClaudeUsageWidget.swift */; };
 		C25214BB8646AF1D3653F40D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961C7E1113D9D4AAAF0BA369 /* AppSettings.swift */; };
+		C37223F8FEC3B497DD23A036 /* UsageAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD55D9098A9467D7664BE4C /* UsageAPI.swift */; };
+		CF9A22395FCEF38B0B59C4B6 /* ClaudeUsage.icon in Resources */ = {isa = PBXBuildFile; fileRef = CA0F84FF9FFCD4687553EA32 /* ClaudeUsage.icon */; };
 		E590066085D27EA41A0AB299 /* OAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BDE777E8B3DA905A94E855 /* OAuthClient.swift */; };
+		ED15CB87E5106EA6DD490300 /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BA831D345E4ECD720C25BF /* HistoryStore.swift */; };
+		F78AC89185346B86F4D55B20 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C8339C45BC8C940FF4BC8F1F /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +77,7 @@
 
 /* Begin PBXFileReference section */
 		103E1D10300117742EAF4E47 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		14BFD81E79312A48DFFDE7D8 /* UsageDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageDecodingTests.swift; sourceTree = "<group>"; };
 		1520DE729C71CBF445CFC145 /* ClaudeUsageApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeUsageApp.swift; sourceTree = "<group>"; };
 		161BB7F34856C3E7D6F81978 /* ClaudeUsageWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClaudeUsageWidget.entitlements; sourceTree = "<group>"; };
 		19E523773952E01523EA9066 /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
@@ -77,6 +91,7 @@
 		561451D37D4508BD6A7717A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		70954312EAB29E15762B5609 /* UsageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageViewModel.swift; sourceTree = "<group>"; };
 		961C7E1113D9D4AAAF0BA369 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		96BA831D345E4ECD720C25BF /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
 		9860FB20FD504D088B3C90DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9AD55D9098A9467D7664BE4C /* UsageAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageAPI.swift; sourceTree = "<group>"; };
 		A0FE0DC64E730BECA3F6A9AB /* UsageNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageNotifier.swift; sourceTree = "<group>"; };
@@ -85,8 +100,10 @@
 		C8339C45BC8C940FF4BC8F1F /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		C83428CAB7277078A2677D14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C840CE1F329996CBCF0B01B6 /* ClaudeUsageWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeUsageWidgetBundle.swift; sourceTree = "<group>"; };
+		CA0F84FF9FFCD4687553EA32 /* ClaudeUsage.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = ClaudeUsage.icon; sourceTree = "<group>"; };
 		CBBE659389322DA860A65644 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		CE895DA6708B75A81A599C0F /* MenuBarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContent.swift; sourceTree = "<group>"; };
+		D247FD93267C06CEA3FB6B65 /* ClaudeUsageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeUsageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2D075FEF47C5CBC62414384 /* ClaudeUsage.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClaudeUsage.entitlements; sourceTree = "<group>"; };
 		F1BDE777E8B3DA905A94E855 /* OAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -98,6 +115,7 @@
 				961C7E1113D9D4AAAF0BA369 /* AppSettings.swift */,
 				9860FB20FD504D088B3C90DF /* Assets.xcassets */,
 				D2D075FEF47C5CBC62414384 /* ClaudeUsage.entitlements */,
+				CA0F84FF9FFCD4687553EA32 /* ClaudeUsage.icon */,
 				1520DE729C71CBF445CFC145 /* ClaudeUsageApp.swift */,
 				C83428CAB7277078A2677D14 /* Info.plist */,
 				239BE937C2A61DD57A5D3F40 /* LoginWindowView.swift */,
@@ -114,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				CBBE659389322DA860A65644 /* Constants.swift */,
+				96BA831D345E4ECD720C25BF /* HistoryStore.swift */,
 				C8339C45BC8C940FF4BC8F1F /* Localizable.xcstrings */,
 				F1BDE777E8B3DA905A94E855 /* OAuthClient.swift */,
 				103E1D10300117742EAF4E47 /* Settings.swift */,
@@ -137,11 +156,20 @@
 			path = Widget;
 			sourceTree = "<group>";
 		};
+		850B7ABFFB06A2E9BF1AC21B /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				14BFD81E79312A48DFFDE7D8 /* UsageDecodingTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		A9FE83FF131079D589DFD671 = {
 			isa = PBXGroup;
 			children = (
 				04F5AC4E8773B4AB3670D0A2 /* App */,
 				65471DFB72CD62D0BD13839B /* Shared */,
+				850B7ABFFB06A2E9BF1AC21B /* Tests */,
 				7B6FF4928D8088A5E306A1C6 /* Widget */,
 				DE040C3B31A66879A643C28A /* Products */,
 			);
@@ -151,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				3DDB3669F215EFC0C1958C20 /* ClaudeUsage.app */,
+				D247FD93267C06CEA3FB6B65 /* ClaudeUsageTests.xctest */,
 				250064F1475E2F3077E3F4DA /* ClaudeUsageWidgetExtension.appex */,
 			);
 			name = Products;
@@ -197,6 +226,24 @@
 			productReference = 3DDB3669F215EFC0C1958C20 /* ClaudeUsage.app */;
 			productType = "com.apple.product-type.application";
 		};
+		FF014592133EB8D1E6BFAFCA /* ClaudeUsageTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CC371DE47AC7182FEA4B93CD /* Build configuration list for PBXNativeTarget "ClaudeUsageTests" */;
+			buildPhases = (
+				B438EFD5498A4B70A3A0743E /* Sources */,
+				52515CE73E4E42E5C8A6B0F5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ClaudeUsageTests;
+			packageProductDependencies = (
+			);
+			productName = ClaudeUsageTests;
+			productReference = D247FD93267C06CEA3FB6B65 /* ClaudeUsageTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -214,6 +261,10 @@
 						DevelopmentTeam = 77UHX55UF6;
 						ProvisioningStyle = Automatic;
 					};
+					FF014592133EB8D1E6BFAFCA = {
+						DevelopmentTeam = 77UHX55UF6;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = AE9F6626FC7AB451FE2D9D95 /* Build configuration list for PBXProject "ClaudeUsage" */;
@@ -223,6 +274,8 @@
 				Base,
 				de,
 				en,
+				es,
+				fr,
 			);
 			mainGroup = A9FE83FF131079D589DFD671;
 			minimizedProjectReferenceProxies = 1;
@@ -232,6 +285,7 @@
 			projectRoot = "";
 			targets = (
 				FCD643E83F9907C0D1AFF05E /* ClaudeUsage */,
+				FF014592133EB8D1E6BFAFCA /* ClaudeUsageTests */,
 				6E97C317F002EB5B78F6589D /* ClaudeUsageWidgetExtension */,
 			);
 		};
@@ -247,11 +301,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		52515CE73E4E42E5C8A6B0F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F78AC89185346B86F4D55B20 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		93F8577ADA890DBFF21FF55F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				A47E49B7F10611B596F6999E /* Assets.xcassets in Resources */,
+				CF9A22395FCEF38B0B59C4B6 /* ClaudeUsage.icon in Resources */,
 				6BCCF276EDDE72EC21ADE795 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,6 +329,7 @@
 				C25214BB8646AF1D3653F40D /* AppSettings.swift in Sources */,
 				6689E4C7F8D857ED5425E9A0 /* ClaudeUsageApp.swift in Sources */,
 				587D896E4CE2D6328FF4D9E9 /* Constants.swift in Sources */,
+				7A370ED1E65DF053DB9C4B07 /* HistoryStore.swift in Sources */,
 				19B7D2CB4C7CAD5636D30CC2 /* LoginWindowView.swift in Sources */,
 				1E600003F606459F6C02B81C /* MenuBarContent.swift in Sources */,
 				5817E3A2FE3F830A3F1991C9 /* MenuContentView.swift in Sources */,
@@ -288,12 +352,29 @@
 				BA038D11D903058344C5BECB /* ClaudeUsageWidget.swift in Sources */,
 				77DF1AA74971689CB3058EA0 /* ClaudeUsageWidgetBundle.swift in Sources */,
 				9D3CB93DF41E539EE48681B6 /* Constants.swift in Sources */,
+				908C8BEF42EF236FAB88CCC8 /* HistoryStore.swift in Sources */,
 				1DF51313033F5D173F8A2A26 /* OAuthClient.swift in Sources */,
 				37B5E3B8C418C26CEEF51187 /* Settings.swift in Sources */,
 				3C2F7BAAAAF84A79EB4AD9C0 /* TokenStore.swift in Sources */,
 				1446E142166E35F0939A6394 /* UsageAPI.swift in Sources */,
 				A0884818F981E01EB172D708 /* UsageModels.swift in Sources */,
 				348A32779442F71DC10A1765 /* UsageUI.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B438EFD5498A4B70A3A0743E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				976B1722B7D0E9869AE33A88 /* Constants.swift in Sources */,
+				ED15CB87E5106EA6DD490300 /* HistoryStore.swift in Sources */,
+				94EFFE64D757883327B7C552 /* OAuthClient.swift in Sources */,
+				609EC7025BDBF4389E84132A /* Settings.swift in Sources */,
+				95D27A3FE4CCBB1505E62110 /* TokenStore.swift in Sources */,
+				C37223F8FEC3B497DD23A036 /* UsageAPI.swift in Sources */,
+				136A3AB7E8C451A401D426E1 /* UsageDecodingTests.swift in Sources */,
+				79CBE10A9CB93D1E527776F1 /* UsageModels.swift in Sources */,
+				8BB97342053A0E53BA21C600 /* UsageUI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -442,7 +523,7 @@
 		967B09B6C6E23EA20D85D398 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = ClaudeUsage;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/ClaudeUsage.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -457,10 +538,26 @@
 			};
 			name = Release;
 		};
+		9C1BD31B6444B9050826E53A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jb.ClaudeUsageTests;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		A79D550842E0D4E25774124B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = ClaudeUsage;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/ClaudeUsage.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -491,6 +588,22 @@
 				SDKROOT = macosx;
 			};
 			name = Release;
+		};
+		E16017584B716D44301AF144 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jb.ClaudeUsageTests;
+				SDKROOT = macosx;
+			};
+			name = Debug;
 		};
 		EB58AF6A0B0DF186C27F58C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -535,6 +648,15 @@
 			buildConfigurations = (
 				2D5D20BB7FA5D8B2008CDC53 /* Debug */,
 				8BE17C3D771A9AFED4D45795 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CC371DE47AC7182FEA4B93CD /* Build configuration list for PBXNativeTarget "ClaudeUsageTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E16017584B716D44301AF144 /* Debug */,
+				9C1BD31B6444B9050826E53A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

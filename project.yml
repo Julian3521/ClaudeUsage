@@ -21,13 +21,18 @@ targets:
     type: application
     platform: macOS
     sources:
-      - App
+      - path: App
+        excludes:
+          - "ClaudeUsage.icon"
+      - path: App/ClaudeUsage.icon
+        type: file
       - Shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.jb.ClaudeUsage
         INFOPLIST_FILE: App/Info.plist
         CODE_SIGN_ENTITLEMENTS: App/ClaudeUsage.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: ClaudeUsage
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         GENERATE_INFOPLIST_FILE: NO
         COMBINE_HIDPI_IMAGES: YES
@@ -35,6 +40,8 @@ targets:
       - target: ClaudeUsageWidgetExtension
     scheme:
       buildImplicitDependencies: true
+      testTargets:
+        - ClaudeUsageTests
 
   ClaudeUsageWidgetExtension:
     type: app-extension
@@ -48,3 +55,14 @@ targets:
         INFOPLIST_FILE: Widget/Info.plist
         CODE_SIGN_ENTITLEMENTS: Widget/ClaudeUsageWidget.entitlements
         GENERATE_INFOPLIST_FILE: NO
+
+  ClaudeUsageTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests
+      - Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jb.ClaudeUsageTests
+        GENERATE_INFOPLIST_FILE: YES

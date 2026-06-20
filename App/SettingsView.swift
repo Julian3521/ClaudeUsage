@@ -20,6 +20,10 @@ struct SettingsView: View {
                     ForEach(Settings.refreshOptions, id: \.self) { Text("\($0) min").tag($0) }
                 }
                 Toggle("Notify near limit", isOn: $appSettings.settings.notifyAtHighUsage)
+                Picker("Alert at", selection: $appSettings.settings.notifyThreshold) {
+                    ForEach(Settings.thresholdOptions, id: \.self) { Text(verbatim: "\($0)%").tag($0) }
+                }
+                .disabled(!appSettings.settings.notifyAtHighUsage)
             }
 
             Section("Menu bar") {

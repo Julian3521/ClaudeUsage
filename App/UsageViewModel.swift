@@ -22,6 +22,8 @@ final class UsageViewModel {
     var shouldDismissLogin = false
     /// Surfaced in the login window when a login attempt fails.
     var loginError: String?
+    /// True when the last fetch failed (shown as a warning in the menu bar).
+    var lastFetchFailed = false
 
     var isLoggedIn: Bool { TokenStore.load() != nil }
 
@@ -93,6 +95,7 @@ final class UsageViewModel {
         do {
             try await load()
         } catch {
+            lastFetchFailed = true
             rawJSON = error.localizedDescription
             if let snapshot = SnapshotStore.load() {
                 state = .loaded(snapshot)       // keep showing cached data
@@ -105,11 +108,14 @@ final class UsageViewModel {
     /// Fetches usage, updates state + the shared snapshot, and reloads the widget.
     private func load() async throws {
         let result = try await UsageAPI.fetch()
+        lastFetchFailed = false
         rawJSON = result.rawJSON
         if let snapshot = SnapshotStore.load() {
+            HistoryStore.append(snapshot)
             state = .loaded(snapshot)
-            if AppSettings.shared.settings.notifyAtHighUsage {
-                UsageNotifier.check(snapshot, threshold: Settings.notifyThreshold)
+            let settings = AppSettings.shared.settings
+            if settings.notifyAtHighUsage {
+                UsageNotifier.check(snapshot, threshold: Double(settings.notifyThreshold))
             }
         }
         WidgetCenter.shared.reloadAllTimelines()

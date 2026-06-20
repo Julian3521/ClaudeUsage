@@ -50,6 +50,8 @@ struct UsageRing: View {
                     .minimumScaleFactor(0.5)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityValue("\(Int(percent.rounded()))%")
     }
 }
 
@@ -83,5 +85,8 @@ struct UsageBar: View {
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue("\(Int(percent.rounded()))%, \(UsageFormat.resetLabel(resetsAt))")
     }
 }

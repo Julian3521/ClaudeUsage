@@ -47,12 +47,25 @@ struct MenuBarLabel: View {
 
     var body: some View {
         let settings = AppSettings.shared.settings
-        if let snapshot = viewModel.snapshot {
-            MenuBarContent(values: settings.menuBarMetric.values(snapshot),
-                           showBar: settings.menuBarShowBar,
-                           showPercent: settings.menuBarShowPercent)
-        } else {
-            Image(systemName: "gauge.with.dots.needle.bottom.50percent")
+        HStack(spacing: 3) {
+            if viewModel.lastFetchFailed {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+            }
+            if let snapshot = viewModel.snapshot {
+                MenuBarContent(values: settings.menuBarMetric.values(snapshot),
+                               showBar: settings.menuBarShowBar,
+                               showPercent: settings.menuBarShowPercent)
+            } else {
+                Image(systemName: "gauge.with.dots.needle.bottom.50percent")
+            }
         }
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    private var accessibilityLabel: String {
+        let title = String(localized: "Claude Usage")
+        guard let s = viewModel.snapshot else { return title }
+        return "\(title): \(Int(s.sessionPercent.rounded()))% / \(Int(s.weeklyPercent.rounded()))%"
     }
 }
