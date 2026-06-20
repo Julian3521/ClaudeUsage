@@ -5,12 +5,14 @@ import AppKit
 struct ClaudeUsageApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     private let viewModel = UsageViewModel.shared
+    // Owned via @State so the menu-bar label re-renders when settings change.
+    @State private var appSettings = AppSettings.shared
 
     var body: some Scene {
         MenuBarExtra {
             MenuContentView(viewModel: viewModel)
         } label: {
-            MenuBarLabel(viewModel: viewModel)
+            MenuBarLabel(viewModel: viewModel, settings: appSettings.settings)
         }
         .menuBarExtraStyle(.window)
 
@@ -44,9 +46,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 /// The menu-bar status item. Observes the view model + settings so it updates live.
 struct MenuBarLabel: View {
     let viewModel: UsageViewModel
+    let settings: Settings
 
     var body: some View {
-        let settings = AppSettings.shared.settings
         HStack(spacing: 3) {
             if viewModel.lastFetchFailed {
                 Image(systemName: "exclamationmark.triangle.fill")

@@ -33,6 +33,7 @@ struct Settings: Codable, Equatable, Sendable {
     var refreshMinutes = 20
     var notifyAtHighUsage = false
     var notifyThreshold = 90          // alert when any limit reaches this %
+    var showAbsoluteReset = false     // "Resets at 14:30" instead of "in 2h 30m"
 
     /// Allowed refresh intervals (minutes).
     static let refreshOptions = [10, 20, 30, 60]
@@ -51,6 +52,7 @@ struct Settings: Codable, Equatable, Sendable {
         refreshMinutes = (try? c.decode(Int.self, forKey: .refreshMinutes)) ?? 20
         notifyAtHighUsage = (try? c.decode(Bool.self, forKey: .notifyAtHighUsage)) ?? false
         notifyThreshold = (try? c.decode(Int.self, forKey: .notifyThreshold)) ?? 90
+        showAbsoluteReset = (try? c.decode(Bool.self, forKey: .showAbsoluteReset)) ?? false
     }
 }
 

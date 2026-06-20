@@ -1,5 +1,6 @@
 import WidgetKit
 import SwiftUI
+import Charts
 
 // MARK: - Timeline
 
@@ -8,11 +9,14 @@ struct UsageEntry: TimelineEntry {
     let snapshot: UsageSnapshot?
     let loggedIn: Bool
     let showSecondary: Bool
+    let absoluteReset: Bool
+    let history: [HistoryPoint]
 }
 
 struct UsageProvider: TimelineProvider {
     func placeholder(in context: Context) -> UsageEntry {
-        UsageEntry(date: Date(), snapshot: .placeholder, loggedIn: true, showSecondary: true)
+        UsageEntry(date: Date(), snapshot: .placeholder, loggedIn: true,
+                   showSecondary: true, absoluteReset: false, history: [])
     }
 
     func getSnapshot(in context: Context, completion: @escaping (UsageEntry) -> Void) {
@@ -30,10 +34,13 @@ struct UsageProvider: TimelineProvider {
     }
 
     private func entry(snapshot: UsageSnapshot?) -> UsageEntry {
-        UsageEntry(date: Date(),
-                   snapshot: snapshot,
-                   loggedIn: TokenStore.load() != nil,
-                   showSecondary: SettingsStore.load().showSecondary)
+        let settings = SettingsStore.load()
+        return UsageEntry(date: Date(),
+                          snapshot: snapshot,
+                          loggedIn: TokenStore.load() != nil,
+                          showSecondary: settings.showSecondary,
+                          absoluteReset: settings.showAbsoluteReset,
+                          history: HistoryStore.load())
     }
 }
 
@@ -87,8 +94,10 @@ struct UsageWidgetEntryView: View {
             Label("Claude", systemImage: "gauge.with.dots.needle.67percent")
                 .font(.caption.bold())
                 .foregroundStyle(.secondary)
-            UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
-            UsageBar(title: "Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
+            UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
+                     absoluteReset: entry.absoluteReset)
+            UsageBar(title: "Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
+                     absoluteReset: entry.absoluteReset)
         }
     }
 
@@ -106,7 +115,7 @@ struct UsageWidgetEntryView: View {
             UsageRing(percent: percent, lineWidth: 8)
                 .frame(width: 64, height: 64)
             Text(title).font(.caption2.weight(.medium))
-            Text(UsageFormat.resetLabel(resetsAt))
+            Text(UsageFormat.resetLabel(resetsAt, absolute: entry.absoluteReset))
                 .font(.system(size: 9))
                 .foregroundStyle(.secondary)
         }
@@ -127,12 +136,15 @@ struct UsageWidgetEntryView: View {
             }
             Spacer(minLength: 0)
             UsageBar(title: "Current session (5h)",
-                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
+                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
+                     absoluteReset: entry.absoluteReset)
             UsageBar(title: "Weekly · all models (7d)",
-                     percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
+                     percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
+                     absoluteReset: entry.absoluteReset)
             if entry.showSecondary, let sonnet = s.sonnetPercent {
                 UsageBar(title: "Weekly · Sonnet (7d)",
-                         percent: sonnet, resetsAt: s.sonnetResetsAt)
+                         percent: sonnet, resetsAt: s.sonnetResetsAt,
+                         absoluteReset: entry.absoluteReset)
             }
             if entry.showSecondary, let spend = s.spendText {
                 HStack {
@@ -140,6 +152,26 @@ struct UsageWidgetEntryView: View {
                     Spacer()
                     Text(spend).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                 }
+            }
+            if entry.history.count >= 2 {
+                Chart {
+                    ForEach(entry.history) { point in
+                        LineMark(x: .value("Time", point.date),
+                                 y: .value("Usage", point.weekly),
+                                 series: .value("Series", "weekly"))
+                            .foregroundStyle(.orange)
+                    }
+                    ForEach(entry.history) { point in
+                        LineMark(x: .value("Time", point.date),
+                                 y: .value("Usage", point.session),
+                                 series: .value("Series", "session"))
+                            .foregroundStyle(.blue.opacity(0.5))
+                    }
+                }
+                .chartXAxis(.hidden)
+                .chartYAxis(.hidden)
+                .chartYScale(domain: 0...100)
+                .frame(height: 28)
             }
         }
     }

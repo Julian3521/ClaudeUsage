@@ -21,6 +21,7 @@ struct MenuBarContent: View {
                         }
                         if showPercent {
                             Text("\(Int(value.rounded()))%")
+                                .foregroundStyle(UsageFormat.color(for: value))
                         }
                     }
                 }

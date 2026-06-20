@@ -50,17 +50,19 @@ struct MenuContentView: View {
     }
 
     private func loaded(_ s: UsageSnapshot) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+        let settings = AppSettings.shared.settings
+        let absolute = settings.showAbsoluteReset
+        return VStack(alignment: .leading, spacing: 14) {
             UsageBar(title: "Current session (5h)",
-                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
+                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt, absoluteReset: absolute)
             UsageBar(title: "Weekly · all models (7d)",
-                     percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
-            if AppSettings.shared.settings.showSecondary {
+                     percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt, absoluteReset: absolute)
+            if settings.showSecondary {
                 if let opus = s.opusPercent {
-                    UsageBar(title: "Weekly · Opus (7d)", percent: opus, resetsAt: s.opusResetsAt)
+                    UsageBar(title: "Weekly · Opus (7d)", percent: opus, resetsAt: s.opusResetsAt, absoluteReset: absolute)
                 }
                 if let sonnet = s.sonnetPercent {
-                    UsageBar(title: "Weekly · Sonnet (7d)", percent: sonnet, resetsAt: s.sonnetResetsAt)
+                    UsageBar(title: "Weekly · Sonnet (7d)", percent: sonnet, resetsAt: s.sonnetResetsAt, absoluteReset: absolute)
                 }
                 if let spend = s.spendText {
                     HStack {
@@ -133,6 +135,7 @@ struct MenuContentView: View {
                     Link("Open usage on claude.ai", destination: Config.usagePageURL)
                     SettingsLink { Text("Settings…") }
                     Button("Copy raw response") { copyRaw() }
+                    Button("About Claude Usage") { showAbout() }
                     Button("Sign out", role: .destructive) { viewModel.logout() }
                 } label: { Image(systemName: "ellipsis") }
                     .menuStyle(.borderlessButton)
@@ -162,5 +165,13 @@ struct MenuContentView: View {
     private func copyRaw() {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(viewModel.rawJSON, forType: .string)
+    }
+
+    private func showAbout() {
+        NSApp.activate(ignoringOtherApps: true)
+        let credits = NSAttributedString(
+            string: String(localized: "Not affiliated with Anthropic.")
+                + "\ngithub.com/Julian3521/ClaudeUsage")
+        NSApp.orderFrontStandardAboutPanel(options: [.credits: credits])
     }
 }

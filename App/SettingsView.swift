@@ -38,6 +38,7 @@ struct SettingsView: View {
 
             Section("Details") {
                 Toggle("Show Opus, Sonnet & spend", isOn: $appSettings.settings.showSecondary)
+                Toggle("Show reset as clock time", isOn: $appSettings.settings.showAbsoluteReset)
             }
         }
         .formStyle(.grouped)
@@ -68,10 +69,11 @@ struct SettingsView: View {
         let s = UsageSnapshot.sample
         return VStack(spacing: 4) {
             VStack(alignment: .leading, spacing: 10) {
-                UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
-                UsageBar(title: "Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
+                let absolute = appSettings.settings.showAbsoluteReset
+                UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt, absoluteReset: absolute)
+                UsageBar(title: "Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt, absoluteReset: absolute)
                 if appSettings.settings.showSecondary, let opus = s.opusPercent {
-                    UsageBar(title: "Opus", percent: opus, resetsAt: s.opusResetsAt)
+                    UsageBar(title: "Opus", percent: opus, resetsAt: s.opusResetsAt, absoluteReset: absolute)
                 }
             }
             .padding(12)

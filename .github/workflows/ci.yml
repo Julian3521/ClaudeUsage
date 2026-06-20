@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-test:
+    # Needs Xcode 26+ for the Icon Composer (.icon) app icon and Swift 6.
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Build & test
+        run: |
+          xcodebuild test \
+            -project ClaudeUsage.xcodeproj \
+            -scheme ClaudeUsage \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO | xcbeautify || exit ${PIPESTATUS[0]}
+        env:
+          NSUnbufferedIO: YES

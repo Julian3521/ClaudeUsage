@@ -12,7 +12,10 @@ enum UsageFormat {
         return "\(m)m"
     }
 
-    static func resetLabel(_ date: Date?, now: Date = Date()) -> String {
+    static func resetLabel(_ date: Date?, absolute: Bool = false, now: Date = Date()) -> String {
+        if absolute, let date {
+            return String(localized: "Resets at \(date.formatted(date: .omitted, time: .shortened))")
+        }
         guard let s = resetString(date, now: now) else { return "—" }
         return String(localized: "Resets in \(s)")
     }
@@ -60,6 +63,7 @@ struct UsageBar: View {
     let title: LocalizedStringKey
     let percent: Double
     let resetsAt: Date?
+    var absoluteReset: Bool = false
 
     private var fraction: Double { min(1, max(0, percent / 100)) }
 
@@ -81,12 +85,12 @@ struct UsageBar: View {
                 }
             }
             .frame(height: 8)
-            Text(UsageFormat.resetLabel(resetsAt))
+            Text(UsageFormat.resetLabel(resetsAt, absolute: absoluteReset))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
-        .accessibilityValue("\(Int(percent.rounded()))%, \(UsageFormat.resetLabel(resetsAt))")
+        .accessibilityValue("\(Int(percent.rounded()))%, \(UsageFormat.resetLabel(resetsAt, absolute: absoluteReset))")
     }
 }
