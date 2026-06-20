@@ -27,7 +27,9 @@ final class UsageViewModel: ObservableObject {
     /// Short text for the menu bar, e.g. "8%".
     var menuBarTitle: String {
         if case let .loaded(s) = state {
-            return "\(Int(s.sessionPercent.rounded()))%"
+            // Show whichever limit is closest to being hit (session vs weekly).
+            let p = max(s.sessionPercent, s.weeklyPercent)
+            return "\(Int(p.rounded()))%"
         }
         return isLoggedIn ? "…" : ""
     }
