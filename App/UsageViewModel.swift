@@ -16,6 +16,8 @@ final class UsageViewModel: ObservableObject {
     @Published var rawJSON: String = ""
     /// Toggled to true once a login succeeds, so the login window can close itself.
     @Published var shouldDismissLogin = false
+    /// Surfaced in the login window when a login attempt fails.
+    @Published var loginError: String?
 
     /// PKCE material for the in-flight login attempt.
     private(set) var pkce: PKCE?
@@ -44,10 +46,36 @@ final class UsageViewModel: ObservableObject {
     func startLogin() {
         pkce = PKCE.generate()
         shouldDismissLogin = false
+        loginError = nil
     }
 
     var authorizeURL: URL? {
         pkce.map { OAuthClient.authorizeURL(pkce: $0) }
+    }
+
+    /// Log in by pasting a token from `claude setup-token`. Most reliable path:
+    /// the token is minted by the official CLI for the user's subscription.
+    func loginWithToken(_ raw: String) {
+        let token = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !token.isEmpty else { return }
+        loginError = nil
+        TokenStore.save(TokenSet(accessToken: token, refreshToken: nil, expiresAt: nil))
+        pkce = nil
+        state = .loading
+        Task {
+            do {
+                let result = try await UsageAPI.fetch()
+                rawJSON = result.rawJSON
+                if let snap = SnapshotStore.load() { state = .loaded(snap) }
+                WidgetCenter.shared.reloadAllTimelines()
+                shouldDismissLogin = true
+            } catch {
+                TokenStore.clear()      // bad token: don't leave it stored
+                state = .loggedOut
+                rawJSON = error.localizedDescription
+                loginError = error.localizedDescription
+            }
+        }
     }
 
     /// Called when the web view (or manual paste) yields an authorization code.
