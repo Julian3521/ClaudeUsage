@@ -4,8 +4,6 @@ A tiny iOS app + home/lock-screen widget that shows your **Claude session (5h) a
 weekly (7d) usage limits** — the same numbers you see under `claude /usage` and in
 the Claude app's *Usage* screen.
 
-<img src="docs/screenshot.png" width="280" alt="Usage screen" />
-
 It signs in to **your own** Claude account and reads the limits directly from
 Anthropic's usage endpoint. No data leaves your device except the calls to
 Anthropic. The OAuth token is stored in the iOS Keychain and shared with the
@@ -19,8 +17,9 @@ widget extension.
 ## Requirements
 
 - **Xcode 16 or newer** (developed with Xcode 26).
-- A **paid Apple Developer account** (needed for App Groups + Keychain sharing
-  between the app and the widget, and so the app runs for a year on your phone).
+- A **paid Apple Developer account** (for Keychain sharing between the app and the
+  widget, and so the app runs for a year on your phone). The Team ID is already
+  set in [`project.yml`](project.yml) — change `DEVELOPMENT_TEAM` to your own.
 - An **iPhone on iOS 17+** and a Claude subscription (Pro/Max).
 
 ## Build & run
@@ -36,8 +35,9 @@ open ClaudeUsage.xcodeproj
 
 In Xcode:
 
-1. Select the **ClaudeUsage** target → *Signing & Capabilities* → choose your
-   **Team**. Do the same for the **ClaudeUsageWidgetExtension** target.
+1. Signing is preconfigured via `DEVELOPMENT_TEAM` in `project.yml`. If you use a
+   different Apple Developer account, set your own Team on both the **ClaudeUsage**
+   and **ClaudeUsageWidgetExtension** targets under *Signing & Capabilities*.
 2. Pick your iPhone as the run destination and press **▶︎ Run**.
 3. In the app, tap **"Bei Claude anmelden"** and log in with your Claude account.
    The app captures the authorization code automatically. (If login fails in the
@@ -48,7 +48,7 @@ In Xcode:
 
 ## How it works
 
-```
+```text
 App  ──login──▶ platform.claude.com/oauth/authorize  (PKCE)
      ──code───▶ platform.claude.com/v1/oauth/token    → access + refresh token (Keychain)
 App & Widget ─▶ api.anthropic.com/api/oauth/usage     (Bearer + anthropic-beta header)
@@ -71,11 +71,10 @@ response, then adjust the `CodingKeys` / `UsageWindow` decoding to match (e.g. i
 
 ## Making it yours
 
-Bundle IDs, the App Group, and the Keychain group are hardcoded to
-`com.julianbelting.*` in [`project.yml`](project.yml),
-[`Shared/Constants.swift`](Shared/Constants.swift) and the two `.entitlements`
-files. Change them consistently if you want your own identifiers, then re-run
-`xcodegen generate`.
+Bundle IDs and the shared Keychain group are hardcoded to `com.jb.*` in
+[`project.yml`](project.yml) and the two `.entitlements` files (the app and
+widget share data purely through the Keychain — no App Group). Change them
+consistently if you want your own identifiers, then re-run `xcodegen generate`.
 
 ## License
 

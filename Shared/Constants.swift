@@ -15,13 +15,13 @@ enum Config {
     static let usageURL = "https://api.anthropic.com/api/oauth/usage"
     static let oauthBetaHeader = "oauth-2025-04-20"
 
-    // Sharing between the app and the widget extension
-    static let appGroup = "group.com.julianbelting.ClaudeUsage"
-    /// Keychain access group: prefixed with the team id at build time. Because it
-    /// is the only entry in `keychain-access-groups`, items saved WITHOUT an
-    /// explicit access group default to it, so app + widget share them.
-    static let keychainAccessGroup = "com.julianbelting.ClaudeUsage.shared"
-    static let keychainService = "ClaudeUsage.oauth"
+    // Sharing between the app and the widget extension happens entirely through
+    // the Keychain. Both targets list the same single entry in
+    // `keychain-access-groups`, so items saved WITHOUT an explicit access group
+    // default to it and are visible to both. Service names below distinguish the
+    // stored items within that shared group.
+    static let keychainService = "ClaudeUsage.oauth"        // OAuth tokens
+    static let keychainSnapshotService = "ClaudeUsage.snapshot" // cached usage
 
     /// Refresh the widget at most this often (seconds). WidgetKit budgets refreshes.
     static let widgetRefreshInterval: TimeInterval = 20 * 60

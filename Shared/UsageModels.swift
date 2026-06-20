@@ -1,4 +1,5 @@
 import Foundation
+import Security
 
 // MARK: - Raw API response (tolerant decoding)
 
@@ -105,22 +106,39 @@ struct UsageSnapshot: Codable, Equatable {
     )
 }
 
-// MARK: - Snapshot persistence (App Group)
+// MARK: - Snapshot persistence (shared Keychain)
 
+/// Stored in the same shared Keychain group as the tokens so the widget can read
+/// the last fetched usage instantly (and as an offline fallback). No App Group
+/// capability required.
 enum SnapshotStore {
-    private static let key = "usage.snapshot"
-
-    private static var defaults: UserDefaults? {
-        UserDefaults(suiteName: Config.appGroup)
-    }
+    private static let account = "snapshot"
 
     static func save(_ snapshot: UsageSnapshot) {
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
-        defaults?.set(data, forKey: key)
+        let base = baseQuery()
+        SecItemDelete(base as CFDictionary)
+        var add = base
+        add[kSecValueData as String] = data
+        add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        SecItemAdd(add as CFDictionary, nil)
     }
 
     static func load() -> UsageSnapshot? {
-        guard let data = defaults?.data(forKey: key) else { return nil }
+        var query = baseQuery()
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        var result: AnyObject?
+        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
+              let data = result as? Data else { return nil }
         return try? JSONDecoder().decode(UsageSnapshot.self, from: data)
+    }
+
+    private static func baseQuery() -> [String: Any] {
+        [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: Config.keychainSnapshotService,
+            kSecAttrAccount as String: account,
+        ]
     }
 }
