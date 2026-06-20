@@ -42,10 +42,8 @@ struct MenuBarLabel: View {
 
     var body: some View {
         let title = viewModel.menuBarTitle
-        if title.isEmpty {
-            Image(systemName: "gauge.with.dots.needle.bottom.50percent")
-        } else {
-            Label(title, systemImage: "gauge.with.dots.needle.bottom.50percent")
-        }
+        // Always show icon + text so the item is never an empty (invisible) slot.
+        Label(title.isEmpty ? "Claude" : title,
+              systemImage: "gauge.with.dots.needle.bottom.50percent")
     }
 }
