@@ -3,7 +3,7 @@ import AppKit
 
 /// The panel shown when clicking the menu-bar item.
 struct MenuContentView: View {
-    @ObservedObject var viewModel: UsageViewModel
+    let viewModel: UsageViewModel
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
@@ -85,6 +85,7 @@ struct MenuContentView: View {
                     Task { await viewModel.refresh() }
                 } label: { Image(systemName: "arrow.clockwise") }
                     .help("Aktualisieren")
+                    .keyboardShortcut("r")
 
                 Menu {
                     Button("Rohdaten kopieren") { copyRaw() }
@@ -94,10 +95,17 @@ struct MenuContentView: View {
                     .frame(width: 40)
             }
             Spacer()
+            Text("v\(Self.appVersion)")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
             Button("Beenden") { NSApp.terminate(nil) }
                 .font(.caption)
+                .keyboardShortcut("q")
         }
     }
+
+    private static let appVersion =
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
 
     // MARK: - Actions
 

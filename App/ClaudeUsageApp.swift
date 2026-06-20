@@ -38,7 +38,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 /// The menu-bar status item label. Observes the view model so it updates live.
 struct MenuBarLabel: View {
-    @ObservedObject var viewModel: UsageViewModel
+    let viewModel: UsageViewModel
 
     var body: some View {
         let title = viewModel.menuBarTitle

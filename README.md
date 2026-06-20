@@ -42,27 +42,32 @@ In Xcode:
    first run Xcode mints the provisioning profiles automatically.
 2. Run the **ClaudeUsage** scheme. The app is a menu-bar agent (no Dock icon) —
    look for the gauge icon in the menu bar.
-3. Click it → **"Bei Claude anmelden"** and log in. The code is captured
-   automatically. (If the embedded web view fails — e.g. Google SSO — use
-   **"Manuell…"**: open the page in your browser and paste the shown code.)
+3. Click it → **Anmelden** → **Token** tab. The usage endpoint requires the
+   `user:profile` scope, which your existing Claude Code login already has, so the
+   simplest path is to paste that token. The window shows a one-line command that
+   copies it to your clipboard (`security find-generic-password -s "Claude
+   Code-credentials" -w | python3 -c "…accessToken…" | pbcopy`). Paste it (⌘V) →
+   **Speichern & verbinden**. (A **Browser** OAuth tab exists too, but Google SSO
+   is blocked in embedded web views, and `claude setup-token` mints an
+   inference-only token the usage endpoint rejects with 403.)
 4. Add the widget: right-click the desktop → *Edit Widgets* (or open Notification
    Center → *Edit Widgets*) → search **Claude Usage** → pick Small / Medium / Large.
 
 ## How it works
 
 ```text
-App  ──login──▶ platform.claude.com/oauth/authorize  (PKCE)
-     ──code───▶ platform.claude.com/v1/oauth/token    → access + refresh token (Keychain)
-App & Widget ─▶ api.anthropic.com/api/oauth/usage     (Bearer + anthropic-beta header)
-                 → five_hour / seven_day / seven_day_opus  → rings & bars
+Login (token paste)  ─▶ existing Claude Code token (Keychain, has user:profile)
+Login (browser OAuth) ─▶ claude.ai/oauth/authorize (PKCE) → platform.claude.com/v1/oauth/token
+App  ─▶ api.anthropic.com/api/oauth/usage   (Bearer + anthropic-beta: oauth-2025-04-20)
+        → five_hour / seven_day → rings & bars → snapshot (Keychain) → widget reads it
 ```
 
 - **`Shared/`** — models, OAuth (PKCE), Keychain token + snapshot store, usage
-  API, shared SwiftUI ring/bar views. Compiled into both targets.
-- **`App/`** — `MenuBarExtra` app + login window (`WKWebView`). A periodic timer
-  refreshes the menu-bar value; an `AppDelegate` drives it on launch.
-- **`Widget/`** — WidgetKit timeline provider + Small/Medium/Large views.
-  Refreshes ~every 20 min (WidgetKit budgets refreshes; not real-time).
+  API, shared SwiftUI ring/bar views. Swift 6 language mode, `@Observable`.
+- **`App/`** — `MenuBarExtra` app + login window. The app is the single fetcher;
+  a periodic timer refreshes the value and reloads the widget timeline.
+- **`Widget/`** — WidgetKit provider + Small/Medium/Large views. It only renders
+  the snapshot the app writes (no network), so it never adds to endpoint load.
 
 The app and widget share both the OAuth token and the last usage snapshot through
 a single shared **Keychain access group** (no App Group needed).

@@ -5,7 +5,7 @@ import AppKit
 ///  • Token  — paste a token from `claude setup-token` (reliable, subscription).
 ///  • Browser — the OAuth web flow (may hit Google-SSO / host issues).
 struct LoginWindowView: View {
-    @ObservedObject var viewModel: UsageViewModel
+    let viewModel: UsageViewModel
     @Environment(\.dismiss) private var dismiss
 
     /// Copies the existing Claude Code access token (which has the user:profile
