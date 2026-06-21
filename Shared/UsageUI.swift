@@ -108,7 +108,7 @@ struct UsageBar: View {
                             .fill(Color.primary.opacity(0.55))
                             .frame(width: 2, height: 12)
                             .offset(x: min(geo.size.width - 2, geo.size.width * pace))
-                            .help("On-pace marker")
+                            .help("Marker = even usage across the window")
                     }
                 }
             }

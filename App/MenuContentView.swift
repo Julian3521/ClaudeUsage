@@ -68,7 +68,7 @@ struct MenuContentView: View {
         return VStack(alignment: .leading, spacing: 14) {
             UsageBar(title: "Current session (5h)",
                      percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
-                     resetFormat: fmt, windowHours: 5)
+                     resetFormat: fmt)
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
                      resetFormat: fmt, windowHours: 168)
@@ -108,8 +108,10 @@ struct MenuContentView: View {
             let peak = history.flatMap { [$0.session, $0.weekly] }.max() ?? 0
             let top = max(5, (peak / 5).rounded(.up) * 5)
             VStack(alignment: .leading, spacing: 3) {
-                HStack {
+                HStack(spacing: 8) {
                     Text("History").font(.caption2).foregroundStyle(.secondary)
+                    legendDot(.blue.opacity(0.6), "Session")
+                    legendDot(.orange, "Weekly")
                     Spacer()
                     Text(verbatim: "↑ \(Int(peak.rounded()))%")
                         .font(.caption2).foregroundStyle(.secondary)
@@ -134,6 +136,13 @@ struct MenuContentView: View {
                 .frame(height: 40)
                 .accessibilityLabel("Usage history, weekly and session over time")
             }
+        }
+    }
+
+    private func legendDot(_ color: Color, _ label: LocalizedStringKey) -> some View {
+        HStack(spacing: 3) {
+            Circle().fill(color).frame(width: 6, height: 6)
+            Text(label).font(.caption2).foregroundStyle(.secondary)
         }
     }
 
@@ -179,9 +188,6 @@ struct MenuContentView: View {
 
                 SettingsLink { Label("Settings…", systemImage: "gearshape") }
                     .keyboardShortcut(",")
-                Button { Updater.shared.checkForUpdates() } label: {
-                    Label("Check for Updates…", systemImage: "arrow.down.circle")
-                }
                 Divider()
                 Button { NSApp.terminate(nil) } label: { Label("Quit", systemImage: "power") }
                     .keyboardShortcut("q")

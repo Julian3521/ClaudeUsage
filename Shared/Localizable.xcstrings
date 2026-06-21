@@ -661,6 +661,28 @@
         }
       }
     },
+    "Marker = even usage across the window": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marker = gleichmäßiger Verbrauch übers Fenster"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marcador = uso uniforme durante la ventana"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repère = usage régulier sur la fenêtre"
+          }
+        }
+      }
+    },
     "Menu bar": {
       "extractionState": "stale",
       "localizations": {
@@ -1940,13 +1962,13 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Semanal"
+            "value": "Semana"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hebdo"
+            "value": "Semaine"
           }
         }
       }
@@ -2161,19 +2183,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Puffer"
+            "value": "unter Plan"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "de margen"
+            "value": "bajo lo previsto"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "de marge"
+            "value": "sous le rythme"
           }
         }
       }
