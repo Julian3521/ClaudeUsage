@@ -37,4 +37,8 @@ enum Config {
     /// Reuse a cached snapshot newer than this instead of hitting the network,
     /// so relaunches / rapid refreshes don't trip the endpoint's rate limit.
     static let minFetchInterval: TimeInterval = 120
+
+    /// Lowest allowed auto-refresh interval (minutes). The usage endpoint
+    /// rate-limits aggressively; faster polling reliably triggers 429s.
+    static let minRefreshMinutes = 15
 }

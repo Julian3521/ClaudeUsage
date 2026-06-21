@@ -120,10 +120,11 @@ final class UsageViewModel {
         }
     }
 
-    /// On a 429, pause polling until the server's Retry-After (or 5 min).
+    /// On a 429, pause polling. The endpoint sends no Retry-After and short
+    /// retries keep it stuck, so back off a long 30 minutes by default.
     private func applyCooldown(_ error: Error) {
         if case let UsageError.rateLimited(retryAfter) = error {
-            rateLimitedUntil = Date().addingTimeInterval(retryAfter ?? 300)
+            rateLimitedUntil = Date().addingTimeInterval(retryAfter ?? 1800)
         }
     }
 

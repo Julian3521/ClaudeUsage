@@ -30,14 +30,15 @@ struct Settings: Codable, Equatable, Sendable {
     var menuBarShowBar = true
     var menuBarShowPercent = true
     var showSecondary = true          // Opus / Sonnet / spend rows
-    var refreshMinutes = 20
+    var refreshMinutes = 30
     var notifyAtHighUsage = false
     var notifyThreshold = 90          // alert when any limit reaches this %
     var showAbsoluteReset = false     // "Resets at 14:30" instead of "in 2h 30m"
     var autoOpenSession = false       // auto-ping ~1 min after each 5h reset
 
-    /// Allowed refresh intervals (minutes).
-    static let refreshOptions = [1, 5, 10, 20, 30, 60]
+    /// Allowed refresh intervals (minutes). The usage endpoint rate-limits hard,
+    /// so 15 min is the lowest interval that reliably avoids 429s.
+    static let refreshOptions = [15, 30, 60, 120]
     /// Selectable alert thresholds (%).
     static let thresholdOptions = [70, 75, 80, 85, 90, 95]
 
@@ -50,7 +51,8 @@ struct Settings: Codable, Equatable, Sendable {
         menuBarShowBar = (try? c.decode(Bool.self, forKey: .menuBarShowBar)) ?? true
         menuBarShowPercent = (try? c.decode(Bool.self, forKey: .menuBarShowPercent)) ?? true
         showSecondary = (try? c.decode(Bool.self, forKey: .showSecondary)) ?? true
-        refreshMinutes = (try? c.decode(Int.self, forKey: .refreshMinutes)) ?? 20
+        let storedRefresh = (try? c.decode(Int.self, forKey: .refreshMinutes)) ?? 30
+        refreshMinutes = Settings.refreshOptions.contains(storedRefresh) ? storedRefresh : 30
         notifyAtHighUsage = (try? c.decode(Bool.self, forKey: .notifyAtHighUsage)) ?? false
         notifyThreshold = (try? c.decode(Int.self, forKey: .notifyThreshold)) ?? 90
         showAbsoluteReset = (try? c.decode(Bool.self, forKey: .showAbsoluteReset)) ?? false

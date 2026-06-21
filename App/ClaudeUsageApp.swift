@@ -23,7 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Task { @MainActor in
             UsageViewModel.shared.onAppear()
             while !Task.isCancelled {
-                let minutes = Double(max(1, AppSettings.shared.settings.refreshMinutes))
+                let minutes = Double(max(Config.minRefreshMinutes, AppSettings.shared.settings.refreshMinutes))
                 try? await Task.sleep(for: .seconds(minutes * 60))
                 await UsageViewModel.shared.refresh(force: true)
             }

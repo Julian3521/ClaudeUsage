@@ -33,13 +33,11 @@ right-click the app → Open.)*
 
 ## Screenshots
 
-| Menu bar | Panel |
-| --- | --- |
-| ![Menu bar](docs/menubar.png) | ![Panel](docs/panel.png) |
-
-| General | Menu bar | Widget |
+| Compact | Rings | Large |
 | --- | --- | --- |
-| ![General settings](docs/settings-general.png) | ![Menu bar settings](docs/settings-menubar.png) | ![Widget settings](docs/settings-widget.png) |
+| ![Compact Claude usage widget](docs/widget-compact.png) | ![Claude session & weekly rings widget](docs/widget-rings.png) | ![Large Claude usage widget with spend](docs/widget-large.png) |
+
+![Claude usage history widget (session & weekly)](docs/widget-history.png)
 
 > ⚠️ **Unofficial.** Reuses the public Claude Code OAuth client and an
 > undocumented usage endpoint (`/api/oauth/usage`), for personal use with your own
