@@ -1,23 +1,33 @@
 import SwiftUI
 
 enum UsageFormat {
-    /// "2h 30m" style remaining-until-reset string.
+    /// "2d 3h" / "2h 30m" style remaining-until-reset string.
     static func resetString(_ date: Date?, now: Date = Date()) -> String? {
         guard let date else { return nil }
         let secs = Int(date.timeIntervalSince(now))
         guard secs > 0 else { return String(localized: "now") }
-        let h = secs / 3600
+        let d = secs / 86400
+        let h = (secs % 86400) / 3600
         let m = (secs % 3600) / 60
+        if d > 0 { return "\(d)d \(h)h" }
         if h > 0 { return "\(h)h \(m)m" }
         return "\(m)m"
     }
 
-    static func resetLabel(_ date: Date?, absolute: Bool = false, now: Date = Date()) -> String {
-        if absolute, let date {
-            return String(localized: "Resets at \(date.formatted(date: .omitted, time: .shortened))")
+    static func resetLabel(_ date: Date?, format: ResetFormat = .relative, now: Date = Date()) -> String {
+        switch format {
+        case .relative:
+            guard let s = resetString(date, now: now) else { return "—" }
+            return String(localized: "Resets in \(s)")
+        case .weekday:
+            guard let date else { return "—" }
+            let s = date.formatted(.dateTime.weekday(.abbreviated).hour().minute())
+            return String(localized: "Resets \(s)")
+        case .date:
+            guard let date else { return "—" }
+            let s = date.formatted(.dateTime.day().month(.abbreviated).hour().minute())
+            return String(localized: "Resets \(s)")
         }
-        guard let s = resetString(date, now: now) else { return "—" }
-        return String(localized: "Resets in \(s)")
     }
 
     /// Color for a usage percentage (0...100): green → orange → red.
@@ -63,7 +73,7 @@ struct UsageBar: View {
     let title: LocalizedStringKey
     let percent: Double
     let resetsAt: Date?
-    var absoluteReset: Bool = false
+    var resetFormat: ResetFormat = .relative
 
     private var fraction: Double { min(1, max(0, percent / 100)) }
 
@@ -85,12 +95,12 @@ struct UsageBar: View {
                 }
             }
             .frame(height: 8)
-            Text(UsageFormat.resetLabel(resetsAt, absolute: absoluteReset))
+            Text(UsageFormat.resetLabel(resetsAt, format: resetFormat))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
-        .accessibilityValue("\(Int(percent.rounded()))%, \(UsageFormat.resetLabel(resetsAt, absolute: absoluteReset))")
+        .accessibilityValue("\(Int(percent.rounded()))%, \(UsageFormat.resetLabel(resetsAt, format: resetFormat))")
     }
 }

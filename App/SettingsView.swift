@@ -149,7 +149,13 @@ private struct WidgetSettings: View {
         Form {
             Section {
                 Toggle("Show Opus, Sonnet & spend", isOn: $settings.settings.showSecondary)
-                Toggle("Show reset as clock time", isOn: $settings.settings.showAbsoluteReset)
+                Picker("Reset display", selection: $settings.settings.resetDisplay) {
+                    ForEach(ResetFormat.allCases, id: \.self) {
+                        Text(LocalizedStringKey($0.label)).tag($0)
+                    }
+                }
+            } footer: {
+                Text("Applies to the menu panel and widgets. Weekday and Date include the day, useful for the weekly window.")
             }
             Section("Preview") { preview }
         }
@@ -158,15 +164,15 @@ private struct WidgetSettings: View {
 
     private var preview: some View {
         let snapshot = UsageSnapshot.sample
-        let absolute = settings.settings.showAbsoluteReset
+        let fmt = settings.settings.resetDisplay
         return VStack(alignment: .leading, spacing: 10) {
             UsageBar(title: "Session", percent: snapshot.sessionPercent,
-                     resetsAt: snapshot.sessionResetsAt, absoluteReset: absolute)
+                     resetsAt: snapshot.sessionResetsAt, resetFormat: fmt)
             UsageBar(title: "Weekly", percent: snapshot.weeklyPercent,
-                     resetsAt: snapshot.weeklyResetsAt, absoluteReset: absolute)
+                     resetsAt: snapshot.weeklyResetsAt, resetFormat: fmt)
             if settings.settings.showSecondary, let opus = snapshot.opusPercent {
                 UsageBar(title: "Opus", percent: opus,
-                         resetsAt: snapshot.opusResetsAt, absoluteReset: absolute)
+                         resetsAt: snapshot.opusResetsAt, resetFormat: fmt)
             }
         }
         .padding(.vertical, 4)

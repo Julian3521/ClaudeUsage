@@ -2,8 +2,8 @@
   "sourceLanguage": "en",
   "strings": {
     "%@ min": {},
-    "%@.": {},
     "%@%%": {},
+    "%@.": {},
     "%lld min": {
       "extractionState": "stale",
       "localizations": {
@@ -92,6 +92,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Alerter à"
+          }
+        }
+      }
+    },
+    "Applies to the menu panel and widgets. Weekday and Date include the day, useful for the weekly window.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gilt für das Menü-Panel und die Widgets. Wochentag und Datum zeigen den Tag – praktisch fürs Wochenfenster."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se aplica al panel del menú y a los widgets. Día y Fecha incluyen el día, útil para la ventana semanal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "S’applique au panneau du menu et aux widgets. Jour et Date affichent le jour, utile pour la fenêtre hebdomadaire."
           }
         }
       }
@@ -325,6 +347,28 @@
         }
       }
     },
+    "Countdown": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Countdown"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuenta atrás"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compte à rebours"
+          }
+        }
+      }
+    },
     "Current session (5h)": {
       "extractionState": "stale",
       "localizations": {
@@ -344,6 +388,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Session actuelle (5 h)"
+          }
+        }
+      }
+    },
+    "Date + time": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datum + Uhrzeit"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fecha + hora"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date + heure"
           }
         }
       }
@@ -598,29 +664,6 @@
         }
       }
     },
-    "now": {
-      "extractionState": "stale",
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "jetzt"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ahora"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "maintenant"
-          }
-        }
-      }
-    },
     "Open Terminal.": {
       "extractionState": "stale",
       "localizations": {
@@ -870,6 +913,50 @@
           "stringUnit": {
             "state": "translated",
             "value": "Actualiser toutes les"
+          }
+        }
+      }
+    },
+    "Reset display": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset-Anzeige"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar reinicio"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affichage réinit."
+          }
+        }
+      }
+    },
+    "Resets %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se restablece %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réinit. %@"
           }
         }
       }
@@ -1307,6 +1394,28 @@
         }
       }
     },
+    "Signed in": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angemeldet"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesión iniciada"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecté"
+          }
+        }
+      }
+    },
     "Sonnet": {
       "extractionState": "stale",
       "localizations": {
@@ -1533,6 +1642,28 @@
         }
       }
     },
+    "Weekday + time": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wochentag + Uhrzeit"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Día + hora"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jour + heure"
+          }
+        }
+      }
+    },
     "Weekly": {
       "extractionState": "stale",
       "localizations": {
@@ -1556,25 +1687,25 @@
         }
       }
     },
-    "Weekly · all models (7d)": {
+    "Weekly (7d)": {
       "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Woche · alle Modelle (7 Tage)"
+            "value": "Woche (7 Tage)"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Semanal · todos los modelos (7 d)"
+            "value": "Semanal (7 d)"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hebdo · tous modèles (7 j)"
+            "value": "Hebdo (7 j)"
           }
         }
       }
@@ -1625,25 +1756,25 @@
         }
       }
     },
-    "Weekly (7d)": {
+    "Weekly · all models (7d)": {
       "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Woche (7 Tage)"
+            "value": "Woche · alle Modelle (7 Tage)"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Semanal (7 d)"
+            "value": "Semanal · todos los modelos (7 d)"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hebdo (7 j)"
+            "value": "Hebdo · tous modèles (7 j)"
           }
         }
       }
@@ -1694,24 +1825,25 @@
         }
       }
     },
-    "Signed in": {
+    "now": {
+      "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Angemeldet"
+            "value": "jetzt"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sesión iniciada"
+            "value": "ahora"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Connecté"
+            "value": "maintenant"
           }
         }
       }

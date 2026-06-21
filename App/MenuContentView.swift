@@ -56,18 +56,18 @@ struct MenuContentView: View {
 
     private func loaded(_ s: UsageSnapshot) -> some View {
         let settings = AppSettings.shared.settings
-        let absolute = settings.showAbsoluteReset
+        let fmt = settings.resetDisplay
         return VStack(alignment: .leading, spacing: 14) {
             UsageBar(title: "Current session (5h)",
-                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt, absoluteReset: absolute)
+                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt, resetFormat: fmt)
             UsageBar(title: "Weekly · all models (7d)",
-                     percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt, absoluteReset: absolute)
+                     percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt, resetFormat: fmt)
             if settings.showSecondary {
                 if let opus = s.opusPercent {
-                    UsageBar(title: "Weekly · Opus (7d)", percent: opus, resetsAt: s.opusResetsAt, absoluteReset: absolute)
+                    UsageBar(title: "Weekly · Opus (7d)", percent: opus, resetsAt: s.opusResetsAt, resetFormat: fmt)
                 }
                 if let sonnet = s.sonnetPercent {
-                    UsageBar(title: "Weekly · Sonnet (7d)", percent: sonnet, resetsAt: s.sonnetResetsAt, absoluteReset: absolute)
+                    UsageBar(title: "Weekly · Sonnet (7d)", percent: sonnet, resetsAt: s.sonnetResetsAt, resetFormat: fmt)
                 }
                 if let spend = s.spendText {
                     HStack {

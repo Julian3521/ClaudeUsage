@@ -9,14 +9,14 @@ struct UsageEntry: TimelineEntry {
     let snapshot: UsageSnapshot?
     let loggedIn: Bool
     let showSecondary: Bool
-    let absoluteReset: Bool
+    let resetFormat: ResetFormat
     let history: [HistoryPoint]
 }
 
 struct UsageProvider: TimelineProvider {
     func placeholder(in context: Context) -> UsageEntry {
         UsageEntry(date: Date(), snapshot: .placeholder, loggedIn: true,
-                   showSecondary: true, absoluteReset: false, history: [])
+                   showSecondary: true, resetFormat: .relative, history: [])
     }
 
     func getSnapshot(in context: Context, completion: @escaping (UsageEntry) -> Void) {
@@ -39,7 +39,7 @@ struct UsageProvider: TimelineProvider {
                           snapshot: snapshot,
                           loggedIn: TokenStore.load() != nil,
                           showSecondary: settings.showSecondary,
-                          absoluteReset: settings.showAbsoluteReset,
+                          resetFormat: settings.resetDisplay,
                           history: HistoryStore.load())
     }
 }
@@ -95,9 +95,9 @@ struct UsageWidgetEntryView: View {
                 .font(.caption.bold())
                 .foregroundStyle(.secondary)
             UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
-                     absoluteReset: entry.absoluteReset)
+                     resetFormat: entry.resetFormat)
             UsageBar(title: "Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
-                     absoluteReset: entry.absoluteReset)
+                     resetFormat: entry.resetFormat)
         }
     }
 
@@ -116,7 +116,7 @@ struct UsageWidgetEntryView: View {
             UsageRing(percent: percent, lineWidth: 7)
                 .frame(width: 54, height: 54)
             Text(title).font(.caption2.weight(.medium))
-            Text(UsageFormat.resetLabel(resetsAt, absolute: entry.absoluteReset))
+            Text(UsageFormat.resetLabel(resetsAt, format: entry.resetFormat))
                 .font(.system(size: 9))
                 .foregroundStyle(.secondary)
         }
@@ -137,14 +137,14 @@ struct UsageWidgetEntryView: View {
 
             UsageBar(title: "Current session (5h)",
                      percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
-                     absoluteReset: entry.absoluteReset)
+                     resetFormat: entry.resetFormat)
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
-                     absoluteReset: entry.absoluteReset)
+                     resetFormat: entry.resetFormat)
             if entry.showSecondary, let sonnet = s.sonnetPercent {
                 UsageBar(title: "Weekly · Sonnet (7d)",
                          percent: sonnet, resetsAt: s.sonnetResetsAt,
-                         absoluteReset: entry.absoluteReset)
+                         resetFormat: entry.resetFormat)
             }
             if entry.showSecondary, let spend = s.spendText {
                 HStack {

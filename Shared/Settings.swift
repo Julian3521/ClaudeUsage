@@ -25,6 +25,21 @@ enum MenuBarMetric: String, Codable, CaseIterable, Sendable {
     }
 }
 
+/// How a reset time is shown in reset labels.
+enum ResetFormat: String, Codable, CaseIterable, Sendable {
+    case relative   // "Resets in 2d 3h"
+    case weekday    // "Resets Sat 14:30"
+    case date       // "Resets 25 Jun, 14:30"
+
+    var label: String {
+        switch self {
+        case .relative: return "Countdown"
+        case .weekday: return "Weekday + time"
+        case .date: return "Date + time"
+        }
+    }
+}
+
 struct Settings: Codable, Equatable, Sendable {
     var menuBarMetric: MenuBarMetric = .highest
     var menuBarShowBar = true
@@ -33,7 +48,7 @@ struct Settings: Codable, Equatable, Sendable {
     var refreshMinutes = 30
     var notifyAtHighUsage = false
     var notifyThreshold = 90          // alert when any limit reaches this %
-    var showAbsoluteReset = false     // "Resets at 14:30" instead of "in 2h 30m"
+    var resetDisplay: ResetFormat = .relative   // countdown / weekday / date
     var autoOpenSession = false       // auto-ping ~1 min after each 5h reset
 
     /// Allowed refresh intervals (minutes). The usage endpoint rate-limits hard,
@@ -43,6 +58,13 @@ struct Settings: Codable, Equatable, Sendable {
     static let thresholdOptions = [70, 75, 80, 85, 90, 95]
 
     init() {}
+
+    enum CodingKeys: String, CodingKey {
+        case menuBarMetric, menuBarShowBar, menuBarShowPercent, showSecondary
+        case refreshMinutes, notifyAtHighUsage, notifyThreshold
+        case resetDisplay, autoOpenSession
+        case showAbsoluteReset   // legacy (Bool) — migrated to resetDisplay
+    }
 
     // Lenient decoding so older stored settings keep working.
     init(from decoder: Decoder) throws {
@@ -55,8 +77,27 @@ struct Settings: Codable, Equatable, Sendable {
         refreshMinutes = Settings.refreshOptions.contains(storedRefresh) ? storedRefresh : 30
         notifyAtHighUsage = (try? c.decode(Bool.self, forKey: .notifyAtHighUsage)) ?? false
         notifyThreshold = (try? c.decode(Int.self, forKey: .notifyThreshold)) ?? 90
-        showAbsoluteReset = (try? c.decode(Bool.self, forKey: .showAbsoluteReset)) ?? false
+        if let fmt = try? c.decode(ResetFormat.self, forKey: .resetDisplay) {
+            resetDisplay = fmt
+        } else if (try? c.decode(Bool.self, forKey: .showAbsoluteReset)) == true {
+            resetDisplay = .date     // migrate old "show as clock time" → date + time
+        } else {
+            resetDisplay = .relative
+        }
         autoOpenSession = (try? c.decode(Bool.self, forKey: .autoOpenSession)) ?? false
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(menuBarMetric, forKey: .menuBarMetric)
+        try c.encode(menuBarShowBar, forKey: .menuBarShowBar)
+        try c.encode(menuBarShowPercent, forKey: .menuBarShowPercent)
+        try c.encode(showSecondary, forKey: .showSecondary)
+        try c.encode(refreshMinutes, forKey: .refreshMinutes)
+        try c.encode(notifyAtHighUsage, forKey: .notifyAtHighUsage)
+        try c.encode(notifyThreshold, forKey: .notifyThreshold)
+        try c.encode(resetDisplay, forKey: .resetDisplay)
+        try c.encode(autoOpenSession, forKey: .autoOpenSession)
     }
 }
 
