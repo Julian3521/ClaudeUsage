@@ -34,8 +34,7 @@ struct Settings: Codable, Equatable, Sendable {
     var notifyAtHighUsage = false
     var notifyThreshold = 90          // alert when any limit reaches this %
     var showAbsoluteReset = false     // "Resets at 14:30" instead of "in 2h 30m"
-    var autoStartWindow = false       // ping to anchor the 5h window early
-    var autoStartHour = 7             // hour of day for the daily auto-ping
+    var autoOpenSession = false       // auto-ping ~1 min after each 5h reset
 
     /// Allowed refresh intervals (minutes).
     static let refreshOptions = [1, 5, 10, 20, 30, 60]
@@ -55,8 +54,7 @@ struct Settings: Codable, Equatable, Sendable {
         notifyAtHighUsage = (try? c.decode(Bool.self, forKey: .notifyAtHighUsage)) ?? false
         notifyThreshold = (try? c.decode(Int.self, forKey: .notifyThreshold)) ?? 90
         showAbsoluteReset = (try? c.decode(Bool.self, forKey: .showAbsoluteReset)) ?? false
-        autoStartWindow = (try? c.decode(Bool.self, forKey: .autoStartWindow)) ?? false
-        autoStartHour = (try? c.decode(Int.self, forKey: .autoStartHour)) ?? 7
+        autoOpenSession = (try? c.decode(Bool.self, forKey: .autoOpenSession)) ?? false
     }
 }
 

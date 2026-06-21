@@ -1,97 +1,114 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Bindable private var appSettings = AppSettings.shared
+    var body: some View {
+        TabView {
+            GeneralSettings()
+                .tabItem { Label("General", systemImage: "gearshape") }
+            MenuBarSettings()
+                .tabItem { Label("Menu bar", systemImage: "menubar.rectangle") }
+            WidgetSettings()
+                .tabItem { Label("Widget", systemImage: "square.grid.2x2") }
+        }
+        .frame(width: 460, height: 360)
+    }
+}
+
+private struct GeneralSettings: View {
+    @Bindable private var settings = AppSettings.shared
 
     var body: some View {
         Form {
-            Section("Preview") {
-                VStack(spacing: 14) {
-                    menuBarPreview
-                    widgetPreview
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 6)
-            }
-
-            Section("General") {
-                Toggle("Launch at login", isOn: $appSettings.launchAtLogin)
-                Picker("Refresh every", selection: $appSettings.settings.refreshMinutes) {
+            Section {
+                Toggle("Launch at login", isOn: $settings.launchAtLogin)
+                Picker("Refresh every", selection: $settings.settings.refreshMinutes) {
                     ForEach(Settings.refreshOptions, id: \.self) { Text("\($0) min").tag($0) }
                 }
-                Toggle("Notify near limit", isOn: $appSettings.settings.notifyAtHighUsage)
-                Picker("Alert at", selection: $appSettings.settings.notifyThreshold) {
+            }
+
+            Section("Notifications") {
+                Toggle("Notify near limit", isOn: $settings.settings.notifyAtHighUsage)
+                Picker("Alert at", selection: $settings.settings.notifyThreshold) {
                     ForEach(Settings.thresholdOptions, id: \.self) { Text(verbatim: "\($0)%").tag($0) }
                 }
-                .disabled(!appSettings.settings.notifyAtHighUsage)
+                .disabled(!settings.settings.notifyAtHighUsage)
             }
 
             Section {
-                Toggle("Auto-start a window daily", isOn: $appSettings.settings.autoStartWindow)
-                Picker("At hour", selection: $appSettings.settings.autoStartHour) {
-                    ForEach(0..<24, id: \.self) { Text(verbatim: String(format: "%02d:00", $0)).tag($0) }
-                }
-                .disabled(!appSettings.settings.autoStartWindow)
-            } header: {
-                Text("Session windows")
+                Toggle("Auto-open new sessions", isOn: $settings.settings.autoOpenSession)
             } footer: {
-                Text("Sends a tiny request to anchor the 5-hour window early, so it resets earlier in your day. Uses minimal quota.")
+                Text("Sends a tiny request about a minute after each 5-hour reset, so a fresh window opens immediately and keeps rolling. Uses minimal quota.")
             }
+        }
+        .formStyle(.grouped)
+        .onChange(of: settings.settings.notifyAtHighUsage) { _, on in
+            if on { UsageNotifier.requestAuthorization() }
+        }
+    }
+}
 
-            Section("Menu bar") {
-                Picker("Show", selection: $appSettings.settings.menuBarMetric) {
+private struct MenuBarSettings: View {
+    @Bindable private var settings = AppSettings.shared
+
+    var body: some View {
+        Form {
+            Section("Preview") { preview }
+            Section {
+                Picker("Show", selection: $settings.settings.menuBarMetric) {
                     ForEach(MenuBarMetric.allCases, id: \.self) {
                         Text(LocalizedStringKey($0.label)).tag($0)
                     }
                 }
-                Toggle("Progress bar", isOn: $appSettings.settings.menuBarShowBar)
-                Toggle("Percentage", isOn: $appSettings.settings.menuBarShowPercent)
-            }
-
-            Section("Details") {
-                Toggle("Show Opus, Sonnet & spend", isOn: $appSettings.settings.showSecondary)
-                Toggle("Show reset as clock time", isOn: $appSettings.settings.showAbsoluteReset)
+                Toggle("Progress bar", isOn: $settings.settings.menuBarShowBar)
+                Toggle("Percentage", isOn: $settings.settings.menuBarShowPercent)
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420)
-        .onChange(of: appSettings.settings.notifyAtHighUsage) { _, on in
-            if on { UsageNotifier.requestAuthorization() }
-        }
     }
 
-    private var menuBarPreview: some View {
-        let settings = appSettings.settings
-        return VStack(spacing: 4) {
-            ZStack {
-                Capsule().fill(.black.opacity(0.85))
-                MenuBarContent(values: settings.menuBarMetric.values(.sample),
-                               showBar: settings.menuBarShowBar,
-                               showPercent: settings.menuBarShowPercent)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 12)
-            }
-            .frame(height: 28)
-            .fixedSize()
-            Text("Menu bar").font(.caption2).foregroundStyle(.secondary)
+    private var preview: some View {
+        let s = settings.settings
+        return HStack {
+            Spacer()
+            Image(nsImage: StatusItemRenderer.image(values: s.menuBarMetric.values(.sample),
+                                                    showBar: s.menuBarShowBar,
+                                                    showPercent: s.menuBarShowPercent,
+                                                    warning: false))
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(.black.opacity(0.85), in: Capsule())
+            Spacer()
         }
     }
+}
 
-    private var widgetPreview: some View {
-        let s = UsageSnapshot.sample
-        return VStack(spacing: 4) {
-            VStack(alignment: .leading, spacing: 10) {
-                let absolute = appSettings.settings.showAbsoluteReset
-                UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt, absoluteReset: absolute)
-                UsageBar(title: "Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt, absoluteReset: absolute)
-                if appSettings.settings.showSecondary, let opus = s.opusPercent {
-                    UsageBar(title: "Opus", percent: opus, resetsAt: s.opusResetsAt, absoluteReset: absolute)
-                }
+private struct WidgetSettings: View {
+    @Bindable private var settings = AppSettings.shared
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle("Show Opus, Sonnet & spend", isOn: $settings.settings.showSecondary)
+                Toggle("Show reset as clock time", isOn: $settings.settings.showAbsoluteReset)
             }
-            .padding(12)
-            .frame(width: 180)
-            .background(.quaternary, in: RoundedRectangle(cornerRadius: 16))
-            Text("Widget").font(.caption2).foregroundStyle(.secondary)
+            Section("Preview") { preview }
         }
+        .formStyle(.grouped)
+    }
+
+    private var preview: some View {
+        let snapshot = UsageSnapshot.sample
+        let absolute = settings.settings.showAbsoluteReset
+        return VStack(alignment: .leading, spacing: 10) {
+            UsageBar(title: "Session", percent: snapshot.sessionPercent,
+                     resetsAt: snapshot.sessionResetsAt, absoluteReset: absolute)
+            UsageBar(title: "Weekly", percent: snapshot.weeklyPercent,
+                     resetsAt: snapshot.weeklyResetsAt, absoluteReset: absolute)
+            if settings.settings.showSecondary, let opus = snapshot.opusPercent {
+                UsageBar(title: "Opus", percent: opus,
+                         resetsAt: snapshot.opusResetsAt, absoluteReset: absolute)
+            }
+        }
+        .padding(.vertical, 4)
     }
 }

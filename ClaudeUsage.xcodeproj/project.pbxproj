@@ -13,8 +13,8 @@
 		1446E142166E35F0939A6394 /* UsageAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD55D9098A9467D7664BE4C /* UsageAPI.swift */; };
 		194CCAD14E059D4E429631D6 /* UsageUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220CE5C927FBA66B8E411D03 /* UsageUI.swift */; };
 		19B7D2CB4C7CAD5636D30CC2 /* LoginWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239BE937C2A61DD57A5D3F40 /* LoginWindowView.swift */; };
+		1ABDA97EDA33C0322CC0B3E8 /* StatusItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FC4146A0BAC317552AF9B0 /* StatusItem.swift */; };
 		1DF51313033F5D173F8A2A26 /* OAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BDE777E8B3DA905A94E855 /* OAuthClient.swift */; };
-		1E600003F606459F6C02B81C /* MenuBarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE895DA6708B75A81A599C0F /* MenuBarContent.swift */; };
 		2562D5F5C499F257C0707A0F /* SessionStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4883BC7B5EA0D31E9CFD03D9 /* SessionStarter.swift */; };
 		2DE007E5C1369CE0205CDA0A /* UsageAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD55D9098A9467D7664BE4C /* UsageAPI.swift */; };
 		32EDEF82B724E10707C4978C /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E523773952E01523EA9066 /* TokenStore.swift */; };
@@ -89,6 +89,7 @@
 		25BDD4065223F5A82C9ABBF5 /* HistoryWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryWidget.swift; sourceTree = "<group>"; };
 		2AB4851F82804202E410BB46 /* ClaudeUsageWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeUsageWidget.swift; sourceTree = "<group>"; };
 		2D8530E203C99CDB7CAA371F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		33FC4146A0BAC317552AF9B0 /* StatusItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItem.swift; sourceTree = "<group>"; };
 		3DDB3669F215EFC0C1958C20 /* ClaudeUsage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeUsage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E0191E6393F22D0681FB744 /* UsageModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageModels.swift; sourceTree = "<group>"; };
 		4883BC7B5EA0D31E9CFD03D9 /* SessionStarter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStarter.swift; sourceTree = "<group>"; };
@@ -106,7 +107,6 @@
 		C840CE1F329996CBCF0B01B6 /* ClaudeUsageWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeUsageWidgetBundle.swift; sourceTree = "<group>"; };
 		CA0F84FF9FFCD4687553EA32 /* ClaudeUsage.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = ClaudeUsage.icon; sourceTree = "<group>"; };
 		CBBE659389322DA860A65644 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		CE895DA6708B75A81A599C0F /* MenuBarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContent.swift; sourceTree = "<group>"; };
 		D247FD93267C06CEA3FB6B65 /* ClaudeUsageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeUsageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2D075FEF47C5CBC62414384 /* ClaudeUsage.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClaudeUsage.entitlements; sourceTree = "<group>"; };
 		F1BDE777E8B3DA905A94E855 /* OAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthClient.swift; sourceTree = "<group>"; };
@@ -123,10 +123,10 @@
 				1520DE729C71CBF445CFC145 /* ClaudeUsageApp.swift */,
 				C83428CAB7277078A2677D14 /* Info.plist */,
 				239BE937C2A61DD57A5D3F40 /* LoginWindowView.swift */,
-				CE895DA6708B75A81A599C0F /* MenuBarContent.swift */,
 				C66AC3187EFDC2485362B76A /* MenuContentView.swift */,
 				4883BC7B5EA0D31E9CFD03D9 /* SessionStarter.swift */,
 				C3DDB428AAF806BABE2028FE /* SettingsView.swift */,
+				33FC4146A0BAC317552AF9B0 /* StatusItem.swift */,
 				A0FE0DC64E730BECA3F6A9AB /* UsageNotifier.swift */,
 				70954312EAB29E15762B5609 /* UsageViewModel.swift */,
 			);
@@ -337,12 +337,12 @@
 				587D896E4CE2D6328FF4D9E9 /* Constants.swift in Sources */,
 				7A370ED1E65DF053DB9C4B07 /* HistoryStore.swift in Sources */,
 				19B7D2CB4C7CAD5636D30CC2 /* LoginWindowView.swift in Sources */,
-				1E600003F606459F6C02B81C /* MenuBarContent.swift in Sources */,
 				5817E3A2FE3F830A3F1991C9 /* MenuContentView.swift in Sources */,
 				E590066085D27EA41A0AB299 /* OAuthClient.swift in Sources */,
 				2562D5F5C499F257C0707A0F /* SessionStarter.swift in Sources */,
 				718629049AABBEB33D7CA5BB /* Settings.swift in Sources */,
 				01A94F27A1793DF4B3348F0F /* SettingsView.swift in Sources */,
+				1ABDA97EDA33C0322CC0B3E8 /* StatusItem.swift in Sources */,
 				32EDEF82B724E10707C4978C /* TokenStore.swift in Sources */,
 				2DE007E5C1369CE0205CDA0A /* UsageAPI.swift in Sources */,
 				7EF5E868AC4EC1EB1AF5CDDC /* UsageModels.swift in Sources */,

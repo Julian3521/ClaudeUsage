@@ -5,7 +5,8 @@ import Charts
 /// The panel shown when clicking the menu-bar item.
 struct MenuContentView: View {
     let viewModel: UsageViewModel
-    @Environment(\.openWindow) private var openWindow
+    var onOpenLogin: () -> Void = {}
+    var onOpenSettings: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -136,7 +137,7 @@ struct MenuContentView: View {
                         Task { await viewModel.startSessionWindow() }
                     }
                     Link("Open usage on claude.ai", destination: Config.usagePageURL)
-                    SettingsLink { Text("Settings…") }
+                    Button("Settings…") { onOpenSettings() }
                     Button("Copy raw response") { copyRaw() }
                     Button("About Claude Usage") { showAbout() }
                     Button("Sign out", role: .destructive) { viewModel.logout() }
@@ -160,9 +161,7 @@ struct MenuContentView: View {
     // MARK: - Actions
 
     private func openLogin() {
-        viewModel.prepareLogin()
-        openWindow(id: "login")
-        NSApp.activate(ignoringOtherApps: true)
+        onOpenLogin()
     }
 
     private func copyRaw() {

@@ -117,11 +117,15 @@ final class UsageViewModel {
             if settings.notifyAtHighUsage {
                 UsageNotifier.check(snapshot, threshold: Double(settings.notifyThreshold))
             }
+            scheduleAutoOpen(snapshot)
         }
         WidgetCenter.shared.reloadAllTimelines()
     }
 
     // MARK: - Session windows
+
+    @ObservationIgnored private var autoOpenTask: Task<Void, Never>?
+    @ObservationIgnored private var scheduledReset: Date?
 
     /// Manually anchor a new 5h window now (sends a tiny request).
     func startSessionWindow() async {
@@ -134,19 +138,24 @@ final class UsageViewModel {
         }
     }
 
-    /// Once per day, after the configured hour, anchor a new window automatically.
-    func maybeAutoStartWindow() async {
-        let settings = AppSettings.shared.settings
-        guard settings.autoStartWindow, isLoggedIn else { return }
-        let calendar = Calendar.current
-        let now = Date()
-        guard calendar.component(.hour, from: now) >= settings.autoStartHour else { return }
-        let today = calendar.startOfDay(for: now).timeIntervalSince1970
-        let key = "autoStart.lastDay"
-        guard UserDefaults.standard.double(forKey: key) < today else { return }
-        UserDefaults.standard.set(today, forKey: key)
-        try? await SessionStarter.ping()
-        await refresh(force: true)
+    /// When enabled, schedule a tiny request ~1 minute after the current 5h
+    /// window resets, so a fresh window opens immediately and keeps rolling.
+    func scheduleAutoOpen(_ snapshot: UsageSnapshot) {
+        guard AppSettings.shared.settings.autoOpenSession, isLoggedIn,
+              let resetsAt = snapshot.sessionResetsAt else {
+            autoOpenTask?.cancel(); autoOpenTask = nil; scheduledReset = nil
+            return
+        }
+        guard scheduledReset != resetsAt else { return }   // already scheduled
+        scheduledReset = resetsAt
+        autoOpenTask?.cancel()
+        let delay = max(0, resetsAt.timeIntervalSinceNow) + 60
+        autoOpenTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(delay))
+            guard !Task.isCancelled else { return }
+            try? await SessionStarter.ping()
+            await self?.refresh(force: true)
+        }
     }
 
     /// True only for real auth failures (so we keep a valid token through a 429).

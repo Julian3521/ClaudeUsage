@@ -1,130 +1,86 @@
-# Claude Usage — macOS Menu Bar + Widget
+# Claude Usage
 
-A tiny macOS **menu-bar app** and **WidgetKit widget** that show your **Claude
-session (5h) and weekly (7d) usage limits** — the same numbers you see under
-`claude /usage` and in the Claude app's *Usage* screen.
+A tiny **macOS menu-bar app + widget** that shows your **Claude session (5h) and
+weekly (7d) usage limits** — the same numbers as `claude /usage` and the Claude
+app's *Usage* screen.
 
-The menu bar shows the live session percentage; clicking it opens a panel with
-bars + reset countdowns. A desktop / Notification Center widget shows the same.
+[![Latest release](https://img.shields.io/github/v/release/Julian3521/ClaudeUsage?label=download)](https://github.com/Julian3521/ClaudeUsage/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/Julian3521/ClaudeUsage/total)](https://github.com/Julian3521/ClaudeUsage/releases)
+[![CI](https://github.com/Julian3521/ClaudeUsage/actions/workflows/ci.yml/badge.svg)](https://github.com/Julian3521/ClaudeUsage/actions/workflows/ci.yml)
 
-It signs in to **your own** Claude account and reads the limits directly from
-Anthropic's usage endpoint. No data leaves your Mac except the calls to
-Anthropic. The OAuth token is stored in the Keychain and shared with the widget.
+## ⬇️ Download
 
-> ⚠️ **Unofficial.** This reuses the public Claude Code OAuth client and an
-> undocumented usage endpoint (`/api/oauth/usage`). It is meant for personal use
-> with your own account. Anthropic may change or block it at any time, in which
-> case the app will need updating. Not affiliated with Anthropic.
+### [Download **ClaudeUsage.dmg** →](https://github.com/Julian3521/ClaudeUsage/releases/latest/download/ClaudeUsage.dmg)
 
-## Requirements
+macOS 14+ · open the DMG and drag the app to **Applications**. It lives in the
+menu bar (no Dock icon) — click the gauge, then **Sign in**. *(First launch:
+right-click the app → Open.)*
 
-- **macOS 14 (Sonoma) or newer** and **Xcode 16+** (developed with Xcode 26).
-- A **paid Apple Developer account** (for App Sandbox + Keychain sharing between
-  the app and the widget). The Team ID is set in [`project.yml`](project.yml)
-  (`DEVELOPMENT_TEAM`) — change it to your own.
-- A Claude subscription (Pro/Max).
+#### Features
 
-## Build & run
+- Live **progress bar + percentage** in the menu bar (session, weekly, or both).
+- A click-through panel with bars, reset countdowns, **spend (€)** and a history
+  sparkline; ⚠️ marker when a fetch fails.
+- **Widgets** (Small/Medium/Large) incl. a **histogram** of utilization over time.
+- **Notifications** near a limit, **launch at login**, configurable refresh, and
+  optional **auto-open** of new 5-hour windows.
+- Localized in **English, German, French, Spanish**.
+
+> ⚠️ **Unofficial.** Reuses the public Claude Code OAuth client and an
+> undocumented usage endpoint (`/api/oauth/usage`), for personal use with your own
+> account. Anthropic may change or block it at any time. Not affiliated with Anthropic.
+
+---
+
+## Build from source (open source)
+
+Requirements: **macOS 14+**, **Xcode 26** (Icon Composer app icon + Swift 6),
+a Claude subscription, and an Apple Developer account for signing.
 
 ```bash
-# (Optional) regenerate the Xcode project from project.yml
 brew install xcodegen
 xcodegen generate
-
 open ClaudeUsage.xcodeproj
 ```
 
-In Xcode:
-
-1. Signing is preconfigured via `DEVELOPMENT_TEAM`. If you use a different
-   account, select your **Team** on both the **ClaudeUsage** and
-   **ClaudeUsageWidgetExtension** targets under *Signing & Capabilities*. On the
-   first run Xcode mints the provisioning profiles automatically.
-2. Run the **ClaudeUsage** scheme. The app is a menu-bar agent (no Dock icon) —
-   look for the gauge icon in the menu bar.
-3. Click it → **Anmelden** → **Token** tab. The usage endpoint requires the
+1. Set your **Team** in `project.yml` (`DEVELOPMENT_TEAM`) or in Xcode → Signing.
+2. Run the **ClaudeUsage** scheme (menu-bar agent — look for the gauge icon).
+3. Click it → **Sign in** → **Token** tab. The usage endpoint needs the
    `user:profile` scope, which your existing Claude Code login already has, so the
    simplest path is to paste that token. The window shows a one-line command that
-   copies it to your clipboard (`security find-generic-password -s "Claude
-   Code-credentials" -w | python3 -c "…accessToken…" | pbcopy`). Paste it (⌘V) →
-   **Speichern & verbinden**. (A **Browser** OAuth tab exists too, but Google SSO
-   is blocked in embedded web views, and `claude setup-token` mints an
-   inference-only token the usage endpoint rejects with 403.)
-4. Add the widget: right-click the desktop → *Edit Widgets* (or open Notification
-   Center → *Edit Widgets*) → search **Claude Usage** → pick Small / Medium / Large.
+   copies it to your clipboard; paste it and **Save & connect**.
+4. Add a widget: right-click the desktop → *Edit Widgets* → search **Claude Usage**.
 
 ## How it works
 
 ```text
-Login (token paste)  ─▶ existing Claude Code token (Keychain, has user:profile)
-Login (browser OAuth) ─▶ claude.ai/oauth/authorize (PKCE) → platform.claude.com/v1/oauth/token
-App  ─▶ api.anthropic.com/api/oauth/usage   (Bearer + anthropic-beta: oauth-2025-04-20)
-        → five_hour / seven_day → rings & bars → snapshot (Keychain) → widget reads it
+Login  → paste the existing Claude Code token (Keychain, has user:profile)
+App    → api.anthropic.com/api/oauth/usage  (Bearer + anthropic-beta: oauth-2025-04-20)
+         → five_hour / seven_day / sonnet / spend  → snapshot (Keychain) → widget reads it
 ```
 
-- **`Shared/`** — models, OAuth (PKCE), Keychain token + snapshot store, usage
-  API, shared SwiftUI ring/bar views. Swift 6 language mode, `@Observable`.
-- **`App/`** — `MenuBarExtra` app + login window + Settings window. The app is
-  the single fetcher; a periodic timer refreshes the value and reloads the widget.
-- **`Widget/`** — WidgetKit provider + Small/Medium/Large views. It only renders
-  the snapshot the app writes (no network), so it never adds to endpoint load.
+- **`Shared/`** — models, Keychain token/snapshot/history/settings stores, usage
+  API, shared SwiftUI views. Swift 6 language mode, `@Observable`.
+- **`App/`** — AppKit `NSStatusItem` menu bar (live-updated via `Observation`),
+  SwiftUI popover, login window, `TabView` Settings. The app is the single fetcher.
+- **`Widget/`** — WidgetKit provider + views (incl. Swift Charts histograms). It
+  only renders the snapshot the app writes, so it never adds endpoint load.
+- **`Tests/`** — decoder unit tests against a real response (`xcodebuild test`).
 
-**Settings** (menu bar → ⋯ → Settings…) with a live preview:
+## Releasing (DMG)
 
-- **Menu bar** — which limit to show (highest / session / weekly / **both**) and
-  how (**progress bar** and/or **percentage**, independently).
-- **General** — **launch at login**, refresh interval (10/20/30/60 min), and a
-  **notification** when any limit reaches 90 %.
-- **Details** — show the Opus & Sonnet weekly limits and extra-usage **spend (€)**.
-
-The menu also shows a **usage history sparkline**, a ⚠️ marker when a fetch
-fails, and a link to open usage on claude.ai (the widget opens it on click too).
-
-**Localized in English, German, French, and Spanish.** Decoder covered by unit
-tests (`Tests/`, run with ⌘U or `xcodebuild test`).
-
-## Download
-
-Grab the latest **`ClaudeUsage.dmg`** from the [Releases](../../releases) page
-(notarized; open and drag to Applications). Or build from source below.
-
-## Distribution & CI
-
-- **`.github/workflows/ci.yml`** — builds + runs the unit tests on every push.
-- **`.github/workflows/release.yml`** — on a `vX.Y.Z` tag, signs, notarizes, and
-  attaches a DMG to a GitHub release. Add these repo secrets first:
-  `BUILD_CERTIFICATE_BASE64` (Developer ID Application .p12, base64), `P12_PASSWORD`,
-  `KEYCHAIN_PASSWORD`, `NOTARY_APPLE_ID`, `NOTARY_TEAM_ID`, `NOTARY_PASSWORD`
-  (an app-specific password). Locally, `scripts/release.sh` does the same.
-
-> CI uses a `macos-26` runner (Xcode 26 is required for the Icon Composer
-> app icon and Swift 6 mode).
-
-## Experimental: auto-start session windows
-
-The 5-hour window is anchored to your first request, so a late start means a late
-reset. *Settings → Session windows* can send a tiny request once per day at a set
-hour (or on demand via the menu) to anchor the window **earlier**, so it resets
-earlier in your day. It uses minimal quota — your own account, opt-in.
-
-The app and widget share both the OAuth token and the last usage snapshot through
-a single shared **Keychain access group** (no App Group needed).
+`scripts/release.sh` archives, signs (Developer ID), builds a DMG, and notarizes
+it. In CI, pushing a `vX.Y.Z` tag runs `.github/workflows/release.yml` and attaches
+the DMG to a GitHub release. Required repo secrets: `BUILD_CERTIFICATE_BASE64`
+(Developer ID .p12, base64), `P12_PASSWORD`, `KEYCHAIN_PASSWORD`, `NOTARY_APPLE_ID`,
+`NOTARY_TEAM_ID`, `NOTARY_PASSWORD` (app-specific password).
 
 ## If the percentages look wrong
 
-The exact JSON shape of `/api/oauth/usage` is undocumented, so the decoder in
-[`Shared/UsageModels.swift`](Shared/UsageModels.swift) is deliberately tolerant.
-From the menu, use **⋯ → "Rohdaten kopieren"** to copy the real response, then
-adjust the `CodingKeys` / `UsageWindow` decoding to match (e.g. if `utilization`
-is named differently or is a 0–1 fraction vs a 0–100 percent).
-
-## Making it yours
-
-Bundle IDs and the shared Keychain group are hardcoded to `com.jb.*` in
-[`project.yml`](project.yml) and the two `.entitlements` files (the app and
-widget share data purely through the Keychain — no App Group). Change them
-consistently if you want your own identifiers, then re-run `xcodegen generate`.
+The `/api/oauth/usage` schema is undocumented, so the decoder in
+[`Shared/UsageModels.swift`](Shared/UsageModels.swift) is tolerant. Use the menu's
+**⋯ → Copy raw response** and open an issue / adjust the decoding.
 
 ## License
 
-Personal project. Use at your own risk.
+MIT — see [LICENSE](LICENSE). Personal project, use at your own risk.

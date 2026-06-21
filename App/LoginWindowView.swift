@@ -5,7 +5,7 @@ import AppKit
 /// `user:profile` scope the usage endpoint requires).
 struct LoginWindowView: View {
     let viewModel: UsageViewModel
-    @Environment(\.dismiss) private var dismiss
+    var onClose: () -> Void = {}
 
     @State private var token = ""
 
@@ -56,7 +56,7 @@ struct LoginWindowView: View {
 
                 HStack {
                     Spacer()
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") { onClose() }
                     Button("Save & connect") { viewModel.loginWithToken(token) }
                         .keyboardShortcut(.defaultAction)
                         .disabled(token.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -66,7 +66,7 @@ struct LoginWindowView: View {
         }
         .frame(width: 520, height: 460)
         .onChange(of: viewModel.shouldDismissLogin) { _, done in
-            if done { dismiss() }
+            if done { onClose() }
         }
     }
 
