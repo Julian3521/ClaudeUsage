@@ -20,6 +20,7 @@ cd "$(dirname "$0")/.."
 
 TEAM_ID="${TEAM_ID:-77UHX55UF6}"
 NOTARY_PROFILE="${NOTARY_PROFILE:-ClaudeUsageNotary}"
+DEV_ID="${DEV_ID:-Developer ID Application}"
 SCHEME="ClaudeUsage"
 APP_NAME="ClaudeUsage"
 BUILD_DIR="$(pwd)/build"
@@ -39,6 +40,27 @@ xcodebuild -project "$APP_NAME.xcodeproj" -scheme "$SCHEME" \
   -archivePath "$ARCHIVE" archive
 
 APP="$ARCHIVE/Products/Applications/$APP_NAME.app"
+
+# Sparkle ships its helper binaries pre-signed; under manual signing Xcode leaves
+# them as-is, which notarization rejects ("not signed with a valid Developer ID /
+# no secure timestamp"). Re-sign them inside-out with our cert + timestamp +
+# hardened runtime, then re-seal the framework and the app.
+SP="$APP/Contents/Frameworks/Sparkle.framework"
+if [ -d "$SP" ]; then
+  echo "▸ Re-signing Sparkle helpers…"
+  APP_ENT="$BUILD_DIR/app.entitlements"
+  codesign -d --entitlements - --xml "$APP" > "$APP_ENT" 2>/dev/null
+  for comp in \
+    "$SP/Versions/Current/Autoupdate" \
+    "$SP/Versions/Current/Updater.app" \
+    "$SP/Versions/Current/XPCServices/Downloader.xpc" \
+    "$SP/Versions/Current/XPCServices/Installer.xpc"; do
+    [ -e "$comp" ] && codesign -f --options runtime --timestamp -s "$DEV_ID" "$comp"
+  done
+  codesign -f --options runtime --timestamp -s "$DEV_ID" "$SP"
+  codesign -f --options runtime --timestamp --entitlements "$APP_ENT" -s "$DEV_ID" "$APP"
+fi
+
 echo "▸ Verifying signature…"
 codesign --verify --deep --strict --verbose=1 "$APP"
 
