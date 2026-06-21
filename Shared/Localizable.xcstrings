@@ -10,6 +10,9 @@
     "%@%%" : {
 
     },
+    "%@h" : {
+
+    },
     "%lld min" : {
       "extractionState" : "stale",
       "localizations" : {
