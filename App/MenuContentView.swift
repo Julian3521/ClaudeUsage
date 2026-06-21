@@ -88,8 +88,17 @@ struct MenuContentView: View {
     private var sparkline: some View {
         let history = HistoryStore.load()
         if history.count >= 2 {
+            // Scale the y-axis to the data (rounded up to a "nice" bound) instead of a
+            // fixed 0–100, so low usage isn't squashed into a flat line at the bottom.
+            let peak = history.flatMap { [$0.session, $0.weekly] }.max() ?? 0
+            let top = max(5, (peak / 5).rounded(.up) * 5)
             VStack(alignment: .leading, spacing: 3) {
-                Text("History").font(.caption2).foregroundStyle(.secondary)
+                HStack {
+                    Text("History").font(.caption2).foregroundStyle(.secondary)
+                    Spacer()
+                    Text(verbatim: "↑ \(Int(peak.rounded()))%")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
                 Chart {
                     ForEach(history) { point in
                         LineMark(x: .value("Time", point.date),
@@ -106,7 +115,7 @@ struct MenuContentView: View {
                 }
                 .chartXAxis(.hidden)
                 .chartYAxis(.hidden)
-                .chartYScale(domain: 0...100)
+                .chartYScale(domain: 0...top)
                 .frame(height: 40)
                 .accessibilityLabel("Usage history, weekly and session over time")
             }

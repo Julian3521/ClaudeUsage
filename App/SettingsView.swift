@@ -10,8 +10,8 @@ struct SettingsView: View {
                 .tabItem { Label("General", systemImage: "gearshape") }
             MenuBarSettings()
                 .tabItem { Label("Menu bar", systemImage: "menubar.rectangle") }
-            WidgetSettings()
-                .tabItem { Label("Widget", systemImage: "square.grid.2x2") }
+            DisplaySettings()
+                .tabItem { Label("Display", systemImage: "rectangle.grid.1x2") }
             AboutSettings()
                 .tabItem { Label("About", systemImage: "info.circle") }
         }
@@ -100,6 +100,13 @@ private struct GeneralSettings: View {
             } footer: {
                 Text("Sends a tiny request about a minute after each 5-hour reset, so a fresh window opens immediately and keeps rolling. Uses minimal quota.")
             }
+
+            Section("Updates") {
+                Toggle("Check for updates automatically", isOn: Binding(
+                    get: { Updater.shared.automaticallyChecksForUpdates },
+                    set: { Updater.shared.automaticallyChecksForUpdates = $0 }))
+                Button("Check for Updates…") { Updater.shared.checkForUpdates() }
+            }
         }
         .formStyle(.grouped)
         .onChange(of: settings.settings.notifyAtHighUsage) { _, on in
@@ -142,7 +149,7 @@ private struct MenuBarSettings: View {
     }
 }
 
-private struct WidgetSettings: View {
+private struct DisplaySettings: View {
     @Bindable private var settings = AppSettings.shared
 
     var body: some View {
@@ -154,6 +161,8 @@ private struct WidgetSettings: View {
                         Text(LocalizedStringKey($0.label)).tag($0)
                     }
                 }
+            } header: {
+                Text("Menu panel & widgets")
             } footer: {
                 Text("Applies to the menu panel and widgets. Weekday and Date include the day, useful for the weekly window.")
             }
