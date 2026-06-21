@@ -95,7 +95,6 @@ final class StatusItemController {
     private let viewModel: UsageViewModel
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let popover = NSPopover()
-    private var loginWindow: NSWindow?
 
     init(viewModel: UsageViewModel) {
         self.viewModel = viewModel
@@ -105,8 +104,7 @@ final class StatusItemController {
 
         popover.behavior = .transient
         popover.contentViewController = NSHostingController(rootView:
-            MenuContentView(viewModel: viewModel,
-                            onOpenLogin: { [weak self] in self?.showLogin() })
+            MenuContentView(viewModel: viewModel)
         )
 
         observe()
@@ -148,24 +146,5 @@ final class StatusItemController {
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             popover.contentViewController?.view.window?.makeKey()
         }
-    }
-
-    private func showLogin() {
-        popover.performClose(nil)
-        viewModel.prepareLogin()
-        if loginWindow == nil {
-            let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 480),
-                                  styleMask: [.titled, .closable], backing: .buffered, defer: false)
-            window.title = String(localized: "Sign in to Claude")
-            window.isReleasedWhenClosed = false
-            window.center()
-            window.contentViewController = NSHostingController(rootView:
-                LoginWindowView(viewModel: viewModel, onClose: { [weak self] in
-                    self?.loginWindow?.close()
-                }))
-            loginWindow = window
-        }
-        NSApp.activate(ignoringOtherApps: true)
-        loginWindow?.makeKeyAndOrderFront(nil)
     }
 }

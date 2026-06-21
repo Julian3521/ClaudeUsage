@@ -5,7 +5,6 @@ import Charts
 /// The panel shown when clicking the menu-bar item.
 struct MenuContentView: View {
     let viewModel: UsageViewModel
-    var onOpenLogin: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -50,7 +49,7 @@ struct MenuContentView: View {
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-            Button("Sign in") { openLogin() }
+            SettingsLink { Text("Sign in") }
                 .buttonStyle(.borderedProminent)
         }
     }
@@ -168,9 +167,4 @@ struct MenuContentView: View {
         }
     }
 
-    // MARK: - Actions
-
-    private func openLogin() {
-        onOpenLogin()
-    }
 }

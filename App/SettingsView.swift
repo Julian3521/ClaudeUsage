@@ -4,6 +4,8 @@ import AppKit
 struct SettingsView: View {
     var body: some View {
         TabView {
+            AccountSettings()
+                .tabItem { Label("Account", systemImage: "person.crop.circle") }
             GeneralSettings()
                 .tabItem { Label("General", systemImage: "gearshape") }
             MenuBarSettings()
@@ -13,13 +15,68 @@ struct SettingsView: View {
             AboutSettings()
                 .tabItem { Label("About", systemImage: "info.circle") }
         }
-        .frame(width: 460, height: 380)
+        .frame(width: 470, height: 410)
+    }
+}
+
+private struct AccountSettings: View {
+    private let viewModel = UsageViewModel.shared
+    @State private var token = ""
+
+    private static let tokenCommand = #"security find-generic-password -s "Claude Code-credentials" -w | python3 -c "import sys,json;print(json.load(sys.stdin)['claudeAiOauth']['accessToken'])" | pbcopy"#
+
+    var body: some View {
+        Form {
+            if viewModel.isSignedIn {
+                Section("Account") {
+                    Label("Signed in", systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                    Button("Copy raw response") {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(viewModel.rawJSON, forType: .string)
+                    }
+                    Button("Sign out", role: .destructive) { viewModel.logout() }
+                }
+            } else {
+                Section("Sign in") {
+                    Text("Uses your existing Claude Code login (it already has the required user:profile scope). Everything stays local — only the usage request goes to Anthropic.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    HStack(alignment: .top) {
+                        Text(Self.tokenCommand)
+                            .font(.system(.caption, design: .monospaced))
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(6)
+                            .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
+                        Button("Copy") {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(Self.tokenCommand, forType: .string)
+                        }
+                    }
+                    TextField("sk-ant-oat01-…", text: $token, axis: .vertical)
+                        .textFieldStyle(.roundedBorder)
+                        .lineLimit(2...4)
+                        .font(.system(.body, design: .monospaced))
+                    if let error = viewModel.loginError {
+                        Label(error, systemImage: "exclamationmark.triangle")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Button("Save & connect") { viewModel.loginWithToken(token) }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(token.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+        .formStyle(.grouped)
     }
 }
 
 private struct GeneralSettings: View {
     @Bindable private var settings = AppSettings.shared
-    private let viewModel = UsageViewModel.shared
 
     var body: some View {
         Form {
@@ -42,16 +99,6 @@ private struct GeneralSettings: View {
                 Toggle("Auto-open new sessions", isOn: $settings.settings.autoOpenSession)
             } footer: {
                 Text("Sends a tiny request about a minute after each 5-hour reset, so a fresh window opens immediately and keeps rolling. Uses minimal quota.")
-            }
-
-            if viewModel.state != .loggedOut {
-                Section("Account") {
-                    Button("Copy raw response") {
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(viewModel.rawJSON, forType: .string)
-                    }
-                    Button("Sign out", role: .destructive) { viewModel.logout() }
-                }
             }
         }
         .formStyle(.grouped)

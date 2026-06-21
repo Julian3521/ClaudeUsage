@@ -18,9 +18,7 @@ final class UsageViewModel {
 
     var state: ViewState = .loggedOut
     var rawJSON = ""
-    /// Toggled to true once a login succeeds, so the login window can close itself.
-    var shouldDismissLogin = false
-    /// Surfaced in the login window when a login attempt fails.
+    /// Surfaced in the Account settings when a login attempt fails.
     var loginError: String?
     /// True when the last fetch failed.
     var lastFetchFailed = false
@@ -28,6 +26,8 @@ final class UsageViewModel {
     private var rateLimitedUntil: Date?
 
     var isLoggedIn: Bool { TokenStore.load() != nil }
+    /// Observable signed-in state (drives the Account settings UI).
+    var isSignedIn: Bool { state != .loggedOut }
 
     /// Currently in a rate-limit backoff window (drives the menu-bar indicator).
     var isRateLimited: Bool {
@@ -49,12 +49,6 @@ final class UsageViewModel {
 
     // MARK: - Login
 
-    /// Reset transient login state before showing the login window.
-    func prepareLogin() {
-        shouldDismissLogin = false
-        loginError = nil
-    }
-
     /// Log in by pasting an access token (e.g. the existing Claude Code token,
     /// which carries the `user:profile` scope the usage endpoint requires).
     func loginWithToken(_ raw: String) {
@@ -69,7 +63,6 @@ final class UsageViewModel {
     private func fetchAfterLogin() async {
         do {
             try await load()
-            shouldDismissLogin = true
         } catch {
             rawJSON = error.localizedDescription
             loginError = error.localizedDescription
