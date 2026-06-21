@@ -684,6 +684,28 @@
         }
       }
     },
+    "Model mix": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modell-Mix"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mezcla de modelos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répartition des modèles"
+          }
+        }
+      }
+    },
     "Not affiliated with Anthropic.": {
       "localizations": {
         "de": {
@@ -936,13 +958,35 @@
         }
       }
     },
+    "Rate limited — next check in %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limit erreicht – nächster Versuch in %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Límite alcanzado: próximo intento en %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limite atteinte — prochain essai dans %@"
+          }
+        }
+      }
+    },
     "Rate limited — retrying automatically": {
       "extractionState": "stale",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rate-Limit – wird automatisch erneut versucht"
+            "value": "Limit erreicht – automatischer neuer Versuch"
           }
         },
         "es": {
@@ -1954,6 +1998,72 @@
           "stringUnit": {
             "state": "translated",
             "value": "maintenant"
+          }
+        }
+      }
+    },
+    "on pace": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "im Plan"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "según lo previsto"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "dans les temps"
+          }
+        }
+      }
+    },
+    "over pace": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "über Plan"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sobre lo previsto"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "trop rapide"
+          }
+        }
+      }
+    },
+    "to spare": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puffer"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "de margen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "de marge"
           }
         }
       }

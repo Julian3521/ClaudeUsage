@@ -68,14 +68,25 @@ struct UsageRing: View {
     }
 }
 
-/// Horizontal bar with a title, percentage, and reset countdown.
+/// Horizontal bar with a title, percentage, and reset countdown. When
+/// `windowHours` is set, it also draws an "on-pace" marker (where usage would be
+/// if spent evenly across the window) and a caption showing over/under pace.
 struct UsageBar: View {
     let title: LocalizedStringKey
     let percent: Double
     let resetsAt: Date?
     var resetFormat: ResetFormat = .relative
+    var windowHours: Double? = nil
 
     private var fraction: Double { min(1, max(0, percent / 100)) }
+
+    /// Fraction of the window elapsed (0...1) — the even-pace position.
+    private var paceFraction: Double? {
+        guard let windowHours, let resetsAt, windowHours > 0 else { return nil }
+        let length = windowHours * 3600
+        let start = resetsAt.addingTimeInterval(-length)
+        return min(1, max(0, Date().timeIntervalSince(start) / length))
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -92,15 +103,79 @@ struct UsageBar: View {
                     Capsule()
                         .fill(UsageFormat.color(for: percent))
                         .frame(width: max(4, geo.size.width * fraction))
+                    if let pace = paceFraction {
+                        Rectangle()
+                            .fill(Color.primary.opacity(0.55))
+                            .frame(width: 2, height: 12)
+                            .offset(x: min(geo.size.width - 2, geo.size.width * pace))
+                            .help("On-pace marker")
+                    }
                 }
             }
             .frame(height: 8)
-            Text(UsageFormat.resetLabel(resetsAt, format: resetFormat))
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+            HStack(spacing: 6) {
+                Text(UsageFormat.resetLabel(resetsAt, format: resetFormat))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Spacer(minLength: 4)
+                paceCaption.font(.caption2.weight(.medium))
+            }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
         .accessibilityValue("\(Int(percent.rounded()))%, \(UsageFormat.resetLabel(resetsAt, format: resetFormat))")
+    }
+
+    @ViewBuilder
+    private var paceCaption: some View {
+        if let pace = paceFraction {
+            let delta = Int((((fraction) - pace) * 100).rounded())
+            if delta >= 5 {
+                (Text(verbatim: "\(delta)% ") + Text("over pace")).foregroundStyle(.orange)
+            } else if delta <= -5 {
+                (Text(verbatim: "\(-delta)% ") + Text("to spare")).foregroundStyle(.green)
+            } else {
+                Text("on pace").foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+/// Compact split bar showing how the weekly usage leans between Opus and Sonnet.
+struct ModelMixBar: View {
+    let opus: Double      // 0...100 utilization
+    let sonnet: Double
+
+    private var total: Double { max(opus + sonnet, 0.001) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Model mix").font(.subheadline.weight(.semibold))
+            GeometryReader { geo in
+                HStack(spacing: 2) {
+                    Capsule().fill(.purple)
+                        .frame(width: max(2, geo.size.width * opus / total))
+                    Capsule().fill(.teal)
+                }
+            }
+            .frame(height: 8)
+            HStack(spacing: 12) {
+                legend(.purple, "Opus", opus)
+                legend(.teal, "Sonnet", sonnet)
+            }
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Model mix")
+        .accessibilityValue("Opus \(Int(opus.rounded()))%, Sonnet \(Int(sonnet.rounded()))%")
+    }
+
+    private func legend(_ color: Color, _ name: LocalizedStringKey, _ value: Double) -> some View {
+        HStack(spacing: 4) {
+            Circle().fill(color).frame(width: 7, height: 7)
+            Text(name)
+            Text(verbatim: "\(Int(value.rounded()))%").monospacedDigit()
+        }
     }
 }

@@ -35,6 +35,9 @@ final class UsageViewModel {
         return false
     }
 
+    /// When the current rate-limit backoff ends (drives the menu countdown).
+    var rateLimitEndsAt: Date? { isRateLimited ? rateLimitedUntil : nil }
+
     /// The currently loaded snapshot, if any (used by the menu-bar label).
     var snapshot: UsageSnapshot? {
         if case let .loaded(s) = state { return s }

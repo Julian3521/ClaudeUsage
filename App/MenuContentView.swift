@@ -18,9 +18,17 @@ struct MenuContentView: View {
             Divider()
 
             if viewModel.isRateLimited {
-                Label("Rate limited — retrying automatically", systemImage: "exclamationmark.circle.fill")
-                    .font(.caption)
-                    .foregroundStyle(.red)
+                Label {
+                    if let until = viewModel.rateLimitEndsAt, let s = UsageFormat.resetString(until) {
+                        Text("Rate limited — next check in \(s)")
+                    } else {
+                        Text("Rate limited — retrying automatically")
+                    }
+                } icon: {
+                    Image(systemName: "exclamationmark.circle.fill")
+                }
+                .font(.caption)
+                .foregroundStyle(.red)
             }
 
             switch viewModel.state {
@@ -59,15 +67,22 @@ struct MenuContentView: View {
         let fmt = settings.resetDisplay
         return VStack(alignment: .leading, spacing: 14) {
             UsageBar(title: "Current session (5h)",
-                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt, resetFormat: fmt)
+                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
+                     resetFormat: fmt, windowHours: 5)
             UsageBar(title: "Weekly · all models (7d)",
-                     percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt, resetFormat: fmt)
+                     percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
+                     resetFormat: fmt, windowHours: 168)
             if settings.showSecondary {
                 if let opus = s.opusPercent {
-                    UsageBar(title: "Weekly · Opus (7d)", percent: opus, resetsAt: s.opusResetsAt, resetFormat: fmt)
+                    UsageBar(title: "Weekly · Opus (7d)", percent: opus, resetsAt: s.opusResetsAt,
+                             resetFormat: fmt, windowHours: 168)
                 }
                 if let sonnet = s.sonnetPercent {
-                    UsageBar(title: "Weekly · Sonnet (7d)", percent: sonnet, resetsAt: s.sonnetResetsAt, resetFormat: fmt)
+                    UsageBar(title: "Weekly · Sonnet (7d)", percent: sonnet, resetsAt: s.sonnetResetsAt,
+                             resetFormat: fmt, windowHours: 168)
+                }
+                if let opus = s.opusPercent, let sonnet = s.sonnetPercent, opus + sonnet > 0 {
+                    ModelMixBar(opus: opus, sonnet: sonnet)
                 }
                 if let spend = s.spendText {
                     HStack {
