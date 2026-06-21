@@ -61,7 +61,31 @@ jobs:
           NOTARY_PROFILE: ClaudeUsageNotary
         run: ./scripts/release.sh
 
+      # Sign the DMG with the Sparkle EdDSA key and (re)build the appcast feed,
+      # carrying older versions over from the previous release's appcast.
+      - name: Generate Sparkle appcast
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/sparkle"
+          URL=$(gh api repos/sparkle-project/Sparkle/releases/latest \
+                --jq '.assets[] | select(.name|endswith(".tar.xz")) | .browser_download_url')
+          curl -sL "$URL" | tar xJ -C "$RUNNER_TEMP/sparkle"
+          echo "$SPARKLE_PRIVATE_KEY" | base64 --decode > "$RUNNER_TEMP/sparkle_key"
+          curl -fsSL -o "$RUNNER_TEMP/old_appcast.xml" \
+            "https://github.com/${{ github.repository }}/releases/latest/download/appcast.xml" || true
+          APP="build/ClaudeUsage.xcarchive/Products/Applications/ClaudeUsage.app"
+          SHORT=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist")
+          BUILD=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$APP/Contents/Info.plist")
+          DMG_URL="https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/ClaudeUsage.dmg"
+          PAGE="https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+          python3 scripts/appcast.py build/ClaudeUsage.dmg "$SHORT" "$BUILD" "$DMG_URL" \
+            "$RUNNER_TEMP/sparkle/bin/sign_update" "$RUNNER_TEMP/sparkle_key" \
+            "$RUNNER_TEMP/old_appcast.xml" build/appcast.xml "$PAGE"
+          cat build/appcast.xml
+
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${{ github.ref_name }}" build/ClaudeUsage.dmg --generate-notes
+        run: gh release create "${{ github.ref_name }}" build/ClaudeUsage.dmg build/appcast.xml --generate-notes

@@ -44,12 +44,14 @@
 		A0884818F981E01EB172D708 /* UsageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E0191E6393F22D0681FB744 /* UsageModels.swift */; };
 		A47E49B7F10611B596F6999E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9860FB20FD504D088B3C90DF /* Assets.xcassets */; };
 		BA038D11D903058344C5BECB /* ClaudeUsageWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB4851F82804202E410BB46 /* ClaudeUsageWidget.swift */; };
+		BA5C619C6FA5569306640742 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 6C9B545A1EA07962ADC9DF16 /* Sparkle */; };
 		C25214BB8646AF1D3653F40D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961C7E1113D9D4AAAF0BA369 /* AppSettings.swift */; };
 		C37223F8FEC3B497DD23A036 /* UsageAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD55D9098A9467D7664BE4C /* UsageAPI.swift */; };
 		CF9A22395FCEF38B0B59C4B6 /* ClaudeUsage.icon in Resources */ = {isa = PBXBuildFile; fileRef = CA0F84FF9FFCD4687553EA32 /* ClaudeUsage.icon */; };
 		E590066085D27EA41A0AB299 /* OAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BDE777E8B3DA905A94E855 /* OAuthClient.swift */; };
 		ED15CB87E5106EA6DD490300 /* HistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BA831D345E4ECD720C25BF /* HistoryStore.swift */; };
 		F78AC89185346B86F4D55B20 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C8339C45BC8C940FF4BC8F1F /* Localizable.xcstrings */; };
+		F950562A6645DD1C51A7768D /* Updater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F66564479D0CDAE215B9AA8 /* Updater.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +89,7 @@
 		25BDD4065223F5A82C9ABBF5 /* HistoryWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryWidget.swift; sourceTree = "<group>"; };
 		2AB4851F82804202E410BB46 /* ClaudeUsageWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeUsageWidget.swift; sourceTree = "<group>"; };
 		2D8530E203C99CDB7CAA371F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2F66564479D0CDAE215B9AA8 /* Updater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Updater.swift; sourceTree = "<group>"; };
 		33FC4146A0BAC317552AF9B0 /* StatusItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItem.swift; sourceTree = "<group>"; };
 		3DDB3669F215EFC0C1958C20 /* ClaudeUsage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeUsage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E0191E6393F22D0681FB744 /* UsageModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageModels.swift; sourceTree = "<group>"; };
@@ -110,6 +113,17 @@
 		F1BDE777E8B3DA905A94E855 /* OAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		2D966A14AE0AB074D3ECC25F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA5C619C6FA5569306640742 /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
 		04F5AC4E8773B4AB3670D0A2 /* App */ = {
 			isa = PBXGroup;
@@ -124,6 +138,7 @@
 				4883BC7B5EA0D31E9CFD03D9 /* SessionStarter.swift */,
 				C3DDB428AAF806BABE2028FE /* SettingsView.swift */,
 				33FC4146A0BAC317552AF9B0 /* StatusItem.swift */,
+				2F66564479D0CDAE215B9AA8 /* Updater.swift */,
 				A0FE0DC64E730BECA3F6A9AB /* UsageNotifier.swift */,
 				70954312EAB29E15762B5609 /* UsageViewModel.swift */,
 			);
@@ -215,6 +230,7 @@
 			buildPhases = (
 				0879BCB003A66A2E5A5E923C /* Sources */,
 				93F8577ADA890DBFF21FF55F /* Resources */,
+				2D966A14AE0AB074D3ECC25F /* Frameworks */,
 				C61D794878352EA7E321BF49 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -224,6 +240,7 @@
 			);
 			name = ClaudeUsage;
 			packageProductDependencies = (
+				6C9B545A1EA07962ADC9DF16 /* Sparkle */,
 			);
 			productName = ClaudeUsage;
 			productReference = 3DDB3669F215EFC0C1958C20 /* ClaudeUsage.app */;
@@ -280,6 +297,9 @@
 			);
 			mainGroup = A9FE83FF131079D589DFD671;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9A7418C8EA7A5391A3A1C1B1 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DE040C3B31A66879A643C28A /* Products */;
 			projectDirPath = "";
@@ -338,6 +358,7 @@
 				01A94F27A1793DF4B3348F0F /* SettingsView.swift in Sources */,
 				1ABDA97EDA33C0322CC0B3E8 /* StatusItem.swift in Sources */,
 				32EDEF82B724E10707C4978C /* TokenStore.swift in Sources */,
+				F950562A6645DD1C51A7768D /* Updater.swift in Sources */,
 				2DE007E5C1369CE0205CDA0A /* UsageAPI.swift in Sources */,
 				7EF5E868AC4EC1EB1AF5CDDC /* UsageModels.swift in Sources */,
 				0A31BD3EE66CD460BF9C4C70 /* UsageNotifier.swift in Sources */,
@@ -426,7 +447,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 77UHX55UF6;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -448,7 +469,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -496,7 +517,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 77UHX55UF6;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -512,7 +533,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -672,6 +693,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9A7418C8EA7A5391A3A1C1B1 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6C9B545A1EA07962ADC9DF16 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9A7418C8EA7A5391A3A1C1B1 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 65038DD919B78672D25C1C19 /* Project object */;
 }

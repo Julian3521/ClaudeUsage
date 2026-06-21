@@ -8,14 +8,19 @@ options:
 
 settings:
   base:
-    MARKETING_VERSION: "1.0.2"
-    CURRENT_PROJECT_VERSION: "10"
+    MARKETING_VERSION: "1.0.3"
+    CURRENT_PROJECT_VERSION: "11"
     SWIFT_VERSION: "6.0"
     SWIFT_STRICT_CONCURRENCY: complete
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: "77UHX55UF6"
     ENABLE_USER_SCRIPT_SANDBOXING: NO
     ENABLE_HARDENED_RUNTIME: YES
+
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.9.3"
 
 targets:
   ClaudeUsage:
@@ -46,6 +51,7 @@ targets:
           PROVISIONING_PROFILE_SPECIFIER: "ClaudeUsage Developer ID CI"
     dependencies:
       - target: ClaudeUsageWidgetExtension
+      - package: Sparkle
     scheme:
       buildImplicitDependencies: true
       testTargets:

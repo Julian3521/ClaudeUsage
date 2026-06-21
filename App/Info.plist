@@ -28,5 +28,11 @@
 	<string>Personal project. Not affiliated with Anthropic.</string>
 	<key>LSUIElement</key>
 	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/Julian3521/ClaudeUsage/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>aFEvlco9+LkecPAVGgXfPawt1dGxZsjvB7tbi6VsB1Q=</string>
+	<key>SUEnableInstallerLauncherService</key>
+	<true/>
 </dict>
 </plist>

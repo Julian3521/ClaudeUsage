@@ -30,6 +30,7 @@ security warning. It lives in the menu bar (no Dock icon) — click the gauge, t
 - **Widgets** (Small/Medium/Large) incl. a **histogram** of utilization over time.
 - **Notifications** near a limit, **launch at login**, configurable refresh, and
   optional **auto-open** of new 5-hour windows.
+- **Automatic updates** (Sparkle) — new versions install themselves.
 - Localized in **English, German, French, Spanish**.
 
 ## Screenshots

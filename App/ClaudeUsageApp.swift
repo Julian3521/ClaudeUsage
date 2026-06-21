@@ -19,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusController = StatusItemController(viewModel: .shared)
+        _ = Updater.shared      // start Sparkle background update checks
 
         Task { @MainActor in
             UsageViewModel.shared.onAppear()
