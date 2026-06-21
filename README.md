@@ -60,17 +60,17 @@ open ClaudeUsage.xcodeproj
 
 1. Set your **Team** in `project.yml` (`DEVELOPMENT_TEAM`) or in Xcode → Signing.
 2. Run the **ClaudeUsage** scheme (menu-bar agent — look for the gauge icon).
-3. Open **Settings → Account** (the gauge menu has *Sign in* / *Settings…*). The
-   usage endpoint needs the `user:profile` scope, which your existing Claude Code
-   login already has, so paste that token: the Account tab shows a one-line command
-   that copies it to your clipboard — paste it and **Save & connect**. Signing out
-   and back in also happens here.
+3. Open **Settings → Account** and click **Sign in with Claude** — a browser opens
+   for the OAuth login (PKCE + loopback redirect; no copy/paste). As a fallback you
+   can still paste an existing Claude Code access token (the Account tab shows a
+   one-line command that copies it). Signing out happens here too.
 4. Add a widget: right-click the desktop → *Edit Widgets* → search **Claude Usage**.
 
 ## How it works
 
 ```text
-Login  → paste the existing Claude Code token (Keychain, has user:profile)
+Login  → "Sign in with Claude" browser OAuth (PKCE + loopback) → tokens in Keychain
+         (or paste an existing Claude Code token; both carry user:profile)
 App    → api.anthropic.com/api/oauth/usage  (Bearer + anthropic-beta: oauth-2025-04-20)
          → five_hour / seven_day / sonnet / spend  → snapshot (Keychain) → widget reads it
 ```
