@@ -17,9 +17,10 @@ session & weekly rate limits, macOS menu bar app, WidgetKit widget, SwiftUI.*
 
 ### [Download **ClaudeUsage.dmg** →](https://github.com/Julian3521/ClaudeUsage/releases/latest/download/ClaudeUsage.dmg)
 
-macOS 14+ · open the DMG and drag the app to **Applications**. It lives in the
-menu bar (no Dock icon) — click the gauge, then **Sign in**. *(First launch:
-right-click the app → Open.)*
+macOS 14+ · open the DMG and drag the app onto **Applications**, then launch it.
+It's **signed & notarized** by Apple, so it opens with a normal double-click — no
+security warning. It lives in the menu bar (no Dock icon) — click the gauge, then
+**Sign in**.
 
 #### Features
 
