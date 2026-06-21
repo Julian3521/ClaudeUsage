@@ -1,8 +1,13 @@
-# Claude Usage
+# Claude Usage — macOS menu-bar app & widget for Claude usage limits
 
-A tiny **macOS menu-bar app + widget** that shows your **Claude session (5h) and
-weekly (7d) usage limits** — the same numbers as `claude /usage` and the Claude
-app's *Usage* screen.
+**Claude Usage** is a tiny **macOS menu-bar app and widgets** that show your
+**Claude (and Claude Code) Pro/Max usage limits** at a glance — the **session
+(5-hour)** and **weekly (7-day)** windows, the same numbers as `claude /usage`
+and the Claude app's *Usage* screen — with history charts, limit notifications,
+and graceful rate-limit handling.
+
+*Keywords: Claude usage monitor, Claude Code usage, Anthropic Pro/Max limits,
+session & weekly rate limits, macOS menu bar app, WidgetKit widget, SwiftUI.*
 
 [![Latest release](https://img.shields.io/github/v/release/Julian3521/ClaudeUsage?label=download)](https://github.com/Julian3521/ClaudeUsage/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/Julian3521/ClaudeUsage/total)](https://github.com/Julian3521/ClaudeUsage/releases)

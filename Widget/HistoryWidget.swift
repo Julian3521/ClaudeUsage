@@ -27,27 +27,26 @@ struct HistoryWidgetView: View {
             label("Sign in from the app", systemImage: "person.crop.circle.badge.exclamationmark")
         } else if entry.history.count >= 2 {
             VStack(spacing: 8) {
-                histogram("Session (5h)", value: \.session, unit: .hour, tint: .blue)
-                histogram("Weekly (7d)", value: \.weekly, unit: .day, tint: .orange)
+                histogram("Session (5h)", value: \.session, tint: .blue)
+                histogram("Weekly (7d)", value: \.weekly, tint: .orange)
             }
         } else {
             label("Collecting data…", systemImage: "chart.bar")
         }
     }
 
-    private enum Unit { case hour, day }
-
     private func histogram(_ title: LocalizedStringKey,
                            value: KeyPath<HistoryPoint, Double>,
-                           unit: Unit,
                            tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
+        let points = Array(entry.history.suffix(36))
+        let marks = labelIndices(points.count)
+        let top = yTop(points, value)
+        return VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 6) {
                 Circle().fill(tint).frame(width: 7, height: 7)
                 Text(title).font(.caption.weight(.semibold)).foregroundStyle(tint)
                 Spacer()
             }
-            let points = Array(entry.history.suffix(36))
             Chart {
                 ForEach(Array(points.enumerated()), id: \.offset) { index, point in
                     BarMark(x: .value("i", index),
@@ -55,14 +54,15 @@ struct HistoryWidgetView: View {
                         .foregroundStyle(tint)
                 }
             }
-            .chartYScale(domain: 0...100)
-            .chartYAxis { AxisMarks(values: [0, 100]) }
+            // Scale to the max in the shown period so variation is visible.
+            .chartYScale(domain: 0...top)
+            .chartYAxis { AxisMarks(values: [0, top]) }
             .chartXAxis {
-                AxisMarks(values: labelIndices(points.count)) { mark in
+                AxisMarks(values: marks) { mark in
                     AxisValueLabel {
-                        if let i = mark.as(Int.self), points.indices.contains(i) {
-                            Text(verbatim: relativeLabel(points[i].date, unit: unit))
-                                .font(.system(size: 8))
+                        if let i = mark.as(Int.self), let pos = marks.firstIndex(of: i) {
+                            let back = marks.count - 1 - pos
+                            Text(verbatim: back == 0 ? "0" : "-\(back)").font(.system(size: 8))
                         }
                     }
                 }
@@ -72,18 +72,17 @@ struct HistoryWidgetView: View {
         .background(.background.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
     }
 
-    /// Up to four evenly spaced indices to label on the x-axis.
+    /// Top of the y-axis: the period's max usage, rounded up (min 5).
+    private func yTop(_ points: [HistoryPoint], _ value: KeyPath<HistoryPoint, Double>) -> Double {
+        let maxValue = points.map { $0[keyPath: value] }.max() ?? 0
+        return max(5, (maxValue / 5).rounded(.up) * 5)
+    }
+
+    /// Up to four evenly spaced indices to label on the x-axis (labeled -3…0).
     private func labelIndices(_ count: Int) -> [Int] {
         guard count > 1 else { return [0] }
         let step = max(1, (count - 1) / 3)
         return Array(stride(from: 0, through: count - 1, by: step))
-    }
-
-    private func relativeLabel(_ date: Date, unit: Unit) -> String {
-        let seconds = entry.date.timeIntervalSince(date)
-        let suffix = unit == .day ? "d" : "h"
-        let n = Int((seconds / (unit == .day ? 86400 : 3600)).rounded())
-        return n <= 0 ? "0\(suffix)" : "-\(n)\(suffix)"
     }
 
     private func label(_ text: LocalizedStringKey, systemImage: String) -> some View {
