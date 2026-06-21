@@ -20,14 +20,20 @@ enum UsageFormat {
             guard let s = resetString(date, now: now) else { return "—" }
             return String(localized: "Resets in \(s)")
         case .weekday:
-            guard let date else { return "—" }
-            let s = date.formatted(.dateTime.weekday(.abbreviated).hour().minute())
-            return String(localized: "Resets \(s)")
+            return dayLabel(date) { $0.formatted(.dateTime.weekday(.abbreviated).hour().minute()) }
         case .date:
-            guard let date else { return "—" }
-            let s = date.formatted(.dateTime.day().month(.abbreviated).hour().minute())
-            return String(localized: "Resets \(s)")
+            return dayLabel(date) { $0.formatted(.dateTime.day().month(.abbreviated).hour().minute()) }
         }
+    }
+
+    /// Uses "today"/"tomorrow" when the reset falls on those days (so e.g. a reset
+    /// today and one next week don't both just read "Sun"); otherwise `fallback`.
+    private static func dayLabel(_ date: Date?, fallback: (Date) -> String) -> String {
+        guard let date else { return "—" }
+        let time = date.formatted(date: .omitted, time: .shortened)
+        if Calendar.current.isDateInToday(date) { return String(localized: "Resets today \(time)") }
+        if Calendar.current.isDateInTomorrow(date) { return String(localized: "Resets tomorrow \(time)") }
+        return String(localized: "Resets \(fallback(date))")
     }
 
     /// Color for a usage percentage (0...100): green → orange → red.

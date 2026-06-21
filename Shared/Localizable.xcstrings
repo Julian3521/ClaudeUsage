@@ -1249,6 +1249,50 @@
         }
       }
     },
+    "Resets today %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset heute %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se restablece hoy %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réinit. aujourd’hui %@"
+          }
+        }
+      }
+    },
+    "Resets tomorrow %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset morgen %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se restablece mañana %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réinit. demain %@"
+          }
+        }
+      }
+    },
     "Run this command — it copies your token to the clipboard:": {
       "extractionState": "stale",
       "localizations": {
