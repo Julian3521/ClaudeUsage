@@ -26,6 +26,16 @@ right-click the app → Open.)*
   optional **auto-open** of new 5-hour windows.
 - Localized in **English, German, French, Spanish**.
 
+## Screenshots
+
+| Menu bar | Panel |
+| --- | --- |
+| ![Menu bar](docs/menubar.png) | ![Panel](docs/panel.png) |
+
+| General | Menu bar | Widget |
+| --- | --- | --- |
+| ![General settings](docs/settings-general.png) | ![Menu bar settings](docs/settings-menubar.png) | ![Widget settings](docs/settings-widget.png) |
+
 > ⚠️ **Unofficial.** Reuses the public Claude Code OAuth client and an
 > undocumented usage endpoint (`/api/oauth/usage`), for personal use with your own
 > account. Anthropic may change or block it at any time. Not affiliated with Anthropic.
