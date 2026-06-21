@@ -616,6 +616,28 @@
         }
       }
     },
+    "If sign-in doesn't work, paste your existing Claude Code access token instead (it has the required user:profile scope). This command copies it to your clipboard:": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Falls die Anmeldung nicht klappt, füge stattdessen deinen vorhandenen Claude-Code-Token ein (er hat den nötigen user:profile-Scope). Dieser Befehl kopiert ihn in die Zwischenablage:"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si el inicio de sesión no funciona, pega tu token de acceso de Claude Code (tiene el ámbito user:profile necesario). Este comando lo copia al portapapeles:"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si la connexion échoue, colle plutôt ton jeton d'accès Claude Code existant (il a le scope user:profile requis). Cette commande le copie dans le presse-papiers :"
+          }
+        }
+      }
+    },
     "Launch at login": {
       "extractionState": "stale",
       "localizations": {
@@ -839,6 +861,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Opus"
+          }
+        }
+      }
+    },
+    "Or paste a token": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oder Token einfügen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O pega un token"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ou coller un jeton"
           }
         }
       }
@@ -1503,6 +1547,50 @@
         }
       }
     },
+    "Sign in with Claude": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit Claude anmelden"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar sesión con Claude"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se connecter avec Claude"
+          }
+        }
+      }
+    },
+    "Sign in with your Claude (Pro/Max) account. A browser window opens for the login; everything else stays local — only the usage request goes to Anthropic.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melde dich mit deinem Claude-Konto (Pro/Max) an. Für den Login öffnet sich ein Browserfenster; alles andere bleibt lokal — nur die Nutzungsabfrage geht an Anthropic."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicia sesión con tu cuenta de Claude (Pro/Max). Se abre una ventana del navegador para iniciar sesión; todo lo demás permanece local: solo la consulta de uso va a Anthropic."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecte-toi avec ton compte Claude (Pro/Max). Une fenêtre de navigateur s'ouvre pour la connexion ; tout le reste reste local — seule la requête d'usage va à Anthropic."
+          }
+        }
+      }
+    },
     "Sign out": {
       "extractionState": "stale",
       "localizations": {
@@ -1792,6 +1880,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Version %@"
+          }
+        }
+      }
+    },
+    "Waiting for browser…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warte auf Browser…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esperando al navegador…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En attente du navigateur…"
           }
         }
       }

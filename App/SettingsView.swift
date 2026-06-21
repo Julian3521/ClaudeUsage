@@ -38,9 +38,32 @@ private struct AccountSettings: View {
                     Button("Sign out", role: .destructive) { viewModel.logout() }
                 }
             } else {
-                Section("Sign in") {
-                    Text("Uses your existing Claude Code login (it already has the required user:profile scope). Everything stays local — only the usage request goes to Anthropic.")
+                Section {
+                    Text("Sign in with your Claude (Pro/Max) account. A browser window opens for the login; everything else stays local — only the usage request goes to Anthropic.")
                         .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button {
+                        Task { await viewModel.loginWithOAuth() }
+                    } label: {
+                        if viewModel.isLoggingIn {
+                            HStack(spacing: 8) {
+                                ProgressView().controlSize(.small)
+                                Text("Waiting for browser…")
+                            }
+                        } else {
+                            Label("Sign in with Claude", systemImage: "person.crop.circle.badge.checkmark")
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(viewModel.isLoggingIn)
+                } header: {
+                    Text("Sign in")
+                }
+
+                Section {
+                    Text("If sign-in doesn't work, paste your existing Claude Code access token instead (it has the required user:profile scope). This command copies it to your clipboard:")
+                        .font(.caption)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                     HStack(alignment: .top) {
@@ -59,15 +82,19 @@ private struct AccountSettings: View {
                         .textFieldStyle(.roundedBorder)
                         .lineLimit(2...4)
                         .font(.system(.body, design: .monospaced))
-                    if let error = viewModel.loginError {
+                    Button("Save & connect") { viewModel.loginWithToken(token) }
+                        .disabled(token.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                } header: {
+                    Text("Or paste a token")
+                }
+
+                if let error = viewModel.loginError {
+                    Section {
                         Label(error, systemImage: "exclamationmark.triangle")
                             .font(.caption)
                             .foregroundStyle(.red)
                             .fixedSize(horizontal: false, vertical: true)
                     }
-                    Button("Save & connect") { viewModel.loginWithToken(token) }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(token.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
         }

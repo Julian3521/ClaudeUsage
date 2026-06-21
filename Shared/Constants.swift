@@ -4,9 +4,12 @@ import Foundation
 /// OAuth flow — they are public client identifiers, not secrets. This is an
 /// UNOFFICIAL/undocumented flow and may break if Anthropic changes it.
 enum Config {
-    // OAuth (Claude Code public client) — used for token refresh.
+    // OAuth (Claude Code public client) — used for sign-in + token refresh.
     static let clientID = "9d1c250a-e61b-44d9-88ed-5944d1962f5e"
     static let tokenURL = "https://platform.claude.com/v1/oauth/token"
+    static let authorizeURL = "https://claude.ai/oauth/authorize"
+    /// Scopes Claude Code requests; `user:profile` is what the usage endpoint needs.
+    static let oauthScopes = "org:create_api_key user:profile user:inference"
 
     // Usage endpoint (same one `claude /usage` calls)
     static let usageURL = "https://api.anthropic.com/api/oauth/usage"

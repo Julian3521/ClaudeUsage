@@ -63,6 +63,25 @@ final class UsageViewModel {
         Task { await fetchAfterLogin() }
     }
 
+    /// True while the browser OAuth sign-in is running (drives the button state).
+    var isLoggingIn = false
+
+    /// Browser-based OAuth sign-in (PKCE + loopback). The paste flow stays as a
+    /// fallback if Anthropic's flow ever changes.
+    func loginWithOAuth() async {
+        loginError = nil
+        isLoggingIn = true
+        defer { isLoggingIn = false }
+        do {
+            let token = try await OAuthLogin.signIn()
+            TokenStore.save(token)
+            state = .loading
+            await fetchAfterLogin()
+        } catch {
+            loginError = error.localizedDescription
+        }
+    }
+
     private func fetchAfterLogin() async {
         do {
             try await load()
