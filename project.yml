@@ -37,6 +37,13 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         GENERATE_INFOPLIST_FILE: NO
         COMBINE_HIDPI_IMAGES: YES
+      configs:
+        # Release archives sign manually with the Developer ID cert + a Developer ID
+        # profile (works in CI from secrets); Debug stays automatic for local dev.
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: "Developer ID Application"
+          PROVISIONING_PROFILE_SPECIFIER: "ClaudeUsage Developer ID CI"
     dependencies:
       - target: ClaudeUsageWidgetExtension
     scheme:
@@ -56,6 +63,11 @@ targets:
         INFOPLIST_FILE: Widget/Info.plist
         CODE_SIGN_ENTITLEMENTS: Widget/ClaudeUsageWidget.entitlements
         GENERATE_INFOPLIST_FILE: NO
+      configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: "Developer ID Application"
+          PROVISIONING_PROFILE_SPECIFIER: "ClaudeUsage Widget Developer ID CI"
 
   ClaudeUsageTests:
     type: bundle.unit-test

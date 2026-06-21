@@ -29,36 +29,18 @@ DMG="$BUILD_DIR/$APP_NAME.dmg"
 
 command -v xcodegen >/dev/null && xcodegen generate
 
-# The sandbox + keychain-sharing entitlements need a provisioning profile, so use
-# automatic signing with -allowProvisioningUpdates. Locally this uses your signed-in
-# Xcode account; in CI set ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_PATH (App Store
-# Connect API key) and it's used to generate the Developer ID profiles.
-AUTH=(-allowProvisioningUpdates)
-if [ -n "${ASC_KEY_ID:-}" ] && [ -n "${ASC_ISSUER_ID:-}" ] && [ -n "${ASC_KEY_PATH:-}" ]; then
-  AUTH+=(-authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" -authenticationKeyPath "$ASC_KEY_PATH")
-fi
-
-echo "▸ Archiving…"
+# The Release configuration signs manually with the Developer ID cert + a Developer
+# ID provisioning profile (see project.yml). The certificate and both profiles must
+# be installed: locally that's your keychain/profiles; in CI the workflow installs
+# them from secrets. No App Store Connect account/key is needed.
+echo "▸ Archiving (Developer ID)…"
 xcodebuild -project "$APP_NAME.xcodeproj" -scheme "$SCHEME" \
   -configuration Release -destination 'generic/platform=macOS' \
-  -archivePath "$ARCHIVE" \
-  DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
-  "${AUTH[@]}" archive
+  -archivePath "$ARCHIVE" archive
 
-echo "▸ Exporting (Developer ID)…"
-cat > "$BUILD_DIR/ExportOptions.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-  <key>method</key><string>developer-id</string>
-  <key>teamID</key><string>$TEAM_ID</string>
-  <key>signingStyle</key><string>automatic</string>
-</dict></plist>
-PLIST
-
-xcodebuild -exportArchive -archivePath "$ARCHIVE" \
-  -exportOptionsPlist "$BUILD_DIR/ExportOptions.plist" \
-  -exportPath "$EXPORT_DIR" "${AUTH[@]}"
+APP="$ARCHIVE/Products/Applications/$APP_NAME.app"
+echo "▸ Verifying signature…"
+codesign --verify --deep --strict --verbose=1 "$APP"
 
 echo "▸ Building DMG…"
 rm -f "$DMG"
@@ -66,7 +48,7 @@ rm -f "$DMG"
 # "drag the app onto Applications" layout.
 DMG_STAGE="$BUILD_DIR/dmg-stage"
 rm -rf "$DMG_STAGE"; mkdir -p "$DMG_STAGE"
-cp -R "$EXPORT_DIR/$APP_NAME.app" "$DMG_STAGE/"
+cp -R "$APP" "$DMG_STAGE/"
 ln -s /Applications "$DMG_STAGE/Applications"
 hdiutil create -volname "$APP_NAME" -srcfolder "$DMG_STAGE" \
   -ov -format UDZO "$DMG"

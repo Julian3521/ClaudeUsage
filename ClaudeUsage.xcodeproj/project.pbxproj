@@ -258,11 +258,9 @@
 				TargetAttributes = {
 					6E97C317F002EB5B78F6589D = {
 						DevelopmentTeam = 77UHX55UF6;
-						ProvisioningStyle = Automatic;
 					};
 					FCD643E83F9907C0D1AFF05E = {
 						DevelopmentTeam = 77UHX55UF6;
-						ProvisioningStyle = Automatic;
 					};
 					FF014592133EB8D1E6BFAFCA = {
 						DevelopmentTeam = 77UHX55UF6;
@@ -532,6 +530,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = ClaudeUsage;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/ClaudeUsage.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Info.plist;
@@ -540,6 +540,7 @@
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jb.ClaudeUsage;
+				PROVISIONING_PROFILE_SPECIFIER = "ClaudeUsage Developer ID CI";
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -582,6 +583,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Widget/ClaudeUsageWidget.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Widget/Info.plist;
@@ -591,6 +594,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jb.ClaudeUsage.Widget;
+				PROVISIONING_PROFILE_SPECIFIER = "ClaudeUsage Widget Developer ID CI";
 				SDKROOT = macosx;
 			};
 			name = Release;

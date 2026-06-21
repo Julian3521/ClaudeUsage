@@ -41,24 +41,24 @@ jobs:
           xcrun notarytool store-credentials ClaudeUsageNotary \
             --apple-id "$NOTARY_APPLE_ID" --team-id "$NOTARY_TEAM_ID" --password "$NOTARY_PASSWORD"
 
-      # App Store Connect API key — lets xcodebuild generate the Developer ID
-      # provisioning profiles the sandbox/keychain entitlements require.
-      - name: Write App Store Connect API key
+      # Install the manually-managed Developer ID provisioning profiles from secrets
+      # (the Release config in project.yml signs against these by name).
+      - name: Install provisioning profiles
         env:
-          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          PROVISION_APP_BASE64: ${{ secrets.PROVISION_APP_BASE64 }}
+          PROVISION_WIDGET_BASE64: ${{ secrets.PROVISION_WIDGET_BASE64 }}
         run: |
-          if [ -n "$ASC_KEY_P8" ]; then
-            mkdir -p "$RUNNER_TEMP/asc"
-            echo "$ASC_KEY_P8" | base64 --decode > "$RUNNER_TEMP/asc/key.p8"
-            echo "ASC_KEY_PATH=$RUNNER_TEMP/asc/key.p8" >> "$GITHUB_ENV"
-          fi
+          for D in "$HOME/Library/MobileDevice/Provisioning Profiles" \
+                   "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"; do
+            mkdir -p "$D"
+            echo "$PROVISION_APP_BASE64"    | base64 --decode > "$D/ClaudeUsage_app.provisionprofile"
+            echo "$PROVISION_WIDGET_BASE64" | base64 --decode > "$D/ClaudeUsage_widget.provisionprofile"
+          done
 
       - name: Build, sign, notarize, package DMG
         env:
           TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
           NOTARY_PROFILE: ClaudeUsageNotary
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         run: ./scripts/release.sh
 
       - name: Create GitHub release
