@@ -109,9 +109,17 @@ final class UsageViewModel {
         do {
             try await load()
         } catch {
+            rawJSON = error.localizedDescription
+            if Self.isAuthFailure(error) {
+                // Token expired/revoked: sign out so the menu prompts re-login.
+                TokenStore.clear()
+                lastFetchFailed = false
+                state = .loggedOut
+                WidgetCenter.shared.reloadAllTimelines()
+                return
+            }
             lastFetchFailed = true
             applyCooldown(error)
-            rawJSON = error.localizedDescription
             if let snapshot = SnapshotStore.load() {
                 state = .loaded(snapshot)       // keep showing cached data
             } else {
