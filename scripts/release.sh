@@ -29,17 +29,21 @@ DMG="$BUILD_DIR/$APP_NAME.dmg"
 
 command -v xcodegen >/dev/null && xcodegen generate
 
+# The sandbox + keychain-sharing entitlements need a provisioning profile, so use
+# automatic signing with -allowProvisioningUpdates. Locally this uses your signed-in
+# Xcode account; in CI set ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_PATH (App Store
+# Connect API key) and it's used to generate the Developer ID profiles.
+AUTH=(-allowProvisioningUpdates)
+if [ -n "${ASC_KEY_ID:-}" ] && [ -n "${ASC_ISSUER_ID:-}" ] && [ -n "${ASC_KEY_PATH:-}" ]; then
+  AUTH+=(-authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" -authenticationKeyPath "$ASC_KEY_PATH")
+fi
+
 echo "▸ Archiving…"
-# Developer ID = manual signing with the Developer ID Application cert; no
-# provisioning profile is needed (sandbox/keychain entitlements don't require one).
 xcodebuild -project "$APP_NAME.xcodeproj" -scheme "$SCHEME" \
   -configuration Release -destination 'generic/platform=macOS' \
   -archivePath "$ARCHIVE" \
-  DEVELOPMENT_TEAM="$TEAM_ID" \
-  CODE_SIGN_STYLE=Manual \
-  CODE_SIGN_IDENTITY="Developer ID Application" \
-  PROVISIONING_PROFILE_SPECIFIER="" \
-  archive
+  DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
+  "${AUTH[@]}" archive
 
 echo "▸ Exporting (Developer ID)…"
 cat > "$BUILD_DIR/ExportOptions.plist" <<PLIST
@@ -48,13 +52,13 @@ cat > "$BUILD_DIR/ExportOptions.plist" <<PLIST
 <plist version="1.0"><dict>
   <key>method</key><string>developer-id</string>
   <key>teamID</key><string>$TEAM_ID</string>
-  <key>signingStyle</key><string>manual</string>
+  <key>signingStyle</key><string>automatic</string>
 </dict></plist>
 PLIST
 
 xcodebuild -exportArchive -archivePath "$ARCHIVE" \
   -exportOptionsPlist "$BUILD_DIR/ExportOptions.plist" \
-  -exportPath "$EXPORT_DIR"
+  -exportPath "$EXPORT_DIR" "${AUTH[@]}"
 
 echo "▸ Building DMG…"
 rm -f "$DMG"

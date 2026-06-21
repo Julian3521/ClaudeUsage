@@ -41,10 +41,24 @@ jobs:
           xcrun notarytool store-credentials ClaudeUsageNotary \
             --apple-id "$NOTARY_APPLE_ID" --team-id "$NOTARY_TEAM_ID" --password "$NOTARY_PASSWORD"
 
+      # App Store Connect API key — lets xcodebuild generate the Developer ID
+      # provisioning profiles the sandbox/keychain entitlements require.
+      - name: Write App Store Connect API key
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          if [ -n "$ASC_KEY_P8" ]; then
+            mkdir -p "$RUNNER_TEMP/asc"
+            echo "$ASC_KEY_P8" | base64 --decode > "$RUNNER_TEMP/asc/key.p8"
+            echo "ASC_KEY_PATH=$RUNNER_TEMP/asc/key.p8" >> "$GITHUB_ENV"
+          fi
+
       - name: Build, sign, notarize, package DMG
         env:
           TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
           NOTARY_PROFILE: ClaudeUsageNotary
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
         run: ./scripts/release.sh
 
       - name: Create GitHub release
