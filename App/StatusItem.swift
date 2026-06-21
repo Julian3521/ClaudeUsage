@@ -5,14 +5,13 @@ import Observation
 /// Renders the full menu-bar content (1–2 bar+percent groups, colored by
 /// severity, optional warning) into a single NSImage for an NSStatusItem.
 enum StatusItemRenderer {
-    static func image(values: [Double], showBar: Bool, showPercent: Bool, warning: Bool) -> NSImage {
+    static func image(values: [Double], showBar: Bool, showPercent: Bool) -> NSImage {
         let font = NSFont.systemFont(ofSize: 12, weight: .medium)
         let height: CGFloat = 22
         let barW: CGFloat = 22, barH: CGFloat = 6, innerGap: CGFloat = 3, groupGap: CGFloat = 8
-        let warnW: CGFloat = warning ? 16 : 0
         let texts = values.map { "\(Int($0.rounded()))%" as NSString }
 
-        var width = warnW
+        var width: CGFloat = 0
         if !showBar && !showPercent {
             width += 18
         } else {
@@ -28,17 +27,6 @@ enum StatusItemRenderer {
         let image = NSImage(size: size)
         image.lockFocus()
         var x: CGFloat = 0
-
-        if warning {
-            let r = NSRect(x: 1, y: (height - 12) / 2, width: 12, height: 11)
-            let tri = NSBezierPath()
-            tri.move(to: NSPoint(x: r.midX, y: r.maxY))
-            tri.line(to: NSPoint(x: r.minX, y: r.minY))
-            tri.line(to: NSPoint(x: r.maxX, y: r.minY))
-            tri.close()
-            NSColor.systemOrange.setFill(); tri.fill()
-            x += warnW
-        }
 
         if !showBar && !showPercent {
             let dot = NSBezierPath(ovalIn: NSRect(x: x + 4, y: height/2 - 4, width: 8, height: 8))
@@ -122,8 +110,7 @@ final class StatusItemController {
             button.image = StatusItemRenderer.image(
                 values: settings.menuBarMetric.values(snapshot),
                 showBar: settings.menuBarShowBar,
-                showPercent: settings.menuBarShowPercent,
-                warning: viewModel.lastFetchFailed)
+                showPercent: settings.menuBarShowPercent)
             button.toolTip = "Claude Usage"
         } else {
             let symbol = NSImage(systemSymbolName: "gauge.with.dots.needle.bottom.50percent",

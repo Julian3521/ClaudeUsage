@@ -27,47 +27,42 @@ struct HistoryWidgetView: View {
             label("Sign in from the app", systemImage: "person.crop.circle.badge.exclamationmark")
         } else if entry.history.count >= 2 {
             VStack(spacing: 8) {
-                histogram("Session (5h)", value: \.session,
-                          current: entry.snapshot?.sessionPercent, tint: .blue)
-                histogram("Weekly (7d)", value: \.weekly,
-                          current: entry.snapshot?.weeklyPercent, tint: .orange)
+                histogram("Session (5h)", value: \.session, unit: .hour, tint: .blue)
+                histogram("Weekly (7d)", value: \.weekly, unit: .day, tint: .orange)
             }
         } else {
             label("Collecting data…", systemImage: "chart.bar")
         }
     }
 
+    private enum Unit { case hour, day }
+
     private func histogram(_ title: LocalizedStringKey,
                            value: KeyPath<HistoryPoint, Double>,
-                           current: Double?,
+                           unit: Unit,
                            tint: Color) -> some View {
-        let points = Array(entry.history.suffix(28))
-        return VStack(alignment: .leading, spacing: 3) {
+        VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 6) {
                 Circle().fill(tint).frame(width: 7, height: 7)
                 Text(title).font(.caption.weight(.semibold)).foregroundStyle(tint)
                 Spacer()
-                if let current {
-                    Text("\(Int(current.rounded()))%")
-                        .font(.caption.monospacedDigit().weight(.medium))
-                        .foregroundStyle(.secondary)
+            }
+            let points = Array(entry.history.suffix(36))
+            Chart {
+                ForEach(Array(points.enumerated()), id: \.offset) { index, point in
+                    BarMark(x: .value("i", index),
+                            y: .value("Usage", point[keyPath: value]))
+                        .foregroundStyle(tint)
                 }
             }
-            Chart(points) { point in
-                BarMark(x: .value("Time", point.date),
-                        y: .value("Usage", point[keyPath: value]),
-                        width: .ratio(0.6))
-                    .foregroundStyle(tint.gradient)
-            }
             .chartYScale(domain: 0...100)
-            .chartYAxis { AxisMarks(values: [0, 50, 100]) }
+            .chartYAxis { AxisMarks(values: [0, 100]) }
             .chartXAxis {
-                AxisMarks(values: .automatic(desiredCount: 4)) { mark in
-                    AxisGridLine()
+                AxisMarks(values: labelIndices(points.count)) { mark in
                     AxisValueLabel {
-                        if let date = mark.as(Date.self) {
-                            let hours = Int((date.timeIntervalSince(entry.date) / 3600).rounded())
-                            Text("\(hours)h").font(.system(size: 8))
+                        if let i = mark.as(Int.self), points.indices.contains(i) {
+                            Text(verbatim: relativeLabel(points[i].date, unit: unit))
+                                .font(.system(size: 8))
                         }
                     }
                 }
@@ -75,6 +70,20 @@ struct HistoryWidgetView: View {
         }
         .padding(8)
         .background(.background.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    /// Up to four evenly spaced indices to label on the x-axis.
+    private func labelIndices(_ count: Int) -> [Int] {
+        guard count > 1 else { return [0] }
+        let step = max(1, (count - 1) / 3)
+        return Array(stride(from: 0, through: count - 1, by: step))
+    }
+
+    private func relativeLabel(_ date: Date, unit: Unit) -> String {
+        let seconds = entry.date.timeIntervalSince(date)
+        let suffix = unit == .day ? "d" : "h"
+        let n = Int((seconds / (unit == .day ? 86400 : 3600)).rounded())
+        return n <= 0 ? "0\(suffix)" : "-\(n)\(suffix)"
     }
 
     private func label(_ text: LocalizedStringKey, systemImage: String) -> some View {

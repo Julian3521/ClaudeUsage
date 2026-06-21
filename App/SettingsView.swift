@@ -86,8 +86,7 @@ private struct MenuBarSettings: View {
             Spacer()
             Image(nsImage: StatusItemRenderer.image(values: s.menuBarMetric.values(.sample),
                                                     showBar: s.menuBarShowBar,
-                                                    showPercent: s.menuBarShowPercent,
-                                                    warning: false))
+                                                    showPercent: s.menuBarShowPercent))
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
                 .background(.black.opacity(0.85), in: Capsule())
