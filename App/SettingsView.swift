@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct SettingsView: View {
     var body: some View {
@@ -9,13 +10,16 @@ struct SettingsView: View {
                 .tabItem { Label("Menu bar", systemImage: "menubar.rectangle") }
             WidgetSettings()
                 .tabItem { Label("Widget", systemImage: "square.grid.2x2") }
+            AboutSettings()
+                .tabItem { Label("About", systemImage: "info.circle") }
         }
-        .frame(width: 460, height: 360)
+        .frame(width: 460, height: 380)
     }
 }
 
 private struct GeneralSettings: View {
     @Bindable private var settings = AppSettings.shared
+    private let viewModel = UsageViewModel.shared
 
     var body: some View {
         Form {
@@ -38,6 +42,16 @@ private struct GeneralSettings: View {
                 Toggle("Auto-open new sessions", isOn: $settings.settings.autoOpenSession)
             } footer: {
                 Text("Sends a tiny request about a minute after each 5-hour reset, so a fresh window opens immediately and keeps rolling. Uses minimal quota.")
+            }
+
+            if viewModel.state != .loggedOut {
+                Section("Account") {
+                    Button("Copy raw response") {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(viewModel.rawJSON, forType: .string)
+                    }
+                    Button("Sign out", role: .destructive) { viewModel.logout() }
+                }
             }
         }
         .formStyle(.grouped)
@@ -110,5 +124,26 @@ private struct WidgetSettings: View {
             }
         }
         .padding(.vertical, 4)
+    }
+}
+
+private struct AboutSettings: View {
+    private let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
+    private let repo = URL(string: "https://github.com/Julian3521/ClaudeUsage")!
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(nsImage: NSApp.applicationIconImage)
+                .resizable()
+                .frame(width: 80, height: 80)
+            Text("Claude Usage").font(.title2.bold())
+            Text("Version \(version)").font(.callout).foregroundStyle(.secondary)
+            Link("github.com/Julian3521/ClaudeUsage", destination: repo)
+            Text("Not affiliated with Anthropic.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
     }
 }

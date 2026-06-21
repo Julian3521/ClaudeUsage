@@ -150,16 +150,6 @@ struct MenuContentView: View {
 
                 SettingsLink { Label("Settings…", systemImage: "gearshape") }
                     .keyboardShortcut(",")
-                Button { showAbout() } label: { Label("About Claude Usage", systemImage: "info.circle") }
-
-                if viewModel.isLoggedIn {
-                    Button { copyRaw() } label: { Label("Copy raw response", systemImage: "doc.on.doc") }
-                    Divider()
-                    Button(role: .destructive) {
-                        viewModel.logout()
-                    } label: { Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right") }
-                }
-
                 Divider()
                 Button { NSApp.terminate(nil) } label: { Label("Quit", systemImage: "power") }
                     .keyboardShortcut("q")
@@ -176,18 +166,5 @@ struct MenuContentView: View {
 
     private func openLogin() {
         onOpenLogin()
-    }
-
-    private func copyRaw() {
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(viewModel.rawJSON, forType: .string)
-    }
-
-    private func showAbout() {
-        NSApp.activate(ignoringOtherApps: true)
-        let credits = NSAttributedString(
-            string: String(localized: "Not affiliated with Anthropic.")
-                + "\ngithub.com/Julian3521/ClaudeUsage")
-        NSApp.orderFrontStandardAboutPanel(options: [.credits: credits])
     }
 }
