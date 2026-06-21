@@ -6,7 +6,6 @@ import Charts
 struct MenuContentView: View {
     let viewModel: UsageViewModel
     var onOpenLogin: () -> Void = {}
-    var onOpenSettings: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -124,39 +123,54 @@ struct MenuContentView: View {
     // MARK: - Footer
 
     private var footer: some View {
-        HStack(spacing: 8) {
+        HStack {
             if viewModel.isLoggedIn {
                 Button {
                     Task { await viewModel.refresh(force: true) }
-                } label: { Image(systemName: "arrow.clockwise") }
-                    .help("Refresh")
-                    .keyboardShortcut("r")
-
-                Menu {
-                    Button("Start session window now") {
-                        Task { await viewModel.startSessionWindow() }
-                    }
-                    Link("Open usage on claude.ai", destination: Config.usagePageURL)
-                    Button("Settings…") { onOpenSettings() }
-                    Button("Copy raw response") { copyRaw() }
-                    Button("About Claude Usage") { showAbout() }
-                    Button("Sign out", role: .destructive) { viewModel.logout() }
-                } label: { Image(systemName: "ellipsis") }
-                    .menuStyle(.borderlessButton)
-                    .frame(width: 40)
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .buttonStyle(.borderless)
+                .help("Refresh")
+                .keyboardShortcut("r")
             }
+
             Spacer()
-            Text("v\(Self.appVersion)")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-            Button("Quit") { NSApp.terminate(nil) }
-                .font(.caption)
-                .keyboardShortcut("q")
+
+            Menu {
+                if viewModel.isLoggedIn {
+                    Button {
+                        Task { await viewModel.startSessionWindow() }
+                    } label: { Label("Start session window now", systemImage: "bolt") }
+                    Link(destination: Config.usagePageURL) {
+                        Label("Open usage on claude.ai", systemImage: "arrow.up.right.square")
+                    }
+                    Divider()
+                }
+
+                SettingsLink { Label("Settings…", systemImage: "gearshape") }
+                    .keyboardShortcut(",")
+                Button { showAbout() } label: { Label("About Claude Usage", systemImage: "info.circle") }
+
+                if viewModel.isLoggedIn {
+                    Button { copyRaw() } label: { Label("Copy raw response", systemImage: "doc.on.doc") }
+                    Divider()
+                    Button(role: .destructive) {
+                        viewModel.logout()
+                    } label: { Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right") }
+                }
+
+                Divider()
+                Button { NSApp.terminate(nil) } label: { Label("Quit", systemImage: "power") }
+                    .keyboardShortcut("q")
+            } label: {
+                Image(systemName: "ellipsis.circle")
+            }
+            .buttonStyle(.borderless)
+            .menuStyle(.borderlessButton)
+            .fixedSize()
         }
     }
-
-    private static let appVersion =
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
 
     // MARK: - Actions
 

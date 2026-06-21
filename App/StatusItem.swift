@@ -100,8 +100,7 @@ final class StatusItemController {
         popover.behavior = .transient
         popover.contentViewController = NSHostingController(rootView:
             MenuContentView(viewModel: viewModel,
-                            onOpenLogin: { [weak self] in self?.showLogin() },
-                            onOpenSettings: { StatusItemController.openSettings() })
+                            onOpenLogin: { [weak self] in self?.showLogin() })
         )
 
         observe()
@@ -162,10 +161,5 @@ final class StatusItemController {
         }
         NSApp.activate(ignoringOtherApps: true)
         loginWindow?.makeKeyAndOrderFront(nil)
-    }
-
-    static func openSettings() {
-        NSApp.activate(ignoringOtherApps: true)
-        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
     }
 }
