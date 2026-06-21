@@ -101,19 +101,20 @@ struct UsageWidgetEntryView: View {
         }
     }
 
-    // Home-screen medium: rings, like the app.
+    // Home-screen medium: rings, centered vertically.
     private func mediumView(_ s: UsageSnapshot) -> some View {
         HStack(spacing: 24) {
             ringColumn("Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
             ringColumn("Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
             if let opus { ringColumn("Opus", percent: opus.0, resetsAt: opus.1) }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func ringColumn(_ title: LocalizedStringKey, percent: Double, resetsAt: Date?) -> some View {
-        VStack(spacing: 6) {
-            UsageRing(percent: percent, lineWidth: 8)
-                .frame(width: 64, height: 64)
+        VStack(spacing: 5) {
+            UsageRing(percent: percent, lineWidth: 7)
+                .frame(width: 54, height: 54)
             Text(title).font(.caption2.weight(.medium))
             Text(UsageFormat.resetLabel(resetsAt, absolute: entry.absoluteReset))
                 .font(.system(size: 9))

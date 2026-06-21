@@ -26,9 +26,11 @@ struct HistoryWidgetView: View {
         if !entry.loggedIn {
             label("Sign in from the app", systemImage: "person.crop.circle.badge.exclamationmark")
         } else if entry.history.count >= 2 {
-            VStack(spacing: 12) {
-                histogram("Session (5h)", value: \.session)
-                histogram("Weekly (7d)", value: \.weekly)
+            VStack(spacing: 8) {
+                histogram("Session (5h)", value: \.session,
+                          current: entry.snapshot?.sessionPercent, tint: .blue)
+                histogram("Weekly (7d)", value: \.weekly,
+                          current: entry.snapshot?.weeklyPercent, tint: .orange)
             }
         } else {
             label("Collecting data…", systemImage: "chart.bar")
@@ -36,18 +38,31 @@ struct HistoryWidgetView: View {
     }
 
     private func histogram(_ title: LocalizedStringKey,
-                           value: KeyPath<HistoryPoint, Double>) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title).font(.caption2.weight(.semibold))
+                           value: KeyPath<HistoryPoint, Double>,
+                           current: Double?,
+                           tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 6) {
+                Circle().fill(tint).frame(width: 7, height: 7)
+                Text(title).font(.caption.weight(.semibold)).foregroundStyle(tint)
+                Spacer()
+                if let current {
+                    Text("\(Int(current.rounded()))%")
+                        .font(.caption.monospacedDigit().weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
+            }
             Chart(entry.history) { point in
                 BarMark(x: .value("Time", point.date),
                         y: .value("Usage", point[keyPath: value]))
-                    .foregroundStyle(UsageFormat.color(for: point[keyPath: value]))
+                    .foregroundStyle(tint.gradient)
             }
             .chartYScale(domain: 0...100)
             .chartXAxis(.hidden)
             .chartYAxis { AxisMarks(values: [0, 50, 100]) }
         }
+        .padding(8)
+        .background(.background.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))
     }
 
     private func label(_ text: LocalizedStringKey, systemImage: String) -> some View {
@@ -56,5 +71,6 @@ struct HistoryWidgetView: View {
             Text(text).font(.caption2).multilineTextAlignment(.center)
         }
         .foregroundStyle(.secondary)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
