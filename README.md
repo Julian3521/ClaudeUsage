@@ -84,11 +84,15 @@ App    → api.anthropic.com/api/oauth/usage  (Bearer + anthropic-beta: oauth-20
 
 ## Releasing (DMG)
 
-`scripts/release.sh` archives, signs (Developer ID), builds a DMG, and notarizes
-it. In CI, pushing a `vX.Y.Z` tag runs `.github/workflows/release.yml` and attaches
-the DMG to a GitHub release. Required repo secrets: `BUILD_CERTIFICATE_BASE64`
-(Developer ID .p12, base64), `P12_PASSWORD`, `KEYCHAIN_PASSWORD`, `NOTARY_APPLE_ID`,
-`NOTARY_TEAM_ID`, `NOTARY_PASSWORD` (app-specific password).
+Pushing a `vX.Y.Z` tag runs `.github/workflows/release.yml`, which archives, signs
+(Developer ID), packages a DMG (with an */Applications* shortcut), **notarizes** it,
+and publishes a GitHub release with the DMG attached — fully automated.
+`scripts/release.sh` does the same locally. The Release configuration signs manually
+against Developer ID provisioning profiles, so no App Store Connect account is needed
+at build time. Required repo secrets: `BUILD_CERTIFICATE_BASE64` (Developer ID .p12,
+base64), `P12_PASSWORD`, `KEYCHAIN_PASSWORD`, `NOTARY_APPLE_ID`, `NOTARY_TEAM_ID`,
+`NOTARY_PASSWORD` (app-specific password), and `PROVISION_APP_BASE64` /
+`PROVISION_WIDGET_BASE64` (the app + widget Developer ID profiles, base64).
 
 ## If the percentages look wrong
 
