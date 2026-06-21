@@ -62,8 +62,15 @@ xcodebuild -exportArchive -archivePath "$ARCHIVE" \
 
 echo "▸ Building DMG…"
 rm -f "$DMG"
-hdiutil create -volname "$APP_NAME" -srcfolder "$EXPORT_DIR/$APP_NAME.app" \
+# Stage the app next to an /Applications symlink so the DMG shows the classic
+# "drag the app onto Applications" layout.
+DMG_STAGE="$BUILD_DIR/dmg-stage"
+rm -rf "$DMG_STAGE"; mkdir -p "$DMG_STAGE"
+cp -R "$EXPORT_DIR/$APP_NAME.app" "$DMG_STAGE/"
+ln -s /Applications "$DMG_STAGE/Applications"
+hdiutil create -volname "$APP_NAME" -srcfolder "$DMG_STAGE" \
   -ov -format UDZO "$DMG"
+rm -rf "$DMG_STAGE"
 
 if [[ "${SKIP_NOTARIZE:-0}" != "1" ]]; then
   echo "▸ Notarizing…"
