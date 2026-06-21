@@ -41,7 +41,8 @@ struct HistoryWidgetView: View {
                            value: KeyPath<HistoryPoint, Double>,
                            current: Double?,
                            tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
+        let points = Array(entry.history.suffix(28))
+        return VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 6) {
                 Circle().fill(tint).frame(width: 7, height: 7)
                 Text(title).font(.caption.weight(.semibold)).foregroundStyle(tint)
@@ -52,14 +53,25 @@ struct HistoryWidgetView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            Chart(entry.history) { point in
+            Chart(points) { point in
                 BarMark(x: .value("Time", point.date),
-                        y: .value("Usage", point[keyPath: value]))
+                        y: .value("Usage", point[keyPath: value]),
+                        width: .ratio(0.6))
                     .foregroundStyle(tint.gradient)
             }
             .chartYScale(domain: 0...100)
-            .chartXAxis(.hidden)
             .chartYAxis { AxisMarks(values: [0, 50, 100]) }
+            .chartXAxis {
+                AxisMarks(values: .automatic(desiredCount: 4)) { mark in
+                    AxisGridLine()
+                    AxisValueLabel {
+                        if let date = mark.as(Date.self) {
+                            let hours = Int((date.timeIntervalSince(entry.date) / 3600).rounded())
+                            Text("\(hours)h").font(.system(size: 8))
+                        }
+                    }
+                }
+            }
         }
         .padding(8)
         .background(.background.opacity(0.35), in: RoundedRectangle(cornerRadius: 10))

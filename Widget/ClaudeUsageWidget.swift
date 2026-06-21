@@ -122,20 +122,19 @@ struct UsageWidgetEntryView: View {
         }
     }
 
-    // Large: rings on top, bars below.
+    // Large: rings on top (with breathing room), bars below.
     private func largeView(_ s: UsageSnapshot) -> some View {
-        VStack(spacing: 16) {
-            HStack {
-                Label("Claude Usage", systemImage: "gauge.with.dots.needle.bottom.50percent")
-                    .font(.headline)
-                Spacer()
-            }
-            HStack(spacing: 24) {
+        VStack(spacing: 14) {
+            HStack(spacing: 28) {
                 ringColumn("Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
                 ringColumn("Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
                 if let opus { ringColumn("Opus", percent: opus.0, resetsAt: opus.1) }
             }
-            Spacer(minLength: 0)
+            .frame(maxWidth: .infinity)
+            .padding(.top, 4)
+
+            Divider()
+
             UsageBar(title: "Current session (5h)",
                      percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
                      absoluteReset: entry.absoluteReset)
@@ -154,26 +153,7 @@ struct UsageWidgetEntryView: View {
                     Text(spend).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                 }
             }
-            if entry.history.count >= 2 {
-                Chart {
-                    ForEach(entry.history) { point in
-                        LineMark(x: .value("Time", point.date),
-                                 y: .value("Usage", point.weekly),
-                                 series: .value("Series", "weekly"))
-                            .foregroundStyle(.orange)
-                    }
-                    ForEach(entry.history) { point in
-                        LineMark(x: .value("Time", point.date),
-                                 y: .value("Usage", point.session),
-                                 series: .value("Series", "session"))
-                            .foregroundStyle(.blue.opacity(0.5))
-                    }
-                }
-                .chartXAxis(.hidden)
-                .chartYAxis(.hidden)
-                .chartYScale(domain: 0...100)
-                .frame(height: 28)
-            }
+            Spacer(minLength: 0)
         }
     }
 
