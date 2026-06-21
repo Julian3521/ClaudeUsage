@@ -22,10 +22,18 @@ final class UsageViewModel {
     var shouldDismissLogin = false
     /// Surfaced in the login window when a login attempt fails.
     var loginError: String?
-    /// True when the last fetch failed (shown as a warning in the menu bar).
+    /// True when the last fetch failed.
     var lastFetchFailed = false
+    /// While set and in the future, skip network polling (rate-limit backoff).
+    private var rateLimitedUntil: Date?
 
     var isLoggedIn: Bool { TokenStore.load() != nil }
+
+    /// Currently in a rate-limit backoff window (drives the menu-bar indicator).
+    var isRateLimited: Bool {
+        if let until = rateLimitedUntil { return Date() < until }
+        return false
+    }
 
     /// The currently loaded snapshot, if any (used by the menu-bar label).
     var snapshot: UsageSnapshot? {
@@ -65,6 +73,7 @@ final class UsageViewModel {
         } catch {
             rawJSON = error.localizedDescription
             loginError = error.localizedDescription
+            applyCooldown(error)
             if Self.isAuthFailure(error) {
                 TokenStore.clear()              // token actually invalid
                 state = .loggedOut
@@ -85,7 +94,12 @@ final class UsageViewModel {
 
     func refresh(force: Bool = false) async {
         guard isLoggedIn else { state = .loggedOut; return }
-        // Skip the network if we already have a recent snapshot (rate-limit guard).
+        // Honor a rate-limit backoff (manual refresh ignores it to let you retry).
+        if !force, let until = rateLimitedUntil, Date() < until {
+            if let snapshot = SnapshotStore.load() { state = .loaded(snapshot) }
+            return
+        }
+        // Skip the network if we already have a recent snapshot.
         if !force, let snapshot = SnapshotStore.load(),
            Date().timeIntervalSince(snapshot.fetchedAt) < Config.minFetchInterval {
             state = .loaded(snapshot)
@@ -96,6 +110,7 @@ final class UsageViewModel {
             try await load()
         } catch {
             lastFetchFailed = true
+            applyCooldown(error)
             rawJSON = error.localizedDescription
             if let snapshot = SnapshotStore.load() {
                 state = .loaded(snapshot)       // keep showing cached data
@@ -105,10 +120,18 @@ final class UsageViewModel {
         }
     }
 
+    /// On a 429, pause polling until the server's Retry-After (or 5 min).
+    private func applyCooldown(_ error: Error) {
+        if case let UsageError.rateLimited(retryAfter) = error {
+            rateLimitedUntil = Date().addingTimeInterval(retryAfter ?? 300)
+        }
+    }
+
     /// Fetches usage, updates state + the shared snapshot, and reloads the widget.
     private func load() async throws {
         let result = try await UsageAPI.fetch()
         lastFetchFailed = false
+        rateLimitedUntil = nil
         rawJSON = result.rawJSON
         if let snapshot = SnapshotStore.load() {
             HistoryStore.append(snapshot)
@@ -153,7 +176,7 @@ final class UsageViewModel {
         autoOpenTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(delay))
             guard !Task.isCancelled else { return }
-            try? await SessionStarter.ping()
+            _ = try? await SessionStarter.ping()
             await self?.refresh(force: true)
         }
     }

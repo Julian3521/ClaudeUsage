@@ -1,1682 +1,1698 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "%@ min" : {
-
-    },
-    "%@." : {
-
-    },
-    "%@%%" : {
-
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ min": {},
+    "%@.": {},
+    "%@%%": {},
+    "%lld min": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Min."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        }
+      }
     },
-    "%lld min" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld Min."
+    "About Claude Usage": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über Claude Usage"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld min"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acerca de Claude Usage"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld min"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À propos de Claude Usage"
           }
         }
       }
     },
-    "About Claude Usage" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Über Claude Usage"
+    "Account": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konto"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acerca de Claude Usage"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuenta"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "À propos de Claude Usage"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compte"
           }
         }
       }
     },
-    "Account" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Konto"
+    "Alert at": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warnen bei"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuenta"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alertar al"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compte"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alerter à"
           }
         }
       }
     },
-    "Alert at" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warnen bei"
+    "At hour": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Um Uhrzeit"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alertar al"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A la hora"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alerter à"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À l’heure"
           }
         }
       }
     },
-    "At hour" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Um Uhrzeit"
+    "Auto-open new sessions": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sitzungen automatisch öffnen"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A la hora"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir sesiones automáticamente"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "À l’heure"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir les sessions automatiquement"
           }
         }
       }
     },
-    "Auto-open new sessions" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sitzungen automatisch öffnen"
+    "Auto-start a window daily": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Täglich ein Fenster automatisch starten"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir sesiones automáticamente"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar una ventana a diario"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ouvrir les sessions automatiquement"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Démarrer une fenêtre chaque jour"
           }
         }
       }
     },
-    "Auto-start a window daily" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Täglich ein Fenster automatisch starten"
+    "Cancel": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abbrechen"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iniciar una ventana a diario"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancelar"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Démarrer une fenêtre chaque jour"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Annuler"
           }
         }
       }
     },
-    "Cancel" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abbrechen"
+    "Claude": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cancelar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Annuler"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude"
           }
         }
       }
     },
-    "Claude" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claude"
+    "Claude Usage": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Usage"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claude"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Usage"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claude"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Usage"
           }
         }
       }
     },
-    "Claude Usage" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claude Usage"
+    "Claude Usage History": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Usage Verlauf"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claude Usage"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historial de Claude Usage"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claude Usage"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historique Claude Usage"
           }
         }
       }
     },
-    "Claude Usage History" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claude Usage Verlauf"
+    "Collecting data…": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sammle Daten…"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historial de Claude Usage"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recopilando datos…"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historique Claude Usage"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collecte de données…"
           }
         }
       }
     },
-    "Collecting data…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sammle Daten…"
+    "Copy": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopieren"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recopilando datos…"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copiar"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Collecte de données…"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copier"
           }
         }
       }
     },
-    "Copy" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kopieren"
+    "Copy raw response": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rohdaten kopieren"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copiar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copiar respuesta sin procesar"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copier"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copier la réponse brute"
           }
         }
       }
     },
-    "Copy raw response" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rohdaten kopieren"
+    "Current session (5h)": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktuelle Session (5 Std.)"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copiar respuesta sin procesar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesión actual (5 h)"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copier la réponse brute"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session actuelle (5 h)"
           }
         }
       }
     },
-    "Current session (5h)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktuelle Session (5 Std.)"
+    "Details": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Details"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sesión actual (5 h)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detalles"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Session actuelle (5 h)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Détails"
           }
         }
       }
     },
-    "Details" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Details"
+    "Error": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fehler"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Detalles"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Détails"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erreur"
           }
         }
       }
     },
-    "Error" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fehler"
+    "Extra usage": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zusätzliche Nutzung"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uso adicional"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erreur"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisation supplémentaire"
           }
         }
       }
     },
-    "Extra usage" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zusätzliche Nutzung"
+    "General": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allgemein"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uso adicional"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "General"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utilisation supplémentaire"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Général"
           }
         }
       }
     },
-    "General" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Allgemein"
+    "Highest of both": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Höherer Wert"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "General"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El más alto"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Général"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le plus élevé"
           }
         }
       }
     },
-    "Highest of both" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Höherer Wert"
+    "History": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlauf"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El más alto"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historial"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le plus élevé"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historique"
           }
         }
       }
     },
-    "History" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verlauf"
+    "Launch at login": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bei Anmeldung starten"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historial"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir al iniciar sesión"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historique"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancer à l’ouverture de session"
           }
         }
       }
     },
-    "Launch at login" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bei Anmeldung starten"
+    "Menu bar": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menüleiste"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir al iniciar sesión"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barra de menús"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lancer à l’ouverture de session"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barre des menus"
           }
         }
       }
     },
-    "Menu bar" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Menüleiste"
+    "Not affiliated with Anthropic.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht mit Anthropic affiliiert."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Barra de menús"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No afiliado con Anthropic."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Barre des menus"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non affilié à Anthropic."
           }
         }
       }
     },
-    "Not affiliated with Anthropic." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht mit Anthropic affiliiert."
+    "Notifications": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitteilungen"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No afiliado con Anthropic."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notificaciones"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non affilié à Anthropic."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications"
           }
         }
       }
     },
-    "Notifications" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mitteilungen"
+    "Notify near limit": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bei nahem Limit benachrichtigen"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Notificaciones"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avisar cerca del límite"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Notifications"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifier près de la limite"
           }
         }
       }
     },
-    "Notify near limit" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bei nahem Limit benachrichtigen"
+    "now": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "jetzt"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avisar cerca del límite"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ahora"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Notifier près de la limite"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "maintenant"
           }
         }
       }
     },
-    "now" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "jetzt"
+    "Open Terminal.": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminal öffnen."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ahora"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir Terminal."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "maintenant"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir le Terminal."
           }
         }
       }
     },
-    "Open Terminal." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Terminal öffnen."
+    "Open usage on claude.ai": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutzung auf claude.ai öffnen"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir Terminal."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir uso en claude.ai"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ouvrir le Terminal."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir l’utilisation sur claude.ai"
           }
         }
       }
     },
-    "Open usage on claude.ai" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nutzung auf claude.ai öffnen"
+    "Opus": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opus"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir uso en claude.ai"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opus"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ouvrir l’utilisation sur claude.ai"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opus"
           }
         }
       }
     },
-    "Opus" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opus"
+    "Paste it below (⌘V), then “Save & connect”.": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unten einfügen (⌘V), dann „Speichern & verbinden“."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opus"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pégalo abajo (⌘V) y luego «Guardar y conectar»."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opus"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collez-le ci-dessous (⌘V), puis « Enregistrer et connecter »."
           }
         }
       }
     },
-    "Paste it below (⌘V), then “Save & connect”." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unten einfügen (⌘V), dann „Speichern & verbinden“."
+    "Percentage": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prozent"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pégalo abajo (⌘V) y luego «Guardar y conectar»."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Porcentaje"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Collez-le ci-dessous (⌘V), puis « Enregistrer et connecter »."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pourcentage"
           }
         }
       }
     },
-    "Percentage" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prozent"
+    "Preview": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorschau"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Porcentaje"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vista previa"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pourcentage"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aperçu"
           }
         }
       }
     },
-    "Preview" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vorschau"
+    "Progress bar": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortschrittsbalken"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vista previa"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barra de progreso"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aperçu"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barre de progression"
           }
         }
       }
     },
-    "Progress bar" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fortschrittsbalken"
+    "Quit": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beenden"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Barra de progreso"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salir"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Barre de progression"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quitter"
           }
         }
       }
     },
-    "Quit" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beenden"
+    "Refresh": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktualisieren"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salir"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizar"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quitter"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualiser"
           }
         }
       }
     },
-    "Refresh" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktualisieren"
+    "Refresh every": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktualisieren alle"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizar cada"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualiser"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualiser toutes les"
           }
         }
       }
     },
-    "Refresh every" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktualisieren alle"
+    "Resets at %@": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset um %@"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizar cada"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se restablece a las %@"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualiser toutes les"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réinit. à %@"
           }
         }
       }
     },
-    "Resets at %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reset um %@"
+    "Resets in %@": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset in %@"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se restablece a las %@"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se restablece en %@"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Réinit. à %@"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réinit. dans %@"
           }
         }
       }
     },
-    "Resets in %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reset in %@"
+    "Run this command — it copies your token to the clipboard:": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diesen Befehl ausführen — er kopiert dein Token in die Zwischenablage:"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se restablece en %@"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ejecuta este comando: copia tu token al portapapeles:"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Réinit. dans %@"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exécutez cette commande — elle copie votre jeton dans le presse-papiers :"
           }
         }
       }
     },
-    "Run this command — it copies your token to the clipboard:" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diesen Befehl ausführen — er kopiert dein Token in die Zwischenablage:"
+    "Save & connect": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speichern & verbinden"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ejecuta este comando: copia tu token al portapapeles:"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guardar y conectar"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exécutez cette commande — elle copie votre jeton dans le presse-papiers :"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer et connecter"
           }
         }
       }
     },
-    "Save & connect" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Speichern & verbinden"
+    "Sends a tiny request about a minute after each 5-hour reset, so a fresh window opens immediately and keeps rolling. Uses minimal quota.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sendet etwa eine Minute nach jedem 5-Stunden-Reset eine winzige Anfrage, damit sofort ein neues Fenster startet und weiterläuft. Minimaler Verbrauch."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Guardar y conectar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envía una solicitud mínima alrededor de un minuto después de cada reinicio de 5 horas, para que se abra una ventana nueva de inmediato y siga rotando. Usa cuota mínima."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enregistrer et connecter"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envoie une requête minime environ une minute après chaque réinitialisation de 5 heures, pour qu’une nouvelle fenêtre démarre aussitôt et continue. Quota minimal."
           }
         }
       }
     },
-    "Sends a tiny request about a minute after each 5-hour reset, so a fresh window opens immediately and keeps rolling. Uses minimal quota." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sendet etwa eine Minute nach jedem 5-Stunden-Reset eine winzige Anfrage, damit sofort ein neues Fenster startet und weiterläuft. Minimaler Verbrauch."
+    "Sends a tiny request to anchor the 5-hour window early, so it resets earlier in your day. Uses minimal quota.": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sendet eine winzige Anfrage, um das 5-Stunden-Fenster früher zu verankern, damit es früher am Tag zurücksetzt. Minimaler Verbrauch."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Envía una solicitud mínima alrededor de un minuto después de cada reinicio de 5 horas, para que se abra una ventana nueva de inmediato y siga rotando. Usa cuota mínima."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envía una solicitud mínima para anclar la ventana de 5 horas antes, de modo que se restablezca más temprano. Usa cuota mínima."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Envoie une requête minime environ une minute après chaque réinitialisation de 5 heures, pour qu’une nouvelle fenêtre démarre aussitôt et continue. Quota minimal."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envoie une requête minime pour ancrer la fenêtre de 5 heures plus tôt, afin qu’elle se réinitialise plus tôt dans la journée. Quota minimal."
           }
         }
       }
     },
-    "Sends a tiny request to anchor the 5-hour window early, so it resets earlier in your day. Uses minimal quota." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sendet eine winzige Anfrage, um das 5-Stunden-Fenster früher zu verankern, damit es früher am Tag zurücksetzt. Minimaler Verbrauch."
+    "Session": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Envía una solicitud mínima para anclar la ventana de 5 horas antes, de modo que se restablezca más temprano. Usa cuota mínima."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesión"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Envoie une requête minime pour ancrer la fenêtre de 5 heures plus tôt, afin qu’elle se réinitialise plus tôt dans la journée. Quota minimal."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session"
           }
         }
       }
     },
-    "Session" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Session"
+    "Session (5h)": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session (5 Std.)"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sesión"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesión (5 h)"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Session"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session (5 h)"
           }
         }
       }
     },
-    "Session (5h)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Session (5 Std.)"
+    "Session + weekly": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session + Woche"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sesión (5 h)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sesión + semana"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Session (5 h)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session + semaine"
           }
         }
       }
     },
-    "Session + weekly" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Session + Woche"
+    "Session windows": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sitzungsfenster"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sesión + semana"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ventanas de sesión"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Session + semaine"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fenêtres de session"
           }
         }
       }
     },
-    "Session windows" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sitzungsfenster"
+    "Settings…": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen…"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ventanas de sesión"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustes…"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fenêtres de session"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglages…"
           }
         }
       }
     },
-    "Settings…" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einstellungen…"
+    "Show": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anzeige"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajustes…"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Réglages…"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher"
           }
         }
       }
     },
-    "Show" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anzeige"
+    "Show Opus, Sonnet & spend": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opus, Sonnet & Ausgaben anzeigen"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar Opus, Sonnet y gasto"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afficher"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher Opus, Sonnet et dépenses"
           }
         }
       }
     },
-    "Show Opus, Sonnet & spend" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opus, Sonnet & Ausgaben anzeigen"
+    "Show reset as clock time": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset als Uhrzeit anzeigen"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar Opus, Sonnet y gasto"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar reinicio como hora"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afficher Opus, Sonnet et dépenses"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher la réinit. en heure"
           }
         }
       }
     },
-    "Show reset as clock time" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reset als Uhrzeit anzeigen"
+    "Sign in": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anmelden"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar reinicio como hora"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar sesión"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afficher la réinit. en heure"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se connecter"
           }
         }
       }
     },
-    "Sign in" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anmelden"
+    "Sign in from the app": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In der App anmelden"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iniciar sesión"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicia sesión desde la app"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se connecter"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connectez-vous depuis l’app"
           }
         }
       }
     },
-    "Sign in from the app" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In der App anmelden"
+    "Sign in to Claude": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bei Claude anmelden"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inicia sesión desde la app"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar sesión en Claude"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connectez-vous depuis l’app"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se connecter à Claude"
           }
         }
       }
     },
-    "Sign in to Claude" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bei Claude anmelden"
+    "Sign in to see your session and weekly limits.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melde dich an, um Session- und Wochenlimit zu sehen."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iniciar sesión en Claude"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicia sesión para ver tus límites de sesión y semanales."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se connecter à Claude"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connectez-vous pour voir vos limites de session et hebdomadaires."
           }
         }
       }
     },
-    "Sign in to see your session and weekly limits." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Melde dich an, um Session- und Wochenlimit zu sehen."
+    "Sign out": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abmelden"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inicia sesión para ver tus límites de sesión y semanales."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerrar sesión"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connectez-vous pour voir vos limites de session et hebdomadaires."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se déconnecter"
           }
         }
       }
     },
-    "Sign out" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abmelden"
+    "Sonnet": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonnet"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cerrar sesión"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonnet"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se déconnecter"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonnet"
           }
         }
       }
     },
-    "Sonnet" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sonnet"
+    "Start session window now": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sitzungsfenster jetzt starten"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sonnet"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar ventana de sesión ahora"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sonnet"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Démarrer la fenêtre de session"
           }
         }
       }
     },
-    "Start session window now" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sitzungsfenster jetzt starten"
+    "Token": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iniciar ventana de sesión ahora"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Démarrer la fenêtre de session"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeton"
           }
         }
       }
     },
-    "Token" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token"
+    "Try again": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut versuchen"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reintentar"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jeton"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réessayer"
           }
         }
       }
     },
-    "Try again" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erneut versuchen"
+    "Updated %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktualisiert %@"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reintentar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizado %@"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Réessayer"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mis à jour %@"
           }
         }
       }
     },
-    "Updated %@" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktualisiert %@"
+    "Usage history, weekly and session over time": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutzungsverlauf, Woche und Session über Zeit"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizado %@"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historial de uso, semanal y de sesión"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mis à jour %@"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Historique d’utilisation, hebdo et session"
           }
         }
       }
     },
-    "Usage history, weekly and session over time" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nutzungsverlauf, Woche und Session über Zeit"
+    "Usage limit almost reached": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limit fast erreicht"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historial de uso, semanal y de sesión"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Límite casi alcanzado"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historique d’utilisation, hebdo et session"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limite presque atteinte"
           }
         }
       }
     },
-    "Usage limit almost reached" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limit fast erreicht"
+    "Uses your existing Claude Code login (it already has the required user:profile scope). Everything stays local — only the usage request goes to Anthropic.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutzt dein vorhandenes Claude-Code-Login (es hat die nötige user:profile-Berechtigung). Alles bleibt lokal — nur der Usage-Aufruf geht an Anthropic."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Límite casi alcanzado"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usa tu inicio de sesión de Claude Code existente (ya tiene el ámbito user:profile necesario). Todo queda local: solo la solicitud de uso va a Anthropic."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limite presque atteinte"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilise votre connexion Claude Code existante (elle a déjà le scope user:profile requis). Tout reste local — seule la requête d’utilisation va à Anthropic."
           }
         }
       }
     },
-    "Uses your existing Claude Code login (it already has the required user:profile scope). Everything stays local — only the usage request goes to Anthropic." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nutzt dein vorhandenes Claude-Code-Login (es hat die nötige user:profile-Berechtigung). Alles bleibt lokal — nur der Usage-Aufruf geht an Anthropic."
+    "Utilization of the 5-hour and weekly windows over time.": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auslastung der 5-Stunden- und Wochenfenster über die Zeit."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usa tu inicio de sesión de Claude Code existente (ya tiene el ámbito user:profile necesario). Todo queda local: solo la solicitud de uso va a Anthropic."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uso de las ventanas de 5 horas y semanal a lo largo del tiempo."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utilise votre connexion Claude Code existante (elle a déjà le scope user:profile requis). Tout reste local — seule la requête d’utilisation va à Anthropic."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisation des fenêtres de 5 heures et hebdomadaire au fil du temps."
           }
         }
       }
     },
-    "Utilization of the 5-hour and weekly windows over time." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auslastung der 5-Stunden- und Wochenfenster über die Zeit."
+    "Version %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uso de las ventanas de 5 horas y semanal a lo largo del tiempo."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versión %@"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utilisation des fenêtres de 5 heures et hebdomadaire au fil du temps."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@"
           }
         }
       }
     },
-    "Version %@" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Version %@"
+    "Weekly": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Woche"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versión %@"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semanal"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Version %@"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hebdo"
           }
         }
       }
     },
-    "Weekly" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Woche"
+    "Weekly · all models (7d)": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Woche · alle Modelle (7 Tage)"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Semanal"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semanal · todos los modelos (7 d)"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hebdo"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hebdo · tous modèles (7 j)"
           }
         }
       }
     },
-    "Weekly · all models (7d)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Woche · alle Modelle (7 Tage)"
+    "Weekly · Opus (7d)": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Woche · Opus (7 Tage)"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Semanal · todos los modelos (7 d)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semanal · Opus (7 d)"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hebdo · tous modèles (7 j)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hebdo · Opus (7 j)"
           }
         }
       }
     },
-    "Weekly · Opus (7d)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Woche · Opus (7 Tage)"
+    "Weekly · Sonnet (7d)": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Woche · Sonnet (7 Tage)"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Semanal · Opus (7 d)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semanal · Sonnet (7 d)"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hebdo · Opus (7 j)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hebdo · Sonnet (7 j)"
           }
         }
       }
     },
-    "Weekly · Sonnet (7d)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Woche · Sonnet (7 Tage)"
+    "Weekly (7d)": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Woche (7 Tage)"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Semanal · Sonnet (7 d)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semanal (7 d)"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hebdo · Sonnet (7 j)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hebdo (7 j)"
           }
         }
       }
     },
-    "Weekly (7d)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Woche (7 Tage)"
+    "Widget": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widget"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Semanal (7 d)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widget"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hebdo (7 j)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widget"
           }
         }
       }
     },
-    "Widget" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widget"
+    "Your session and weekly limits at a glance.": {
+      "extractionState": "stale",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Session- und Wochenlimit auf einen Blick."
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widget"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tus límites de sesión y semanales de un vistazo."
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widget"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos limites de session et hebdomadaires en un coup d’œil."
           }
         }
       }
     },
-    "Your session and weekly limits at a glance." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Session- und Wochenlimit auf einen Blick."
+    "Rate limited — retrying automatically": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rate-Limit – wird automatisch erneut versucht"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tus límites de sesión y semanales de un vistazo."
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Límite alcanzado: reintentando automáticamente"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vos limites de session et hebdomadaires en un coup d’œil."
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limite atteinte — nouvelle tentative automatique"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

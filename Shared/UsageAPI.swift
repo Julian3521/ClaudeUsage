@@ -2,12 +2,15 @@ import Foundation
 
 enum UsageError: LocalizedError {
     case notLoggedIn
+    case rateLimited(retryAfter: TimeInterval?)
     case http(status: Int, body: String)
 
     var errorDescription: String? {
         switch self {
         case .notLoggedIn:
             return "Not logged in."
+        case .rateLimited:
+            return "Rate limited — backing off."
         case let .http(status, body):
             return "Usage request failed (\(status)): \(body)"
         }
@@ -54,8 +57,13 @@ enum UsageAPI {
         req.timeoutInterval = 20
 
         let (data, response) = try await URLSession.shared.data(for: req)
-        let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+        let http = response as? HTTPURLResponse
+        let status = http?.statusCode ?? 0
         let raw = String(data: data, encoding: .utf8) ?? ""
+        if status == 429 {
+            let retryAfter = http?.value(forHTTPHeaderField: "retry-after").flatMap(TimeInterval.init)
+            throw UsageError.rateLimited(retryAfter: retryAfter)
+        }
         guard (200..<300).contains(status) else {
             throw UsageError.http(status: status, body: raw)
         }

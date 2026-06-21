@@ -5,13 +5,24 @@ import Observation
 /// Renders the full menu-bar content (1–2 bar+percent groups, colored by
 /// severity, optional warning) into a single NSImage for an NSStatusItem.
 enum StatusItemRenderer {
-    static func image(values: [Double], showBar: Bool, showPercent: Bool) -> NSImage {
+    static func image(values: [Double], showBar: Bool, showPercent: Bool,
+                      rateLimited: Bool = false) -> NSImage {
         let font = NSFont.systemFont(ofSize: 12, weight: .medium)
         let height: CGFloat = 22
         let barW: CGFloat = 22, barH: CGFloat = 6, innerGap: CGFloat = 3, groupGap: CGFloat = 8
         let texts = values.map { "\(Int($0.rounded()))%" as NSString }
 
-        var width: CGFloat = 0
+        // Native red "rate limited" glyph, drawn before the bars when active.
+        let warnSymbol: NSImage? = rateLimited ? NSImage(
+            systemSymbolName: "exclamationmark.circle.fill",
+            accessibilityDescription: "Rate limited"
+        )?.withSymbolConfiguration(
+            NSImage.SymbolConfiguration(pointSize: 13, weight: .semibold)
+                .applying(.init(paletteColors: [.systemRed]))
+        ) : nil
+        let warnW = warnSymbol.map { $0.size.width + 5 } ?? 0
+
+        var width = warnW
         if !showBar && !showPercent {
             width += 18
         } else {
@@ -27,6 +38,13 @@ enum StatusItemRenderer {
         let image = NSImage(size: size)
         image.lockFocus()
         var x: CGFloat = 0
+
+        if let warnSymbol {
+            let s = warnSymbol.size
+            warnSymbol.draw(at: NSPoint(x: 0, y: (height - s.height) / 2),
+                            from: .zero, operation: .sourceOver, fraction: 1)
+            x += warnW
+        }
 
         if !showBar && !showPercent {
             let dot = NSBezierPath(ovalIn: NSRect(x: x + 4, y: height/2 - 4, width: 8, height: 8))
@@ -110,7 +128,8 @@ final class StatusItemController {
             button.image = StatusItemRenderer.image(
                 values: settings.menuBarMetric.values(snapshot),
                 showBar: settings.menuBarShowBar,
-                showPercent: settings.menuBarShowPercent)
+                showPercent: settings.menuBarShowPercent,
+                rateLimited: viewModel.isRateLimited)
             button.toolTip = "Claude Usage"
         } else {
             let symbol = NSImage(systemSymbolName: "gauge.with.dots.needle.bottom.50percent",

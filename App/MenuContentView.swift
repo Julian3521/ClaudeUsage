@@ -18,6 +18,12 @@ struct MenuContentView: View {
 
             Divider()
 
+            if viewModel.isRateLimited {
+                Label("Rate limited — retrying automatically", systemImage: "exclamationmark.circle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            }
+
             switch viewModel.state {
             case .loggedOut:
                 loggedOut
