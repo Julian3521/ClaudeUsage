@@ -1,3 +1,4 @@
+import AppIntents
 import Foundation
 import Security
 
@@ -37,6 +38,14 @@ enum ResetFormat: String, Codable, CaseIterable, Sendable {
         case .weekday: return "Weekday + time"
         case .date: return "Date + time"
         }
+    }
+}
+
+/// Lets `ResetFormat` appear as a picker when editing a widget.
+extension ResetFormat: AppEnum {
+    static var typeDisplayRepresentation: TypeDisplayRepresentation { "Reset display" }
+    static var caseDisplayRepresentations: [ResetFormat: DisplayRepresentation] {
+        [.relative: "Countdown", .weekday: "Weekday + time", .date: "Date + time"]
     }
 }
 

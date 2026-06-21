@@ -50,7 +50,9 @@ struct ClaudeUsageWidget: Widget {
     let kind = "ClaudeUsageWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: UsageProvider()) { entry in
+        AppIntentConfiguration(kind: kind,
+                               intent: ClaudeWidgetConfigIntent.self,
+                               provider: ConfigurableUsageProvider()) { entry in
             UsageWidgetEntryView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
                 .widgetURL(Config.usagePageURL)
@@ -58,6 +60,36 @@ struct ClaudeUsageWidget: Widget {
         .configurationDisplayName("Claude Usage")
         .description("Your session and weekly limits at a glance.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+    }
+}
+
+/// Like `UsageProvider`, but driven by the per-widget configuration intent so each
+/// placed widget can choose its own options (right-click → Edit Widget).
+struct ConfigurableUsageProvider: AppIntentTimelineProvider {
+    func placeholder(in context: Context) -> UsageEntry {
+        UsageEntry(date: Date(), snapshot: .placeholder, loggedIn: true,
+                   showSecondary: true, resetFormat: .relative, history: [])
+    }
+
+    func snapshot(for configuration: ClaudeWidgetConfigIntent,
+                  in context: Context) async -> UsageEntry {
+        entry(SnapshotStore.load() ?? .placeholder, configuration)
+    }
+
+    func timeline(for configuration: ClaudeWidgetConfigIntent,
+                  in context: Context) async -> Timeline<UsageEntry> {
+        let minutes = Double(max(Config.minRefreshMinutes, SettingsStore.load().refreshMinutes))
+        let next = Date().addingTimeInterval(minutes * 60)
+        return Timeline(entries: [entry(SnapshotStore.load(), configuration)], policy: .after(next))
+    }
+
+    private func entry(_ snapshot: UsageSnapshot?, _ config: ClaudeWidgetConfigIntent) -> UsageEntry {
+        UsageEntry(date: Date(),
+                   snapshot: snapshot,
+                   loggedIn: TokenStore.load() != nil,
+                   showSecondary: config.showSecondary,
+                   resetFormat: config.resetDisplay,
+                   history: HistoryStore.load())
     }
 }
 

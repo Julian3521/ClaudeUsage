@@ -254,6 +254,28 @@
         }
       }
     },
+    "Choose what this widget shows.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle, was dieses Widget anzeigt."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige qué muestra este widget."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisis ce que ce widget affiche."
+          }
+        }
+      }
+    },
     "Claude": {
       "extractionState": "stale",
       "localizations": {
@@ -702,6 +724,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Barre des menus"
+          }
+        }
+      }
+    },
+    "Menu panel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menü-Panel"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Panel del menú"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Panneau du menu"
           }
         }
       }
@@ -1700,6 +1744,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Démarrer la fenêtre de session"
+          }
+        }
+      }
+    },
+    "These apply to the menu panel. Each widget is configured separately — right-click it and choose Edit Widget. Weekday and Date include the day for the weekly window.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gilt fürs Menü-Panel. Jedes Widget wird separat konfiguriert — Rechtsklick darauf, dann „Widget bearbeiten“. Wochentag und Datum zeigen beim Wochenfenster den Tag."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se aplican al panel del menú. Cada widget se configura por separado: haz clic derecho y elige «Editar widget». Día y Fecha incluyen el día en la ventana semanal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "S’appliquent au panneau du menu. Chaque widget se configure séparément — clic droit puis « Modifier le widget ». Jour et Date affichent le jour pour la fenêtre hebdomadaire."
           }
         }
       }

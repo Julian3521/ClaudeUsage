@@ -189,9 +189,9 @@ private struct DisplaySettings: View {
                     }
                 }
             } header: {
-                Text("Menu panel & widgets")
+                Text("Menu panel")
             } footer: {
-                Text("Applies to the menu panel and widgets. Weekday and Date include the day, useful for the weekly window.")
+                Text("These apply to the menu panel. Each widget is configured separately — right-click it and choose Edit Widget. Weekday and Date include the day for the weekly window.")
             }
             Section("Preview") { preview }
         }
