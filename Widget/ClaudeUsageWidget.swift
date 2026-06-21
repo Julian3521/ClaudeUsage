@@ -27,8 +27,9 @@ struct UsageProvider: TimelineProvider {
         // The widget does NOT call the network itself — the menu-bar app is the
         // single fetcher (it writes the snapshot and reloads our timeline). This
         // avoids hammering the rate-limited usage endpoint from multiple processes.
-        let minutes = Double(max(Config.minRefreshMinutes, SettingsStore.load().refreshMinutes))
-        let next = Date().addingTimeInterval(minutes * 60)
+        // The widget only re-reads the cached snapshot (the app does the throttled
+        // network fetching), so refresh often to track the app closely.
+        let next = Date().addingTimeInterval(Double(Config.minRefreshMinutes) * 60)
         completion(Timeline(entries: [entry(snapshot: SnapshotStore.load())],
                             policy: .after(next)))
     }
@@ -78,8 +79,9 @@ struct ConfigurableUsageProvider: AppIntentTimelineProvider {
 
     func timeline(for configuration: ClaudeWidgetConfigIntent,
                   in context: Context) async -> Timeline<UsageEntry> {
-        let minutes = Double(max(Config.minRefreshMinutes, SettingsStore.load().refreshMinutes))
-        let next = Date().addingTimeInterval(minutes * 60)
+        // The widget only re-reads the cached snapshot (the app does the throttled
+        // network fetching), so refresh often to track the app closely.
+        let next = Date().addingTimeInterval(Double(Config.minRefreshMinutes) * 60)
         return Timeline(entries: [entry(SnapshotStore.load(), configuration)], policy: .after(next))
     }
 

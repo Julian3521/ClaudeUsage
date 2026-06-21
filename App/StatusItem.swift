@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 import Observation
+import WidgetKit
 
 /// Renders the full menu-bar content (1–2 bar+percent groups, colored by
 /// severity, optional warning) into a single NSImage for an NSStatusItem.
@@ -145,6 +146,10 @@ final class StatusItemController {
             NSApp.activate(ignoringOtherApps: true)
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             popover.contentViewController?.view.window?.makeKey()
+            // Opening the menu is a good moment to freshen data and push the latest
+            // snapshot to the widgets so they don't trail the live menu-bar reading.
+            WidgetCenter.shared.reloadAllTimelines()
+            Task { await viewModel.refresh() }
         }
     }
 }
