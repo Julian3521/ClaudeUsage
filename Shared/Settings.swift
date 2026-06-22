@@ -49,9 +49,24 @@ extension ResetFormat: AppEnum {
     }
 }
 
+/// How the menu-bar readout draws each value.
+enum MenuBarStyle: String, Codable, CaseIterable, Sendable {
+    case bar      // horizontal progress bar
+    case ring     // circular progress ring (percentage can sit inside it)
+    case none     // text only
+
+    var label: String {
+        switch self {
+        case .bar: return "Bar"
+        case .ring: return "Ring"
+        case .none: return "Text only"
+        }
+    }
+}
+
 struct Settings: Codable, Equatable, Sendable {
     var menuBarMetric: MenuBarMetric = .highest
-    var menuBarShowBar = true
+    var menuBarStyle: MenuBarStyle = .bar
     var menuBarShowPercent = true
     var showSecondary = true          // Opus / Sonnet / spend rows
     var refreshMinutes = 30
@@ -69,9 +84,10 @@ struct Settings: Codable, Equatable, Sendable {
     init() {}
 
     enum CodingKeys: String, CodingKey {
-        case menuBarMetric, menuBarShowBar, menuBarShowPercent, showSecondary
+        case menuBarMetric, menuBarStyle, menuBarShowPercent, showSecondary
         case refreshMinutes, notifyAtHighUsage, notifyThreshold
         case resetDisplay, autoOpenSession
+        case menuBarShowBar      // legacy (Bool) — migrated to menuBarStyle
         case showAbsoluteReset   // legacy (Bool) — migrated to resetDisplay
     }
 
@@ -79,7 +95,11 @@ struct Settings: Codable, Equatable, Sendable {
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         menuBarMetric = (try? c.decode(MenuBarMetric.self, forKey: .menuBarMetric)) ?? .highest
-        menuBarShowBar = (try? c.decode(Bool.self, forKey: .menuBarShowBar)) ?? true
+        if let style = try? c.decode(MenuBarStyle.self, forKey: .menuBarStyle) {
+            menuBarStyle = style
+        } else {   // migrate the old "show bar" toggle
+            menuBarStyle = ((try? c.decode(Bool.self, forKey: .menuBarShowBar)) ?? true) ? .bar : .none
+        }
         menuBarShowPercent = (try? c.decode(Bool.self, forKey: .menuBarShowPercent)) ?? true
         showSecondary = (try? c.decode(Bool.self, forKey: .showSecondary)) ?? true
         let storedRefresh = (try? c.decode(Int.self, forKey: .refreshMinutes)) ?? 30
@@ -99,7 +119,7 @@ struct Settings: Codable, Equatable, Sendable {
     func encode(to encoder: Encoder) throws {
         var c = encoder.container(keyedBy: CodingKeys.self)
         try c.encode(menuBarMetric, forKey: .menuBarMetric)
-        try c.encode(menuBarShowBar, forKey: .menuBarShowBar)
+        try c.encode(menuBarStyle, forKey: .menuBarStyle)
         try c.encode(menuBarShowPercent, forKey: .menuBarShowPercent)
         try c.encode(showSecondary, forKey: .showSecondary)
         try c.encode(refreshMinutes, forKey: .refreshMinutes)

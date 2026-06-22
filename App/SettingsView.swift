@@ -154,7 +154,11 @@ private struct MenuBarSettings: View {
                         Text(LocalizedStringKey($0.label)).tag($0)
                     }
                 }
-                Toggle("Progress bar", isOn: $settings.settings.menuBarShowBar)
+                Picker("Style", selection: $settings.settings.menuBarStyle) {
+                    ForEach(MenuBarStyle.allCases, id: \.self) {
+                        Text(LocalizedStringKey($0.label)).tag($0)
+                    }
+                }
                 Toggle("Percentage", isOn: $settings.settings.menuBarShowPercent)
             }
         }
@@ -166,7 +170,7 @@ private struct MenuBarSettings: View {
         return HStack {
             Spacer()
             Image(nsImage: StatusItemRenderer.image(values: s.menuBarMetric.values(.sample),
-                                                    showBar: s.menuBarShowBar,
+                                                    style: s.menuBarStyle,
                                                     showPercent: s.menuBarShowPercent))
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
