@@ -167,9 +167,12 @@ private struct MenuBarSettings: View {
 
     private var preview: some View {
         let s = settings.settings
+        let values = s.menuBarStyle == .combinedRing
+            ? [UsageSnapshot.sample.sessionPercent, UsageSnapshot.sample.weeklyPercent]
+            : s.menuBarMetric.values(.sample)
         return HStack {
             Spacer()
-            Image(nsImage: StatusItemRenderer.image(values: s.menuBarMetric.values(.sample),
+            Image(nsImage: StatusItemRenderer.image(values: values,
                                                     style: s.menuBarStyle,
                                                     showPercent: s.menuBarShowPercent))
                 .padding(.horizontal, 10)

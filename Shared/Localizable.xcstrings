@@ -389,6 +389,28 @@
         }
       }
     },
+    "Combined ring": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kombi-Ring"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anillo combinado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anneau combiné"
+          }
+        }
+      }
+    },
     "Copy": {
       "extractionState": "stale",
       "localizations": {

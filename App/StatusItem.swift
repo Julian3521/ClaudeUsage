@@ -27,7 +27,9 @@ enum StatusItemRenderer {
 
         let bare = (style == .none && !showPercent)   // nothing to show → a dot
         var width = warnW
-        if bare {
+        if style == .combinedRing {
+            width += ringD
+        } else if bare {
             width += 18
         } else {
             for (i, t) in texts.enumerated() {
@@ -36,6 +38,7 @@ enum StatusItemRenderer {
                 case .bar:  width += barW + (showPercent ? innerGap + textW(t) : 0)
                 case .ring: width += ringD                       // percent sits inside
                 case .none: width += showPercent ? textW(t) : 0
+                case .combinedRing: break
                 }
             }
         }
@@ -52,7 +55,12 @@ enum StatusItemRenderer {
             x += warnW
         }
 
-        if bare {
+        if style == .combinedRing {
+            drawCombinedRing(session: values.first ?? 0,
+                             weekly: values.count > 1 ? values[1] : 0,
+                             x: x, height: height, diameter: ringD, lineWidth: ringLW,
+                             showPercent: showPercent)
+        } else if bare {
             let dot = NSBezierPath(ovalIn: NSRect(x: x + 4, y: height/2 - 4, width: 8, height: 8))
             NSColor.secondaryLabelColor.setFill(); dot.fill()
         } else {
@@ -60,6 +68,8 @@ enum StatusItemRenderer {
                 if i > 0 { x += groupGap }
                 let color = nsColor(for: value)
                 switch style {
+                case .combinedRing:
+                    break
                 case .bar:
                     let y = (height - barH) / 2
                     NSColor(white: 0.5, alpha: 0.35).setFill()
@@ -127,6 +137,47 @@ enum StatusItemRenderer {
         }
     }
 
+    /// One ring with both values overlaid: session (blue) + weekly (orange) on the
+    /// same track. The higher arc is drawn first and the lower on top, so the higher
+    /// value's colour forms the protruding tail. The centre number is the higher of
+    /// the two, in that metric's colour.
+    private static func drawCombinedRing(session: Double, weekly: Double, x: CGFloat,
+                                         height: CGFloat, diameter: CGFloat,
+                                         lineWidth: CGFloat, showPercent: Bool) {
+        let center = NSPoint(x: x + diameter / 2, y: height / 2)
+        let r = (diameter - lineWidth) / 2
+        let blue = NSColor.systemBlue, orange = NSColor.systemOrange
+
+        let track = NSBezierPath()
+        track.appendArc(withCenter: center, radius: r, startAngle: 0, endAngle: 360)
+        track.lineWidth = lineWidth
+        NSColor(white: 0.5, alpha: 0.35).setStroke(); track.stroke()
+
+        func arc(_ value: Double, _ color: NSColor) {
+            let frac = min(1, max(0, value / 100))
+            guard frac > 0 else { return }
+            let p = NSBezierPath()
+            p.appendArc(withCenter: center, radius: r,
+                        startAngle: 90, endAngle: 90 - 360 * frac, clockwise: true)
+            p.lineWidth = lineWidth
+            p.lineCapStyle = .round
+            color.setStroke(); p.stroke()
+        }
+        // Higher first, lower on top → the higher value's colour stays visible as the tail.
+        if session >= weekly { arc(session, blue); arc(weekly, orange) }
+        else { arc(weekly, orange); arc(session, blue) }
+
+        if showPercent {
+            let higher = max(session, weekly)
+            let color = session >= weekly ? blue : orange
+            let n = "\(Int(higher.rounded()))" as NSString
+            let f = NSFont.systemFont(ofSize: higher >= 100 ? 7 : 8.5, weight: .semibold)
+            let attrs: [NSAttributedString.Key: Any] = [.font: f, .foregroundColor: color]
+            let ts = n.size(withAttributes: attrs)
+            n.draw(at: NSPoint(x: center.x - ts.width / 2, y: center.y - ts.height / 2), withAttributes: attrs)
+        }
+    }
+
     private static func nsColor(for percent: Double) -> NSColor {
         switch percent {
         case ..<60: return .systemGreen
@@ -171,8 +222,11 @@ final class StatusItemController {
         guard let button = statusItem.button else { return }
         let settings = AppSettings.shared.settings
         if let snapshot = viewModel.snapshot {
+            let values = settings.menuBarStyle == .combinedRing
+                ? [snapshot.sessionPercent, snapshot.weeklyPercent]
+                : settings.menuBarMetric.values(snapshot)
             button.image = StatusItemRenderer.image(
-                values: settings.menuBarMetric.values(snapshot),
+                values: values,
                 style: settings.menuBarStyle,
                 showPercent: settings.menuBarShowPercent,
                 rateLimited: viewModel.isRateLimited)

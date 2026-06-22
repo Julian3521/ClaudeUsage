@@ -51,14 +51,16 @@ extension ResetFormat: AppEnum {
 
 /// How the menu-bar readout draws each value.
 enum MenuBarStyle: String, Codable, CaseIterable, Sendable {
-    case bar      // horizontal progress bar
-    case ring     // circular progress ring (percentage can sit inside it)
-    case none     // text only
+    case bar          // horizontal progress bar
+    case ring         // circular progress ring (percentage can sit inside it)
+    case combinedRing // one ring with session (blue) + weekly (orange) overlaid
+    case none         // text only
 
     var label: String {
         switch self {
         case .bar: return "Bar"
         case .ring: return "Ring"
+        case .combinedRing: return "Combined ring"
         case .none: return "Text only"
         }
     }
