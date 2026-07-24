@@ -38,21 +38,37 @@ final class UsageDecodingTests: XCTestCase {
         XCTAssertNil(try model("opus"))
     }
 
-    /// Any `seven_day_<model>` window decodes, including ones we never hard-coded.
-    func testUnknownModelWindowDecodes() throws {
+    /// The legacy keys still work for models we know…
+    func testLegacyModelWindowDecodes() throws {
         XCTAssertEqual(try model("fable")?.percent, 27)
         XCTAssertEqual(try model("fable")?.displayName, "Fable")
-        let r = try JSONDecoder().decode(UsageResponse.self,
+    }
+
+    /// …but a model we've never heard of only counts when the API names it as
+    /// one, via `limits`. A bare `seven_day_<something>` key is not enough: the
+    /// response carries surfaces (`seven_day_cowork`) and codenames under the
+    /// same prefix, and those are not models.
+    func testUnknownModelNeedsTheLimitsArray() throws {
+        let bare = try JSONDecoder().decode(UsageResponse.self,
             from: Data(#"{"seven_day_brand_new":{"utilization":5}}"#.utf8))
-        XCTAssertEqual(r.models.map(\.key), ["brand_new"])
-        XCTAssertEqual(r.models.first?.displayName, "Brand New")
+        XCTAssertEqual(bare.models, [])
+
+        let named = try JSONDecoder().decode(UsageResponse.self, from: Data(#"""
+        {"limits":[{"kind":"weekly_scoped","percent":5,
+                    "scope":{"model":{"display_name":"Brand New"}}}]}
+        """#.utf8))
+        XCTAssertEqual(named.models.map(\.key), ["brand_new"])
+        XCTAssertEqual(named.models.first?.displayName, "Brand New")
     }
 
     /// Known models sort by tier, unknown ones after them, alphabetically.
     func testModelOrder() throws {
         let r = try JSONDecoder().decode(UsageResponse.self, from: Data(#"""
-        {"seven_day_sonnet":{"utilization":1},"seven_day_zeta":{"utilization":1},
-         "seven_day_fable":{"utilization":1},"seven_day_opus":{"utilization":1}}
+        {"limits":[
+          {"kind":"weekly_scoped","percent":1,"scope":{"model":{"display_name":"Sonnet"}}},
+          {"kind":"weekly_scoped","percent":1,"scope":{"model":{"display_name":"Zeta"}}},
+          {"kind":"weekly_scoped","percent":1,"scope":{"model":{"display_name":"Fable"}}},
+          {"kind":"weekly_scoped","percent":1,"scope":{"model":{"display_name":"Opus"}}}]}
         """#.utf8))
         XCTAssertEqual(r.models.map(\.key), ["opus", "fable", "sonnet", "zeta"])
     }
@@ -115,6 +131,77 @@ final class UsageDecodingTests: XCTestCase {
                        ["fable", "sonnet"])
         settings.showSecondary = false
         XCTAssertTrue(UsageSnapshot.sample.visibleModels(settings).isEmpty)
+    }
+
+    // MARK: - Current response shape (`limits` array)
+
+    /// Abbreviated real response from July 2026: the `seven_day_<model>` keys
+    /// are all null now and the per-model windows live in `limits`, with the
+    /// model named in `scope.model`.
+    private let limitsJSON = """
+    {
+      "five_hour": { "resets_at": "2026-07-24T21:10:00.738604+00:00", "utilization": 24 },
+      "seven_day": { "resets_at": "2026-07-26T03:00:00.738629+00:00", "utilization": 73 },
+      "seven_day_opus": null,
+      "seven_day_sonnet": null,
+      "seven_day_cowork": { "utilization": 40 },
+      "seven_day_oauth_apps": null,
+      "limits": [
+        { "group": "session", "kind": "session", "percent": 24, "scope": null,
+          "resets_at": "2026-07-24T21:10:00.738604+00:00" },
+        { "group": "weekly", "kind": "weekly_all", "percent": 73, "scope": null,
+          "resets_at": "2026-07-26T03:00:00.738629+00:00" },
+        { "group": "weekly", "kind": "weekly_scoped", "percent": 11,
+          "resets_at": "2026-07-26T02:59:59.738872+00:00",
+          "scope": { "model": { "display_name": "Fable", "id": null }, "surface": null } }
+      ]
+    }
+    """
+
+    private func decodeLimits() throws -> UsageResponse {
+        try JSONDecoder().decode(UsageResponse.self, from: Data(limitsJSON.utf8))
+    }
+
+    func testScopedModelLimitDecodes() throws {
+        let fable = try XCTUnwrap(decodeLimits().models.first { $0.key == "fable" })
+        XCTAssertEqual(fable.percent, 11)
+        XCTAssertEqual(fable.displayName, "Fable")   // the API's own name wins
+        XCTAssertNotNil(fable.resetsAt)
+    }
+
+    /// `seven_day_cowork` and friends are surfaces, not models — they must not
+    /// appear as one just because they share the prefix.
+    func testNonModelSevenDayKeysAreIgnored() throws {
+        XCTAssertEqual(try decodeLimits().models.map(\.key), ["fable"])
+    }
+
+    /// Session and weekly still come from the top-level fields…
+    func testTopLevelWindowsStillDecode() throws {
+        let r = try decodeLimits()
+        XCTAssertEqual(r.fiveHour?.percentUsed, 24)
+        XCTAssertEqual(r.sevenDay?.percentUsed, 73)
+    }
+
+    /// …and fall back to `limits` if those fields ever disappear.
+    func testSessionAndWeeklyFallBackToLimits() throws {
+        let json = """
+        {"limits":[{"kind":"session","percent":24,"scope":null},
+                   {"kind":"weekly_all","percent":73,"scope":null}]}
+        """
+        let r = try JSONDecoder().decode(UsageResponse.self, from: Data(json.utf8))
+        XCTAssertEqual(r.fiveHour?.percentUsed, 24)
+        XCTAssertEqual(r.sevenDay?.percentUsed, 73)
+    }
+
+    /// A model reported once per surface must not produce duplicate rows.
+    func testDuplicateScopedModelsCollapse() throws {
+        let json = """
+        {"limits":[
+          {"kind":"weekly_scoped","percent":11,"scope":{"model":{"display_name":"Fable"},"surface":"claude_code"}},
+          {"kind":"weekly_scoped","percent":11,"scope":{"model":{"display_name":"Fable"},"surface":"web"}}]}
+        """
+        let r = try JSONDecoder().decode(UsageResponse.self, from: Data(json.utf8))
+        XCTAssertEqual(r.models.count, 1)
     }
 
     // MARK: - Forecast

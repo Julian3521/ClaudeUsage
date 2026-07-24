@@ -9,14 +9,52 @@ import Security
 struct UsageResponse: Decodable {
     let fiveHour: UsageWindow?
     let sevenDay: UsageWindow?
-    /// Every `seven_day_<model>` window the response carries (Opus, Sonnet,
-    /// Fable, …). Decoded by prefix rather than by fixed keys, so a model
-    /// Anthropic adds later shows up without an app update.
+    /// Per-model weekly windows (Opus, Sonnet, Fable, …), from whichever shape
+    /// the response uses — see `init(from:)`.
     let models: [ModelUsage]
     let spend: Spend?
 
-    /// Prefix of the per-model weekly windows, e.g. `seven_day_fable`.
+    /// Prefix of the legacy per-model windows, e.g. `seven_day_opus`.
     private static let modelPrefix = "seven_day_"
+
+    /// One entry of the `limits` array — the current shape of the response.
+    private struct Limit: Decodable {
+        let kind: String?
+        let percent: Double?
+        let resetsAt: Date?
+        let scope: Scope?
+
+        struct Scope: Decodable {
+            let model: Model?
+            struct Model: Decodable {
+                let id: String?
+                let displayName: String?
+
+                enum CodingKeys: String, CodingKey {
+                    case id
+                    case displayName = "display_name"
+                }
+            }
+        }
+
+        enum CodingKeys: String, CodingKey {
+            case kind, percent, scope
+            case resetsAt = "resets_at"
+        }
+
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            kind = try? c.decode(String.self, forKey: .kind)
+            percent = try? c.decode(Double.self, forKey: .percent)
+            scope = try? c.decode(Scope.self, forKey: .scope)
+            resetsAt = (try? c.decode(String.self, forKey: .resetsAt))
+                .flatMap(UsageWindow.parseDate)
+        }
+
+        var window: UsageWindow {
+            UsageWindow(percentUsed: min(100, max(0, percent ?? 0)), resetsAt: resetsAt)
+        }
+    }
 
     /// Any JSON key — lets us walk the object and pick up unknown model windows.
     private struct AnyKey: CodingKey {
@@ -31,14 +69,37 @@ struct UsageResponse: Decodable {
         let c = try decoder.container(keyedBy: AnyKey.self)
         // `try?` so a null or unexpectedly shaped field degrades to nil rather
         // than failing the whole response.
-        fiveHour = try? c.decode(UsageWindow.self, forKey: AnyKey("five_hour"))
-        sevenDay = try? c.decode(UsageWindow.self, forKey: AnyKey("seven_day"))
         spend = try? c.decode(Spend.self, forKey: AnyKey("spend"))
 
+        // The current shape: one `limits` entry per window, the model named in
+        // `scope.model`. The `seven_day_<model>` keys still exist but are null.
+        let limits = (try? c.decode([Limit].self, forKey: AnyKey("limits"))) ?? []
+        func limit(_ kind: String) -> UsageWindow? {
+            limits.first { $0.kind == kind && $0.scope?.model == nil }?.window
+        }
+        fiveHour = (try? c.decode(UsageWindow.self, forKey: AnyKey("five_hour")))
+            ?? limit("session")
+        sevenDay = (try? c.decode(UsageWindow.self, forKey: AnyKey("seven_day")))
+            ?? limit("weekly_all")
+
         var found: [ModelUsage] = []
+        for entry in limits {
+            guard let model = entry.scope?.model,
+                  let key = ModelUsage.key(displayName: model.displayName, id: model.id),
+                  !found.contains(where: { $0.key == key })   // e.g. per-surface repeats
+            else { continue }
+            let window = entry.window
+            found.append(ModelUsage(key: key, percent: window.percentUsed,
+                                    resetsAt: window.resetsAt, name: model.displayName))
+        }
+        // Legacy fallback for responses that still carry `seven_day_<model>`.
+        // Restricted to models we know: sibling keys like `seven_day_cowork` and
+        // `seven_day_oauth_apps` are surfaces, not models, and must not show up
+        // as one.
         for key in c.allKeys where key.stringValue.hasPrefix(Self.modelPrefix) {
             let name = String(key.stringValue.dropFirst(Self.modelPrefix.count))
-            guard !name.isEmpty,
+            guard ModelUsage.knownOrder.contains(name),
+                  !found.contains(where: { $0.key == name }),
                   let window = try? c.decode(UsageWindow.self, forKey: key) else { continue }
             found.append(ModelUsage(key: name, percent: window.percentUsed,
                                     resetsAt: window.resetsAt))
@@ -83,6 +144,11 @@ struct UsageWindow: Decodable {
         case resetsAt = "resets_at"
     }
 
+    init(percentUsed: Double, resetsAt: Date?) {
+        self.percentUsed = percentUsed
+        self.resetsAt = resetsAt
+    }
+
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         // `utilization` is a percentage 0...100 (e.g. 14.0 = 14%).
@@ -120,6 +186,8 @@ struct ModelUsage: Codable, Equatable, Identifiable, Sendable {
     var key: String
     var percent: Double        // 0...100
     var resetsAt: Date?
+    /// The name the API gave, when it gave one — preferred over deriving it.
+    var name: String?
 
     var id: String { key }
 
@@ -127,9 +195,19 @@ struct ModelUsage: Codable, Equatable, Identifiable, Sendable {
     /// alphabetically, so unknown keys still appear in a stable order.
     static let knownOrder = ["opus", "fable", "sonnet", "haiku"]
 
+    /// Stable key from the API's model scope: "Fable" → "fable". Keying on the
+    /// display name (not the id) keeps per-model settings, colours and order
+    /// working, and matches the legacy `seven_day_<model>` suffixes.
+    static func key(displayName: String?, id: String?) -> String? {
+        let source = displayName ?? id
+        guard let source, !source.isEmpty else { return nil }
+        return source.lowercased().replacingOccurrences(of: " ", with: "_")
+    }
+
     /// "opus" → "Opus", "fable" → "Fable", "some_model" → "Some Model".
     var displayName: String {
-        key.split(separator: "_")
+        if let name, !name.isEmpty { return name }
+        return key.split(separator: "_")
             .map { $0.prefix(1).uppercased() + $0.dropFirst() }
             .joined(separator: " ")
     }
