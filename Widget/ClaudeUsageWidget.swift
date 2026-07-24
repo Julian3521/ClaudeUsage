@@ -11,6 +11,16 @@ struct UsageEntry: TimelineEntry {
     let showSecondary: Bool
     let resetFormat: ResetFormat
     let history: [HistoryPoint]
+    /// Model rows hidden in the app's Display settings (widgets follow the same
+    /// per-model choice; the widget's own toggle only switches the group off).
+    var hiddenModels: Set<String> = []
+    var showSpend = true
+
+    /// Per-model windows this widget should show, in display order.
+    var models: [ModelUsage] {
+        guard showSecondary, let snapshot else { return [] }
+        return snapshot.models.filter { !hiddenModels.contains($0.key) }
+    }
 }
 
 struct UsageProvider: TimelineProvider {
@@ -41,7 +51,9 @@ struct UsageProvider: TimelineProvider {
                           loggedIn: TokenStore.load() != nil,
                           showSecondary: settings.showSecondary,
                           resetFormat: settings.resetDisplay,
-                          history: HistoryStore.load())
+                          history: HistoryStore.load(),
+                          hiddenModels: settings.hiddenModels,
+                          showSpend: settings.showSpend)
     }
 }
 
@@ -86,12 +98,17 @@ struct ConfigurableUsageProvider: AppIntentTimelineProvider {
     }
 
     private func entry(_ snapshot: UsageSnapshot?, _ config: ClaudeWidgetConfigIntent) -> UsageEntry {
-        UsageEntry(date: Date(),
-                   snapshot: snapshot,
-                   loggedIn: TokenStore.load() != nil,
-                   showSecondary: config.showSecondary,
-                   resetFormat: config.resetDisplay,
-                   history: HistoryStore.load())
+        // Which models to show is a global choice (Display settings); whether the
+        // group appears at all stays per-widget.
+        let settings = SettingsStore.load()
+        return UsageEntry(date: Date(),
+                          snapshot: snapshot,
+                          loggedIn: TokenStore.load() != nil,
+                          showSecondary: config.showSecondary,
+                          resetFormat: config.resetDisplay,
+                          history: HistoryStore.load(),
+                          hiddenModels: settings.hiddenModels,
+                          showSpend: settings.showSpend)
     }
 }
 
@@ -101,11 +118,8 @@ struct UsageWidgetEntryView: View {
     @Environment(\.widgetFamily) private var family
     let entry: UsageEntry
 
-    private var opus: (Double, Date?)? {
-        guard entry.showSecondary, let snapshot = entry.snapshot,
-              let percent = snapshot.opusPercent else { return nil }
-        return (percent, snapshot.opusResetsAt)
-    }
+    /// The one model that fits next to the session/weekly rings.
+    private var leadModel: ModelUsage? { entry.models.first }
 
     var body: some View {
         if !entry.loggedIn {
@@ -140,7 +154,9 @@ struct UsageWidgetEntryView: View {
         HStack(spacing: 24) {
             ringColumn("Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
             ringColumn("Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
-            if let opus { ringColumn("Opus", percent: opus.0, resetsAt: opus.1) }
+            if let model = leadModel {
+                ringColumn("\(model.displayName)", percent: model.percent, resetsAt: model.resetsAt)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -162,7 +178,9 @@ struct UsageWidgetEntryView: View {
             HStack(spacing: 28) {
                 ringColumn("Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
                 ringColumn("Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
-                if let opus { ringColumn("Opus", percent: opus.0, resetsAt: opus.1) }
+                if let model = leadModel {
+                    ringColumn("\(model.displayName)", percent: model.percent, resetsAt: model.resetsAt)
+                }
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 4)
@@ -175,12 +193,14 @@ struct UsageWidgetEntryView: View {
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
                      resetFormat: entry.resetFormat)
-            if entry.showSecondary, let sonnet = s.sonnetPercent {
-                UsageBar(title: "Weekly · Sonnet (7d)",
-                         percent: sonnet, resetsAt: s.sonnetResetsAt,
+            // Cap the rows so the large widget can't overflow once several
+            // models are reported; the lead model already has a ring above.
+            ForEach(Array(entry.models.dropFirst().prefix(2))) { model in
+                UsageBar(title: "Weekly · \(model.displayName) (7d)",
+                         percent: model.percent, resetsAt: model.resetsAt,
                          resetFormat: entry.resetFormat)
             }
-            if entry.showSecondary, let spend = s.spendText {
+            if entry.showSecondary, entry.showSpend, let spend = s.spendText {
                 HStack {
                     Text("Extra usage").font(.caption.weight(.semibold))
                     Spacer()

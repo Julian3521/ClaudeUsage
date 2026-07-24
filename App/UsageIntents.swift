@@ -20,9 +20,15 @@ struct CheckClaudeUsageIntent: AppIntent {
         }
         let session = Int(s.sessionPercent.rounded())
         let weekly = Int(s.weeklyPercent.rounded())
+        // The snapshot can be hours old (Mac asleep, rate-limit backoff). Saying
+        // so is better than reporting a stale number as the current one.
+        let age = Date().timeIntervalSince(s.fetchedAt)
+        let asOf = age > Double(Config.minRefreshMinutes) * 60
+            ? " as of \(s.fetchedAt.formatted(date: .omitted, time: .shortened))"
+            : ""
         return .result(
-            value: "Session \(session)%, weekly \(weekly)%",
-            dialog: "Claude usage — session \(session) percent, weekly \(weekly) percent.")
+            value: "Session \(session)%, weekly \(weekly)%\(asOf)",
+            dialog: "Claude usage — session \(session) percent, weekly \(weekly) percent\(asOf).")
     }
 }
 

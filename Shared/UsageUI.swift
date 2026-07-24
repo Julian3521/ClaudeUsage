@@ -147,41 +147,103 @@ struct UsageBar: View {
     }
 }
 
-/// Compact split bar showing how the weekly usage leans between Opus and Sonnet.
-struct ModelMixBar: View {
-    let opus: Double      // 0...100 utilization
-    let sonnet: Double
+extension ModelUsage {
+    /// Stable colour per model, so the mix bar and its legend always agree.
+    var tint: Color {
+        switch key {
+        case "opus": return .purple
+        case "sonnet": return .teal
+        case "fable": return .pink
+        case "haiku": return .mint
+        default: return .gray
+        }
+    }
+}
 
-    private var total: Double { max(opus + sonnet, 0.001) }
+/// Compact split bar showing how the weekly usage leans across the models.
+struct ModelMixBar: View {
+    let models: [ModelUsage]
+
+    private var total: Double { max(models.reduce(0) { $0 + max(0, $1.percent) }, 0.001) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Model mix").font(.subheadline.weight(.semibold))
             GeometryReader { geo in
                 HStack(spacing: 2) {
-                    Capsule().fill(.purple)
-                        .frame(width: max(2, geo.size.width * opus / total))
-                    Capsule().fill(.teal)
+                    ForEach(models) { model in
+                        Capsule().fill(model.tint)
+                            .frame(width: max(2, geo.size.width * max(0, model.percent) / total))
+                    }
                 }
             }
             .frame(height: 8)
-            HStack(spacing: 12) {
-                legend(.purple, "Opus", opus)
-                legend(.teal, "Sonnet", sonnet)
+            // Wraps so four or more models still fit the 300pt panel.
+            FlowRow(spacing: 12) {
+                ForEach(models) { model in
+                    legend(model)
+                }
             }
             .font(.caption2)
             .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Model mix")
-        .accessibilityValue("Opus \(Int(opus.rounded()))%, Sonnet \(Int(sonnet.rounded()))%")
+        .accessibilityValue(models.map { "\($0.displayName) \(Int($0.percent.rounded()))%" }
+            .joined(separator: ", "))
     }
 
-    private func legend(_ color: Color, _ name: LocalizedStringKey, _ value: Double) -> some View {
+    private func legend(_ model: ModelUsage) -> some View {
         HStack(spacing: 4) {
-            Circle().fill(color).frame(width: 7, height: 7)
-            Text(name)
-            Text(verbatim: "\(Int(value.rounded()))%").monospacedDigit()
+            Circle().fill(model.tint).frame(width: 7, height: 7)
+            Text(verbatim: model.displayName)
+            Text(verbatim: "\(Int(model.percent.rounded()))%").monospacedDigit()
         }
+    }
+}
+
+/// Minimal wrapping HStack — the legend can hold an unknown number of models.
+struct FlowRow: Layout {
+    var spacing: CGFloat = 8
+    var lineSpacing: CGFloat = 3
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let rows = layout(subviews, width: proposal.width ?? .infinity)
+        let height = rows.map(\.height).reduce(0, +) + lineSpacing * CGFloat(max(0, rows.count - 1))
+        return CGSize(width: proposal.width ?? rows.map(\.width).max() ?? 0, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize,
+                       subviews: Subviews, cache: inout ()) {
+        var y = bounds.minY
+        for row in layout(subviews, width: bounds.width) {
+            var x = bounds.minX
+            for index in row.indices {
+                let size = subviews[index].sizeThatFits(.unspecified)
+                subviews[index].place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
+                x += size.width + spacing
+            }
+            y += row.height + lineSpacing
+        }
+    }
+
+    private struct Row { var indices: [Int] = []; var width: CGFloat = 0; var height: CGFloat = 0 }
+
+    private func layout(_ subviews: Subviews, width limit: CGFloat) -> [Row] {
+        var rows: [Row] = []
+        var row = Row()
+        for index in subviews.indices {
+            let size = subviews[index].sizeThatFits(.unspecified)
+            let needed = row.indices.isEmpty ? size.width : row.width + spacing + size.width
+            if !row.indices.isEmpty, needed > limit {
+                rows.append(row)
+                row = Row()
+            }
+            row.width = row.indices.isEmpty ? size.width : row.width + spacing + size.width
+            row.height = max(row.height, size.height)
+            row.indices.append(index)
+        }
+        if !row.indices.isEmpty { rows.append(row) }
+        return rows
     }
 }

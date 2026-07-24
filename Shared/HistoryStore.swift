@@ -15,12 +15,7 @@ enum HistoryStore {
     static let maxPoints = 96   // ~32h at a 20-minute interval
 
     static func load() -> [HistoryPoint] {
-        var query = baseQuery()
-        query[kSecReturnData as String] = true
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        var result: AnyObject?
-        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
-              let data = result as? Data,
+        guard let data = Keychain.load(baseQuery()),
               let points = try? JSONDecoder().decode([HistoryPoint].self, from: data)
         else { return [] }
         return points
@@ -37,12 +32,7 @@ enum HistoryStore {
 
     private static func save(_ points: [HistoryPoint]) {
         guard let data = try? JSONEncoder().encode(points) else { return }
-        let base = baseQuery()
-        SecItemDelete(base as CFDictionary)
-        var add = base
-        add[kSecValueData as String] = data
-        add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
-        SecItemAdd(add as CFDictionary, nil)
+        Keychain.save(data, query: baseQuery())
     }
 
     private static func baseQuery() -> [String: Any] {

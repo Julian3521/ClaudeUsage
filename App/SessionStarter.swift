@@ -4,13 +4,18 @@ import Foundation
 /// rolling window starts (and later resets) at a time of your choosing rather
 /// than whenever you first happen to use Claude. Uses minimal quota (1 token).
 enum SessionStarter {
+    /// Runs through `TokenRefresher.authorized`, so an expired access token is
+    /// refreshed first. Auto-open fires ~5h after the last reset — precisely when
+    /// the token is most likely stale — and used to 401 silently forever.
     @discardableResult
     static func ping() async throws -> Bool {
-        guard let tokens = TokenStore.load() else { throw UsageError.notLoggedIn }
+        try await TokenRefresher.authorized { try await send(with: $0) }
+    }
 
+    private static func send(with accessToken: String) async throws -> Bool {
         var req = URLRequest(url: URL(string: Config.messagesURL)!)
         req.httpMethod = "POST"
-        req.setValue("Bearer \(tokens.accessToken)", forHTTPHeaderField: "Authorization")
+        req.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         req.setValue(Config.oauthBetaHeader, forHTTPHeaderField: "anthropic-beta")
         req.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")

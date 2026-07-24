@@ -27,23 +27,7 @@ enum UsageAPI {
     /// Persists any refreshed tokens and the resulting snapshot.
     @discardableResult
     static func fetch() async throws -> Result {
-        guard var tokens = TokenStore.load() else { throw UsageError.notLoggedIn }
-
-        // Proactively refresh if expired.
-        if tokens.isExpired, let rt = tokens.refreshToken {
-            tokens = try await OAuthClient.refresh(rt)
-            TokenStore.save(tokens)
-        }
-
-        do {
-            return try await request(with: tokens.accessToken)
-        } catch UsageError.http(401, _) {
-            // Reactive refresh + one retry.
-            guard let rt = tokens.refreshToken else { throw UsageError.notLoggedIn }
-            let refreshed = try await OAuthClient.refresh(rt)
-            TokenStore.save(refreshed)
-            return try await request(with: refreshed.accessToken)
-        }
+        try await TokenRefresher.authorized { try await request(with: $0) }
     }
 
     private static func request(with accessToken: String) async throws -> Result {

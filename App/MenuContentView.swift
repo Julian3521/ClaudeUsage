@@ -72,24 +72,21 @@ struct MenuContentView: View {
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
                      resetFormat: fmt, windowHours: 168)
-            if settings.showSecondary {
-                if let opus = s.opusPercent {
-                    UsageBar(title: "Weekly · Opus (7d)", percent: opus, resetsAt: s.opusResetsAt,
-                             resetFormat: fmt, windowHours: 168)
-                }
-                if let sonnet = s.sonnetPercent {
-                    UsageBar(title: "Weekly · Sonnet (7d)", percent: sonnet, resetsAt: s.sonnetResetsAt,
-                             resetFormat: fmt, windowHours: 168)
-                }
-                if let opus = s.opusPercent, let sonnet = s.sonnetPercent, opus + sonnet > 0 {
-                    ModelMixBar(opus: opus, sonnet: sonnet)
-                }
-                if let spend = s.spendText {
-                    HStack {
-                        Text("Extra usage").font(.subheadline.weight(.semibold))
-                        Spacer()
-                        Text(spend).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
-                    }
+            // Empty unless the model rows are switched on, so no extra guard here.
+            let models = s.visibleModels(settings)
+            ForEach(models) { model in
+                UsageBar(title: "Weekly · \(model.displayName) (7d)",
+                         percent: model.percent, resetsAt: model.resetsAt,
+                         resetFormat: fmt, windowHours: 168)
+            }
+            if models.count > 1, models.contains(where: { $0.percent > 0 }) {
+                ModelMixBar(models: models)
+            }
+            if settings.showSecondary, settings.showSpend, let spend = s.spendText {
+                HStack {
+                    Text("Extra usage").font(.subheadline.weight(.semibold))
+                    Spacer()
+                    Text(spend).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
                 }
             }
             sparkline

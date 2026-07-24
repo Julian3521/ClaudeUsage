@@ -26,7 +26,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             while !Task.isCancelled {
                 let minutes = Double(max(Config.minRefreshMinutes, AppSettings.shared.settings.refreshMinutes))
                 try? await Task.sleep(for: .seconds(minutes * 60))
-                await UsageViewModel.shared.refresh(force: true)
+                // Unforced: the poller must honor the 429 backoff. `force` is for
+                // explicit user action only — polling through a rate limit just
+                // keeps the endpoint angry and prolongs the block.
+                await UsageViewModel.shared.refresh()
             }
         }
     }

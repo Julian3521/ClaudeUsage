@@ -28,9 +28,12 @@ security warning. It lives in the menu bar (no Dock icon) — click the gauge, t
 - A click-through panel with bars, reset countdowns, **spend (€)** and a history
   sparkline; ⚠️ marker when a fetch fails.
 - **Widgets** (Small/Medium/Large) incl. a **histogram** of utilization over time.
+- **Per-model weekly limits** (Opus, Sonnet, Fable, …) — each can be shown or
+  hidden individually; new models appear automatically once your account has them.
 - **Notifications** near a limit, **launch at login**, configurable refresh, and
   optional **auto-open** of new 5-hour windows.
-- **Automatic updates** (Sparkle) — new versions install themselves.
+- **Update checks** (Sparkle) — the app checks in the background and offers new
+  versions; installing is one click (Settings → General → *Check for Updates…*).
 - Localized in **English, German, French, Spanish**.
 
 ## Screenshots
@@ -72,7 +75,10 @@ open ClaudeUsage.xcodeproj
 Login  → "Sign in with Claude" browser OAuth (PKCE + loopback) → tokens in Keychain
          (or paste an existing Claude Code token; both carry user:profile)
 App    → api.anthropic.com/api/oauth/usage  (Bearer + anthropic-beta: oauth-2025-04-20)
-         → five_hour / seven_day / sonnet / spend  → snapshot (Keychain) → widget reads it
+         → five_hour / seven_day / seven_day_<model>* / spend
+         → snapshot (Keychain) → widget reads it
+         (* every per-model window is decoded by prefix, so a model Anthropic
+            adds later shows up without an app update)
 ```
 
 - **`Shared/`** — models, Keychain token/snapshot/history/settings stores, usage
@@ -92,8 +98,15 @@ and publishes a GitHub release with the DMG attached — fully automated.
 against Developer ID provisioning profiles, so no App Store Connect account is needed
 at build time. Required repo secrets: `BUILD_CERTIFICATE_BASE64` (Developer ID .p12,
 base64), `P12_PASSWORD`, `KEYCHAIN_PASSWORD`, `NOTARY_APPLE_ID`, `NOTARY_TEAM_ID`,
-`NOTARY_PASSWORD` (app-specific password), and `PROVISION_APP_BASE64` /
-`PROVISION_WIDGET_BASE64` (the app + widget Developer ID profiles, base64).
+`NOTARY_PASSWORD` (app-specific password), `PROVISION_APP_BASE64` /
+`PROVISION_WIDGET_BASE64` (the app + widget Developer ID profiles, base64), and
+`SPARKLE_PRIVATE_KEY` (the EdDSA update-signing key, base64) — without the last
+one the job builds and notarizes and then fails at the appcast step.
+
+The tag must match `MARKETING_VERSION` in `project.yml`, and
+`CURRENT_PROJECT_VERSION` must be higher than the published build — `release.sh`
+and `appcast.py` both refuse otherwise, because a mismatch silently ships an
+update nobody is offered.
 
 ## If the percentages look wrong
 

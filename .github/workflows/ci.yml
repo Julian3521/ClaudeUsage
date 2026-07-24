@@ -19,11 +19,15 @@ jobs:
         run: xcodegen generate
 
       - name: Build & test
+        # `shell: bash` runs the step with `-o pipefail`. Without it, xcbeautify's
+        # exit 0 masks a failing xcodebuild and the step goes green with broken
+        # tests — the default `bash -e {0}` sets no pipefail.
+        shell: bash
         run: |
           xcodebuild test \
             -project ClaudeUsage.xcodeproj \
             -scheme ClaudeUsage \
             -destination 'platform=macOS' \
-            CODE_SIGNING_ALLOWED=NO | xcbeautify || exit ${PIPESTATUS[0]}
+            CODE_SIGNING_ALLOWED=NO | xcbeautify
         env:
           NSUnbufferedIO: YES

@@ -15,34 +15,61 @@ struct TokenSet: Codable {
     }
 }
 
-enum TokenStore {
-    private static let account = "tokens"
-
-    static func save(_ tokens: TokenSet) {
-        guard let data = try? JSONEncoder().encode(tokens) else { return }
-
-        let base = baseQuery()
-        SecItemDelete(base as CFDictionary)
-
+/// Shared keychain plumbing. Every store keeps exactly one generic-password
+/// item per service, so writes UPDATE in place: the old delete-then-add left the
+/// user with nothing at all whenever the add failed (locked keychain, missing
+/// entitlement) — for the token item that means a silent, unexplained sign-out.
+enum Keychain {
+    @discardableResult
+    static func save(_ data: Data, query base: [String: Any]) -> OSStatus {
+        let status = SecItemUpdate(base as CFDictionary,
+                                   [kSecValueData as String: data] as CFDictionary)
+        guard status == errSecItemNotFound else { return status }
         var add = base
         add[kSecValueData as String] = data
         add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
-        SecItemAdd(add as CFDictionary, nil)
+        return SecItemAdd(add as CFDictionary, nil)
+    }
+
+    static func load(_ base: [String: Any]) -> Data? {
+        var query = base
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        var result: AnyObject?
+        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess
+        else { return nil }
+        return result as? Data
+    }
+
+    static func delete(_ base: [String: Any]) {
+        SecItemDelete(base as CFDictionary)
+    }
+
+    /// A human-readable reason, for the few places where a failed write has to
+    /// be explained to the user rather than silently swallowed.
+    static func message(for status: OSStatus) -> String {
+        SecCopyErrorMessageString(status, nil) as String? ?? "Keychain error \(status)"
+    }
+}
+
+enum TokenStore {
+    private static let account = "tokens"
+
+    /// Returns `errSecSuccess` on success. Callers on the login path surface a
+    /// failure; a lost token write is otherwise invisible until the next launch.
+    @discardableResult
+    static func save(_ tokens: TokenSet) -> OSStatus {
+        guard let data = try? JSONEncoder().encode(tokens) else { return errSecParam }
+        return Keychain.save(data, query: baseQuery())
     }
 
     static func load() -> TokenSet? {
-        var query = baseQuery()
-        query[kSecReturnData as String] = true
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-
-        var result: AnyObject?
-        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
-              let data = result as? Data else { return nil }
+        guard let data = Keychain.load(baseQuery()) else { return nil }
         return try? JSONDecoder().decode(TokenSet.self, from: data)
     }
 
     static func clear() {
-        SecItemDelete(baseQuery() as CFDictionary)
+        Keychain.delete(baseQuery())
     }
 
     private static func baseQuery() -> [String: Any] {

@@ -9,16 +9,41 @@ import Security
 struct UsageResponse: Decodable {
     let fiveHour: UsageWindow?
     let sevenDay: UsageWindow?
-    let sevenDayOpus: UsageWindow?
-    let sevenDaySonnet: UsageWindow?
+    /// Every `seven_day_<model>` window the response carries (Opus, Sonnet,
+    /// Fable, …). Decoded by prefix rather than by fixed keys, so a model
+    /// Anthropic adds later shows up without an app update.
+    let models: [ModelUsage]
     let spend: Spend?
 
-    enum CodingKeys: String, CodingKey {
-        case fiveHour = "five_hour"
-        case sevenDay = "seven_day"
-        case sevenDayOpus = "seven_day_opus"
-        case sevenDaySonnet = "seven_day_sonnet"
-        case spend
+    /// Prefix of the per-model weekly windows, e.g. `seven_day_fable`.
+    private static let modelPrefix = "seven_day_"
+
+    /// Any JSON key — lets us walk the object and pick up unknown model windows.
+    private struct AnyKey: CodingKey {
+        let stringValue: String
+        init(_ s: String) { stringValue = s }
+        init?(stringValue: String) { self.init(stringValue) }
+        var intValue: Int? { nil }
+        init?(intValue: Int) { nil }
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: AnyKey.self)
+        // `try?` so a null or unexpectedly shaped field degrades to nil rather
+        // than failing the whole response.
+        fiveHour = try? c.decode(UsageWindow.self, forKey: AnyKey("five_hour"))
+        sevenDay = try? c.decode(UsageWindow.self, forKey: AnyKey("seven_day"))
+        spend = try? c.decode(Spend.self, forKey: AnyKey("spend"))
+
+        var found: [ModelUsage] = []
+        for key in c.allKeys where key.stringValue.hasPrefix(Self.modelPrefix) {
+            let name = String(key.stringValue.dropFirst(Self.modelPrefix.count))
+            guard !name.isEmpty,
+                  let window = try? c.decode(UsageWindow.self, forKey: key) else { continue }
+            found.append(ModelUsage(key: name, percent: window.percentUsed,
+                                    resetsAt: window.resetsAt))
+        }
+        models = ModelUsage.sorted(found)
     }
 
     /// Extra-usage / pay-as-you-go spend, in a currency (e.g. EUR).
@@ -86,6 +111,38 @@ struct UsageWindow: Decodable {
     }
 }
 
+// MARK: - Per-model window
+
+/// One weekly per-model window, keyed by the API's `seven_day_<key>` suffix
+/// ("opus", "sonnet", "fable", …). Keeping the key generic means a new model
+/// appears in the UI as soon as the endpoint reports it.
+struct ModelUsage: Codable, Equatable, Identifiable, Sendable {
+    var key: String
+    var percent: Double        // 0...100
+    var resetsAt: Date?
+
+    var id: String { key }
+
+    /// Display order for the models we know about; anything else sorts after,
+    /// alphabetically, so unknown keys still appear in a stable order.
+    static let knownOrder = ["opus", "fable", "sonnet", "haiku"]
+
+    /// "opus" → "Opus", "fable" → "Fable", "some_model" → "Some Model".
+    var displayName: String {
+        key.split(separator: "_")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst() }
+            .joined(separator: " ")
+    }
+
+    static func sorted(_ models: [ModelUsage]) -> [ModelUsage] {
+        models.sorted { a, b in
+            let ia = knownOrder.firstIndex(of: a.key) ?? knownOrder.count
+            let ib = knownOrder.firstIndex(of: b.key) ?? knownOrder.count
+            return ia == ib ? a.key < b.key : ia < ib
+        }
+    }
+}
+
 // MARK: - Snapshot shared with the widget
 
 /// A compact, Codable snapshot persisted to the shared App Group so the widget
@@ -95,10 +152,8 @@ struct UsageSnapshot: Codable, Equatable {
     var sessionResetsAt: Date?
     var weeklyPercent: Double       // 7d window, 0...100
     var weeklyResetsAt: Date?
-    var opusPercent: Double?        // 7d Opus window, optional
-    var opusResetsAt: Date?
-    var sonnetPercent: Double?      // 7d Sonnet window, optional
-    var sonnetResetsAt: Date?
+    /// Per-model weekly windows (Opus, Sonnet, Fable, …), in display order.
+    var models: [ModelUsage] = []
     var spendUsed: Double?          // extra-usage spend, major units
     var spendLimit: Double?
     var spendCurrency: String?
@@ -110,15 +165,19 @@ struct UsageSnapshot: Codable, Equatable {
             sessionResetsAt: r.fiveHour?.resetsAt,
             weeklyPercent: r.sevenDay?.percentUsed ?? 0,
             weeklyResetsAt: r.sevenDay?.resetsAt,
-            opusPercent: r.sevenDayOpus?.percentUsed,
-            opusResetsAt: r.sevenDayOpus?.resetsAt,
-            sonnetPercent: r.sevenDaySonnet?.percentUsed,
-            sonnetResetsAt: r.sevenDaySonnet?.resetsAt,
+            models: r.models,
             spendUsed: r.spend?.used?.value,
             spendLimit: r.spend?.limit?.value,
             spendCurrency: r.spend?.limit?.currency ?? r.spend?.used?.currency,
             fetchedAt: fetchedAt
         )
+    }
+
+    func model(_ key: String) -> ModelUsage? { models.first { $0.key == key } }
+
+    /// The model rows to show, honouring the per-model toggles in Settings.
+    func visibleModels(_ settings: Settings) -> [ModelUsage] {
+        settings.showSecondary ? models.filter { settings.showsModel($0.key) } : []
     }
 
     /// Formatted spend, e.g. "€0.00 / €10.00", when a limit is present.
@@ -140,23 +199,77 @@ struct UsageSnapshot: Codable, Equatable {
 
     /// Highest of all known percentages — used for the high-usage notification.
     var maxPercent: Double {
-        [sessionPercent, weeklyPercent, opusPercent ?? 0, sonnetPercent ?? 0].max() ?? 0
+        ([sessionPercent, weeklyPercent] + models.map(\.percent)).max() ?? 0
     }
 
     static let placeholder = UsageSnapshot(
         sessionPercent: 8, sessionResetsAt: Date().addingTimeInterval(2.5 * 3600),
         weeklyPercent: 12, weeklyResetsAt: Date().addingTimeInterval(7 * 3600 + 600),
-        opusPercent: nil, opusResetsAt: nil, fetchedAt: Date()
+        fetchedAt: Date()
     )
 
     /// Distinct values for settings previews.
     static let sample = UsageSnapshot(
         sessionPercent: 32, sessionResetsAt: Date().addingTimeInterval(2 * 3600),
         weeklyPercent: 68, weeklyResetsAt: Date().addingTimeInterval(5 * 3600),
-        opusPercent: 45, opusResetsAt: Date().addingTimeInterval(5 * 3600),
-        sonnetPercent: 12, sonnetResetsAt: Date().addingTimeInterval(5 * 3600),
+        models: [
+            ModelUsage(key: "opus", percent: 45, resetsAt: Date().addingTimeInterval(5 * 3600)),
+            ModelUsage(key: "fable", percent: 27, resetsAt: Date().addingTimeInterval(5 * 3600)),
+            ModelUsage(key: "sonnet", percent: 12, resetsAt: Date().addingTimeInterval(5 * 3600)),
+        ],
         spendUsed: 0, spendLimit: 10, spendCurrency: "EUR", fetchedAt: Date()
     )
+}
+
+// Codable lives in an extension so the memberwise initializer stays available.
+extension UsageSnapshot {
+    enum CodingKeys: String, CodingKey {
+        case sessionPercent, sessionResetsAt, weeklyPercent, weeklyResetsAt
+        case models, spendUsed, spendLimit, spendCurrency, fetchedAt
+        case opusPercent, opusResetsAt      // legacy — folded into `models`
+        case sonnetPercent, sonnetResetsAt  // legacy
+    }
+
+    /// Lenient, so a snapshot cached by an older build still renders instantly
+    /// on first launch after an update (before the next fetch replaces it).
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        sessionPercent = (try? c.decode(Double.self, forKey: .sessionPercent)) ?? 0
+        sessionResetsAt = try? c.decode(Date.self, forKey: .sessionResetsAt)
+        weeklyPercent = (try? c.decode(Double.self, forKey: .weeklyPercent)) ?? 0
+        weeklyResetsAt = try? c.decode(Date.self, forKey: .weeklyResetsAt)
+        if let stored = try? c.decode([ModelUsage].self, forKey: .models) {
+            models = ModelUsage.sorted(stored)
+        } else {
+            var legacy: [ModelUsage] = []
+            if let p = try? c.decode(Double.self, forKey: .opusPercent) {
+                legacy.append(ModelUsage(key: "opus", percent: p,
+                                         resetsAt: try? c.decode(Date.self, forKey: .opusResetsAt)))
+            }
+            if let p = try? c.decode(Double.self, forKey: .sonnetPercent) {
+                legacy.append(ModelUsage(key: "sonnet", percent: p,
+                                         resetsAt: try? c.decode(Date.self, forKey: .sonnetResetsAt)))
+            }
+            models = ModelUsage.sorted(legacy)
+        }
+        spendUsed = try? c.decode(Double.self, forKey: .spendUsed)
+        spendLimit = try? c.decode(Double.self, forKey: .spendLimit)
+        spendCurrency = try? c.decode(String.self, forKey: .spendCurrency)
+        fetchedAt = (try? c.decode(Date.self, forKey: .fetchedAt)) ?? Date()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(sessionPercent, forKey: .sessionPercent)
+        try c.encodeIfPresent(sessionResetsAt, forKey: .sessionResetsAt)
+        try c.encode(weeklyPercent, forKey: .weeklyPercent)
+        try c.encodeIfPresent(weeklyResetsAt, forKey: .weeklyResetsAt)
+        try c.encode(models, forKey: .models)
+        try c.encodeIfPresent(spendUsed, forKey: .spendUsed)
+        try c.encodeIfPresent(spendLimit, forKey: .spendLimit)
+        try c.encodeIfPresent(spendCurrency, forKey: .spendCurrency)
+        try c.encode(fetchedAt, forKey: .fetchedAt)
+    }
 }
 
 // MARK: - Snapshot persistence (shared Keychain)
@@ -169,21 +282,11 @@ enum SnapshotStore {
 
     static func save(_ snapshot: UsageSnapshot) {
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
-        let base = baseQuery()
-        SecItemDelete(base as CFDictionary)
-        var add = base
-        add[kSecValueData as String] = data
-        add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
-        SecItemAdd(add as CFDictionary, nil)
+        Keychain.save(data, query: baseQuery())
     }
 
     static func load() -> UsageSnapshot? {
-        var query = baseQuery()
-        query[kSecReturnData as String] = true
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        var result: AnyObject?
-        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
-              let data = result as? Data else { return nil }
+        guard let data = Keychain.load(baseQuery()) else { return nil }
         return try? JSONDecoder().decode(UsageSnapshot.self, from: data)
     }
 

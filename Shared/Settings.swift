@@ -70,7 +70,12 @@ struct Settings: Codable, Equatable, Sendable {
     var menuBarMetric: MenuBarMetric = .highest
     var menuBarStyle: MenuBarStyle = .bar
     var menuBarShowPercent = true
-    var showSecondary = true          // Opus / Sonnet / spend rows
+    var showSecondary = true          // master switch for the per-model + spend rows
+    /// Per-model rows switched off individually (keys as reported by the API,
+    /// e.g. "opus", "fable"). Storing what's *hidden* means a model Anthropic
+    /// adds later shows up by default instead of silently staying off.
+    var hiddenModels: Set<String> = []
+    var showSpend = true              // extra-usage (€) row
     var refreshMinutes = 30
     var notifyAtHighUsage = false
     var notifyThreshold = 90          // alert when any limit reaches this %
@@ -85,8 +90,12 @@ struct Settings: Codable, Equatable, Sendable {
 
     init() {}
 
+    /// Whether the weekly row for `key` ("opus", "fable", …) is shown.
+    func showsModel(_ key: String) -> Bool { showSecondary && !hiddenModels.contains(key) }
+
     enum CodingKeys: String, CodingKey {
         case menuBarMetric, menuBarStyle, menuBarShowPercent, showSecondary
+        case hiddenModels, showSpend
         case refreshMinutes, notifyAtHighUsage, notifyThreshold
         case resetDisplay, autoOpenSession
         case menuBarShowBar      // legacy (Bool) — migrated to menuBarStyle
@@ -104,6 +113,8 @@ struct Settings: Codable, Equatable, Sendable {
         }
         menuBarShowPercent = (try? c.decode(Bool.self, forKey: .menuBarShowPercent)) ?? true
         showSecondary = (try? c.decode(Bool.self, forKey: .showSecondary)) ?? true
+        hiddenModels = (try? c.decode(Set<String>.self, forKey: .hiddenModels)) ?? []
+        showSpend = (try? c.decode(Bool.self, forKey: .showSpend)) ?? true
         let storedRefresh = (try? c.decode(Int.self, forKey: .refreshMinutes)) ?? 30
         refreshMinutes = Settings.refreshOptions.contains(storedRefresh) ? storedRefresh : 30
         notifyAtHighUsage = (try? c.decode(Bool.self, forKey: .notifyAtHighUsage)) ?? false
@@ -124,6 +135,8 @@ struct Settings: Codable, Equatable, Sendable {
         try c.encode(menuBarStyle, forKey: .menuBarStyle)
         try c.encode(menuBarShowPercent, forKey: .menuBarShowPercent)
         try c.encode(showSecondary, forKey: .showSecondary)
+        try c.encode(hiddenModels, forKey: .hiddenModels)
+        try c.encode(showSpend, forKey: .showSpend)
         try c.encode(refreshMinutes, forKey: .refreshMinutes)
         try c.encode(notifyAtHighUsage, forKey: .notifyAtHighUsage)
         try c.encode(notifyThreshold, forKey: .notifyThreshold)
@@ -137,12 +150,7 @@ enum SettingsStore {
     private static let account = "settings"
 
     static func load() -> Settings {
-        var query = baseQuery()
-        query[kSecReturnData as String] = true
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        var result: AnyObject?
-        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
-              let data = result as? Data,
+        guard let data = Keychain.load(baseQuery()),
               let settings = try? JSONDecoder().decode(Settings.self, from: data)
         else { return Settings() }
         return settings
@@ -150,12 +158,7 @@ enum SettingsStore {
 
     static func save(_ settings: Settings) {
         guard let data = try? JSONEncoder().encode(settings) else { return }
-        let base = baseQuery()
-        SecItemDelete(base as CFDictionary)
-        var add = base
-        add[kSecValueData as String] = data
-        add[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
-        SecItemAdd(add as CFDictionary, nil)
+        Keychain.save(data, query: baseQuery())
     }
 
     private static func baseQuery() -> [String: Any] {

@@ -14,6 +14,56 @@ enum OAuthError: LocalizedError {
     }
 }
 
+/// Serializes token refreshes across the whole app.
+///
+/// Anthropic rotates refresh tokens, so two callers refreshing the same token in
+/// parallel — the poll timer and the auto-open task can easily collide — get one
+/// success and one `invalid_grant`, which typically invalidates the whole token
+/// family and signs the user out for good. Everyone shares one in-flight refresh
+/// instead, and the two `TokenStore.save` calls can no longer race.
+actor TokenRefresher {
+    static let shared = TokenRefresher()
+
+    private var inFlight: Task<TokenSet, Error>?
+
+    /// Refreshes the tokens the caller saw as stale, or returns the newer set if
+    /// somebody else already refreshed past them.
+    func refresh(from stale: TokenSet) async throws -> TokenSet {
+        if let current = TokenStore.load(),
+           current.accessToken != stale.accessToken, !current.isExpired {
+            return current      // another caller got there first
+        }
+        if let inFlight { return try await inFlight.value }
+
+        guard let refreshToken = stale.refreshToken else { throw UsageError.notLoggedIn }
+        let task = Task { try await OAuthClient.refresh(refreshToken) }
+        inFlight = task
+        defer { inFlight = nil }
+        let refreshed = try await task.value
+        TokenStore.save(refreshed)
+        return refreshed
+    }
+}
+
+extension TokenRefresher {
+    /// Runs `body` with a valid access token: refreshes up front when the token
+    /// has expired, and once more on a 401 before retrying. Every authenticated
+    /// request goes through here so no call site can forget the refresh.
+    static func authorized<T>(_ body: (String) async throws -> T) async throws -> T {
+        guard let tokens = TokenStore.load() else { throw UsageError.notLoggedIn }
+        let token = tokens.isExpired
+            ? try await shared.refresh(from: tokens).accessToken
+            : tokens.accessToken
+        do {
+            return try await body(token)
+        } catch UsageError.http(401, _) {
+            guard let current = TokenStore.load() else { throw UsageError.notLoggedIn }
+            let refreshed = try await shared.refresh(from: current)
+            return try await body(refreshed.accessToken)
+        }
+    }
+}
+
 /// OAuth against the token endpoint: code exchange (sign-in) and token refresh.
 enum OAuthClient {
     /// Exchange an authorization code (+ PKCE verifier) for tokens.

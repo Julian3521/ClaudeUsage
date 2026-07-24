@@ -9,13 +9,14 @@ enum UsageNotifier {
     }
 
     static func check(_ snapshot: UsageSnapshot, threshold: Double) {
-        evaluate("session", "Session", snapshot.sessionPercent, threshold)
-        evaluate("weekly", "Weekly", snapshot.weeklyPercent, threshold)
-        if let opus = snapshot.opusPercent { evaluate("opus", "Opus", opus, threshold) }
-        if let sonnet = snapshot.sonnetPercent { evaluate("sonnet", "Sonnet", sonnet, threshold) }
+        evaluate("session", String(localized: "Session"), snapshot.sessionPercent, threshold)
+        evaluate("weekly", String(localized: "Weekly"), snapshot.weeklyPercent, threshold)
+        for model in snapshot.models {
+            evaluate(model.key, model.displayName, model.percent, threshold)
+        }
     }
 
-    private static func evaluate(_ key: String, _ name: String.LocalizationValue,
+    private static func evaluate(_ key: String, _ name: String,
                                  _ percent: Double, _ threshold: Double) {
         let flagKey = "notified.\(key)"
         let defaults = UserDefaults.standard
@@ -23,7 +24,7 @@ enum UsageNotifier {
             guard !defaults.bool(forKey: flagKey) else { return }
             defaults.set(true, forKey: flagKey)
             post(title: String(localized: "Usage limit almost reached"),
-                 body: "\(String(localized: name)) · \(Int(percent.rounded()))%")
+                 body: "\(name) · \(Int(percent.rounded()))%")
         } else {
             defaults.set(false, forKey: flagKey)
         }

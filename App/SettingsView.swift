@@ -43,20 +43,25 @@ private struct AccountSettings: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
-                    Button {
-                        Task { await viewModel.loginWithOAuth() }
-                    } label: {
-                        if viewModel.isLoggingIn {
-                            HStack(spacing: 8) {
-                                ProgressView().controlSize(.small)
-                                Text("Waiting for browser…")
+                    HStack {
+                        Button {
+                            viewModel.loginWithOAuth()
+                        } label: {
+                            if viewModel.isLoggingIn {
+                                HStack(spacing: 8) {
+                                    ProgressView().controlSize(.small)
+                                    Text("Waiting for browser…")
+                                }
+                            } else {
+                                Label("Sign in with Claude", systemImage: "person.crop.circle.badge.checkmark")
                             }
-                        } else {
-                            Label("Sign in with Claude", systemImage: "person.crop.circle.badge.checkmark")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(viewModel.isLoggingIn)
+                        if viewModel.isLoggingIn {
+                            Button("Cancel") { viewModel.cancelLogin() }
                         }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(viewModel.isLoggingIn)
                 } header: {
                     Text("Sign in")
                 }
@@ -185,11 +190,20 @@ private struct MenuBarSettings: View {
 
 private struct DisplaySettings: View {
     @Bindable private var settings = AppSettings.shared
+    private let viewModel = UsageViewModel.shared
+
+    /// The models to offer: whatever the account currently reports, plus the
+    /// ones we know of — so a limit can be switched on before it first appears.
+    private var modelKeys: [String] {
+        let reported = viewModel.snapshot?.models.map(\.key) ?? []
+        return ModelUsage.sorted(Set(reported + ModelUsage.knownOrder)
+            .map { ModelUsage(key: $0, percent: 0, resetsAt: nil) }).map(\.key)
+    }
 
     var body: some View {
         Form {
             Section {
-                Toggle("Show Opus, Sonnet & spend", isOn: $settings.settings.showSecondary)
+                Toggle("Show per-model limits & spend", isOn: $settings.settings.showSecondary)
                 Picker("Reset display", selection: $settings.settings.resetDisplay) {
                     ForEach(ResetFormat.allCases, id: \.self) {
                         Text(LocalizedStringKey($0.label)).tag($0)
@@ -200,9 +214,48 @@ private struct DisplaySettings: View {
             } footer: {
                 Text("These apply to the menu panel. Each widget is configured separately — right-click it and choose Edit Widget. Weekday and Date include the day for the weekly window.")
             }
+
+            Section {
+                ForEach(modelKeys, id: \.self) { key in
+                    Toggle(isOn: modelBinding(key)) {
+                        HStack(spacing: 6) {
+                            Circle().fill(ModelUsage(key: key, percent: 0, resetsAt: nil).tint)
+                                .frame(width: 8, height: 8)
+                            Text(verbatim: ModelUsage(key: key, percent: 0, resetsAt: nil).displayName)
+                            if viewModel.snapshot != nil, !reports(key) {
+                                Text("not reported yet")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .disabled(!settings.settings.showSecondary)
+                }
+                Toggle("Extra usage (spend)", isOn: $settings.settings.showSpend)
+                    .disabled(!settings.settings.showSecondary)
+            } header: {
+                Text("Weekly limits per model")
+            } footer: {
+                Text("Anthropic reports a separate weekly window per model. Models your account doesn't have yet stay hidden until they appear — they then show up automatically.")
+            }
+
             Section("Preview") { preview }
         }
         .formStyle(.grouped)
+    }
+
+    private func reports(_ key: String) -> Bool {
+        viewModel.snapshot?.models.contains { $0.key == key } ?? false
+    }
+
+    private func modelBinding(_ key: String) -> Binding<Bool> {
+        Binding(
+            get: { !settings.settings.hiddenModels.contains(key) },
+            set: { on in
+                if on { settings.settings.hiddenModels.remove(key) }
+                else { settings.settings.hiddenModels.insert(key) }
+            }
+        )
     }
 
     private var preview: some View {
@@ -213,9 +266,9 @@ private struct DisplaySettings: View {
                      resetsAt: snapshot.sessionResetsAt, resetFormat: fmt)
             UsageBar(title: "Weekly", percent: snapshot.weeklyPercent,
                      resetsAt: snapshot.weeklyResetsAt, resetFormat: fmt)
-            if settings.settings.showSecondary, let opus = snapshot.opusPercent {
-                UsageBar(title: "Opus", percent: opus,
-                         resetsAt: snapshot.opusResetsAt, resetFormat: fmt)
+            ForEach(snapshot.visibleModels(settings.settings)) { model in
+                UsageBar(title: "\(model.displayName)", percent: model.percent,
+                         resetsAt: model.resetsAt, resetFormat: fmt)
             }
         }
         .padding(.vertical, 4)

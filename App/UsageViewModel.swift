@@ -58,28 +58,52 @@ final class UsageViewModel {
         let token = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !token.isEmpty else { return }
         loginError = nil
-        TokenStore.save(TokenSet(accessToken: token, refreshToken: nil, expiresAt: nil))
+        guard store(TokenSet(accessToken: token, refreshToken: nil, expiresAt: nil)) else { return }
         state = .loading
         Task { await fetchAfterLogin() }
     }
 
     /// True while the browser OAuth sign-in is running (drives the button state).
     var isLoggingIn = false
+    @ObservationIgnored private var loginTask: Task<Void, Never>?
 
     /// Browser-based OAuth sign-in (PKCE + loopback). The paste flow stays as a
-    /// fallback if Anthropic's flow ever changes.
-    func loginWithOAuth() async {
+    /// fallback if Anthropic's flow ever changes. Owned as a task so it can be
+    /// cancelled — otherwise an abandoned sign-in holds the loopback port and
+    /// the UI for the full five-minute timeout.
+    func loginWithOAuth() {
+        guard loginTask == nil else { return }
         loginError = nil
         isLoggingIn = true
-        defer { isLoggingIn = false }
-        do {
-            let token = try await OAuthLogin.signIn()
-            TokenStore.save(token)
-            state = .loading
-            await fetchAfterLogin()
-        } catch {
-            loginError = error.localizedDescription
+        loginTask = Task { @MainActor in
+            defer { self.isLoggingIn = false; self.loginTask = nil }
+            do {
+                let token = try await OAuthLogin.signIn()
+                guard self.store(token) else { return }
+                self.state = .loading
+                await self.fetchAfterLogin()
+            } catch {
+                if let login = error as? OAuthLogin.LoginError, case .cancelled = login { return }
+                self.loginError = error.localizedDescription
+            }
         }
+    }
+
+    /// Stop waiting for the browser redirect and release the loopback port.
+    func cancelLogin() {
+        loginTask?.cancel()
+    }
+
+    /// Persists tokens, reporting a keychain failure instead of continuing as if
+    /// signed in — the app would otherwise "work" until the next launch.
+    private func store(_ tokens: TokenSet) -> Bool {
+        let status = TokenStore.save(tokens)
+        guard status == errSecSuccess else {
+            loginError = String(localized: "Couldn't save the login to the keychain: \(Keychain.message(for: status))")
+            state = .loggedOut
+            return false
+        }
+        return true
     }
 
     private func fetchAfterLogin() async {

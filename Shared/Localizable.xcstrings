@@ -96,6 +96,28 @@
         }
       }
     },
+    "Anthropic reports a separate weekly window per model. Models your account doesn't have yet stay hidden until they appear — they then show up automatically.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anthropic meldet pro Modell ein eigenes Wochenfenster. Modelle, die dein Konto noch nicht hat, bleiben ausgeblendet, bis sie auftauchen — danach erscheinen sie automatisch."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anthropic communique une fenêtre hebdomadaire distincte par modèle. Les modèles dont votre compte ne dispose pas encore restent masqués jusqu'à leur apparition, puis s'affichent automatiquement."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anthropic informa de una ventana semanal por modelo. Los modelos que tu cuenta aún no tiene permanecen ocultos hasta que aparecen; después se muestran automáticamente."
+          }
+        }
+      }
+    },
     "Applies to the menu panel and widgets. Weekday and Date include the day, useful for the weekly window.": {
       "localizations": {
         "de": {
@@ -457,6 +479,28 @@
         }
       }
     },
+    "Couldn't save the login to the keychain: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Login konnte nicht im Schlüsselbund gespeichert werden: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d'enregistrer la connexion dans le trousseau : %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo guardar el inicio de sesión en el llavero: %@"
+          }
+        }
+      }
+    },
     "Countdown": {
       "localizations": {
         "de": {
@@ -610,6 +654,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Utilisation supplémentaire"
+          }
+        }
+      }
+    },
+    "Extra usage (spend)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zusätzliche Nutzung (Ausgaben)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisation supplémentaire (dépenses)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uso adicional (gasto)"
           }
         }
       }
@@ -1588,25 +1654,24 @@
         }
       }
     },
-    "Show Opus, Sonnet & spend": {
-      "extractionState": "stale",
+    "Show per-model limits & spend": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Opus, Sonnet & Ausgaben anzeigen"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mostrar Opus, Sonnet y gasto"
+            "value": "Limits pro Modell & Ausgaben anzeigen"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Afficher Opus, Sonnet et dépenses"
+            "value": "Afficher les limites par modèle et les dépenses"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar límites por modelo y gasto"
           }
         }
       }
@@ -2216,48 +2281,46 @@
         }
       }
     },
-    "Weekly · Opus (7d)": {
-      "extractionState": "stale",
+    "Weekly limits per model": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Woche · Opus (7 Tage)"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Semanal · Opus (7 d)"
+            "value": "Wochenlimits pro Modell"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hebdo · Opus (7 j)"
+            "value": "Limites hebdomadaires par modèle"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Límites semanales por modelo"
           }
         }
       }
     },
-    "Weekly · Sonnet (7d)": {
-      "extractionState": "stale",
+    "Weekly · %@ (7d)": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Woche · Sonnet (7 Tage)"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Semanal · Sonnet (7 d)"
+            "value": "Woche · %@ (7 Tage)"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hebdo · Sonnet (7 j)"
+            "value": "Hebdo · %@ (7 j)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semanal · %@ (7 d)"
           }
         }
       }
@@ -2327,6 +2390,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vos limites de session et hebdomadaires en un coup d’œil."
+          }
+        }
+      }
+    },
+    "not reported yet": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "noch nicht gemeldet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pas encore signalé"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "aún no informado"
           }
         }
       }
