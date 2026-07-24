@@ -87,9 +87,6 @@ struct MenuContentView: View {
                          resetFormat: fmt, windowHours: 168,
                          runsOutAt: runsOut(model.percent) { $0.models[model.key] })
             }
-            if models.count > 1, models.contains(where: { $0.percent > 0 }) {
-                ModelMixBar(models: models)
-            }
             if settings.showSecondary, settings.showSpend, let spend = s.spendText {
                 HStack {
                     Text("Extra usage").font(.subheadline.weight(.semibold))
