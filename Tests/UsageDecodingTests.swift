@@ -117,6 +117,76 @@ final class UsageDecodingTests: XCTestCase {
         XCTAssertTrue(UsageSnapshot.sample.visibleModels(settings).isEmpty)
     }
 
+    // MARK: - Forecast
+
+    /// Builds samples every 30 min starting at t0, one per percentage value.
+    private func samples(_ values: [Double], from t0: Date = Date(timeIntervalSince1970: 0),
+                         step: TimeInterval = 1800) -> [UsageForecast.Sample] {
+        values.enumerated().map { (t0.addingTimeInterval(Double($0.offset) * step), $0.element) }
+    }
+
+    /// 10 points per hour from 0 → 100 takes 10 hours; the last sample sits at
+    /// 20%, so 80 points remain = 8 hours out.
+    func testSteadyGrowthProjectsExhaustion() {
+        let series = samples([0, 5, 10, 15, 20])
+        let runsOut = try? XCTUnwrap(UsageForecast.runsOut(series))
+        XCTAssertEqual(runsOut?.timeIntervalSince1970 ?? 0,
+                       series.last!.date.addingTimeInterval(8 * 3600).timeIntervalSince1970,
+                       accuracy: 60)
+    }
+
+    func testFlatOrFallingUsageHasNoForecast() {
+        XCTAssertNil(UsageForecast.runsOut(samples([30, 30, 30, 30])))
+        XCTAssertNil(UsageForecast.runsOut(samples([40, 30, 20, 10])))
+    }
+
+    /// Too little time between samples — a slope there means nothing.
+    func testThinDataHasNoForecast() {
+        XCTAssertNil(UsageForecast.runsOut(samples([0, 10], step: 60)))
+        XCTAssertNil(UsageForecast.runsOut(samples([10])))
+        XCTAssertNil(UsageForecast.runsOut([]))
+    }
+
+    /// A window reset (the drop to 0) must not flatten the slope — only the
+    /// samples after it count.
+    func testResetStartsANewWindow() {
+        let series = samples([80, 90, 95, 2, 4, 6])
+        let runsOut = try? XCTUnwrap(UsageForecast.runsOut(series))
+        // 2pp per 30 min after the reset → 94pp left ≈ 23.5 h.
+        XCTAssertEqual(runsOut?.timeIntervalSince(series.last!.date) ?? 0,
+                       23.5 * 3600, accuracy: 300)
+    }
+
+    func testFullWindowHasNoForecast() {
+        XCTAssertNil(UsageForecast.runsOut(samples([90, 95, 100])))
+    }
+
+    /// The history feed tops up with the live snapshot value.
+    func testForecastFromHistoryUsesSnapshot() {
+        let t0 = Date(timeIntervalSince1970: 0)
+        let history = (0..<4).map {
+            HistoryPoint(date: t0.addingTimeInterval(Double($0) * 1800),
+                         session: 0, weekly: Double($0) * 5,
+                         models: ["fable": Double($0) * 2])
+        }
+        let now = t0.addingTimeInterval(4 * 1800)
+        XCTAssertNotNil(UsageForecast.runsOut(history: history, current: 20,
+                                              currentAt: now) { $0.weekly })
+        XCTAssertNotNil(UsageForecast.runsOut(history: history, current: 8,
+                                              currentAt: now) { $0.models["fable"] })
+        // A model the history never recorded can't be projected.
+        XCTAssertNil(UsageForecast.runsOut(history: history, current: 8,
+                                           currentAt: now) { $0.models["opus"] })
+    }
+
+    /// History points written before per-model values existed still decode.
+    func testLegacyHistoryPointDecodes() throws {
+        let legacy = #"[{"date":0,"session":10,"weekly":20}]"#
+        let points = try JSONDecoder().decode([HistoryPoint].self, from: Data(legacy.utf8))
+        XCTAssertEqual(points.first?.weekly, 20)
+        XCTAssertEqual(points.first?.models, [:])
+    }
+
     func testFractionUtilizationClamped() throws {
         // A 0...1 style value should still be treated as a percent (clamped 0...100).
         let r = try JSONDecoder().decode(UsageResponse.self,

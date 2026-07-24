@@ -14,6 +14,14 @@ enum UsageFormat {
         return "\(m)m"
     }
 
+    /// "Runs out today 14:30" — same day wording as the reset labels.
+    static func runsOutLabel(_ date: Date) -> String {
+        let time = date.formatted(date: .omitted, time: .shortened)
+        if Calendar.current.isDateInToday(date) { return String(localized: "Runs out today \(time)") }
+        if Calendar.current.isDateInTomorrow(date) { return String(localized: "Runs out tomorrow \(time)") }
+        return String(localized: "Runs out \(date.formatted(.dateTime.weekday(.abbreviated).hour().minute()))")
+    }
+
     static func resetLabel(_ date: Date?, format: ResetFormat = .relative, now: Date = Date()) -> String {
         switch format {
         case .relative:
@@ -83,6 +91,27 @@ struct UsageBar: View {
     let resetsAt: Date?
     var resetFormat: ResetFormat = .relative
     var windowHours: Double? = nil
+    /// Projected moment this window hits 100%. Replaces the pace caption — but
+    /// only when you're burning faster than an even pace: below that line the
+    /// calm "11% to spare" is the more useful reading, and a projection built
+    /// from a slow trend would only be alarmist noise.
+    var runsOutAt: Date? = nil
+
+    /// Percentage points off an even burn before we call it over/under pace.
+    private static let paceTolerance = 5.0
+
+    /// Points ahead of (positive) or behind (negative) an even burn.
+    private var paceDelta: Double? {
+        paceFraction.map { (fraction - $0) * 100 }
+    }
+
+    /// Shown only when over pace and the limit would land before the reset.
+    private var forecast: Date? {
+        guard let runsOutAt, let delta = paceDelta, delta >= Self.paceTolerance
+        else { return nil }
+        guard let resetsAt else { return runsOutAt }
+        return runsOutAt < resetsAt ? runsOutAt : nil
+    }
 
     private var fraction: Double { min(1, max(0, percent / 100)) }
 
@@ -129,16 +158,20 @@ struct UsageBar: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
-        .accessibilityValue("\(Int(percent.rounded()))%, \(UsageFormat.resetLabel(resetsAt, format: resetFormat))")
+        .accessibilityValue("\(Int(percent.rounded()))%, \(UsageFormat.resetLabel(resetsAt, format: resetFormat))"
+            + (forecast.map { ", \(UsageFormat.runsOutLabel($0))" } ?? ""))
     }
 
     @ViewBuilder
     private var paceCaption: some View {
-        if let pace = paceFraction {
-            let delta = Int((((fraction) - pace) * 100).rounded())
-            if delta >= 5 {
+        if let forecast {
+            Text(verbatim: UsageFormat.runsOutLabel(forecast))
+                .foregroundStyle(percent >= 85 ? .red : .orange)
+        } else if let paceDelta {
+            let delta = Int(paceDelta.rounded())
+            if Double(delta) >= Self.paceTolerance {
                 (Text(verbatim: "\(delta)% ") + Text("over pace")).foregroundStyle(.orange)
-            } else if delta <= -5 {
+            } else if Double(delta) <= -Self.paceTolerance {
                 (Text(verbatim: "\(-delta)% ") + Text("to spare")).foregroundStyle(.green)
             } else {
                 Text("on pace").foregroundStyle(.secondary)
@@ -160,90 +193,79 @@ extension ModelUsage {
     }
 }
 
-/// Compact split bar showing how the weekly usage leans across the models.
+/// Stacked bar showing how the weekly limits are distributed across the models,
+/// with each model's share written into its segment.
+///
+/// Note what this can and cannot say: the API reports each model's utilization
+/// of its *own* limit, so the shares describe how your limit usage is spread —
+/// not how many tokens went where. The per-model bars above carry the absolute
+/// reading; this is the at-a-glance distribution.
 struct ModelMixBar: View {
     let models: [ModelUsage]
 
+    /// Thick enough to carry the share labels inside the segments.
+    var barHeight: CGFloat = 22
+
     private var total: Double { max(models.reduce(0) { $0 + max(0, $1.percent) }, 0.001) }
 
+    private func share(_ model: ModelUsage) -> Double { max(0, model.percent) / total }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 6) {
             Text("Model mix").font(.subheadline.weight(.semibold))
-            GeometryReader { geo in
-                HStack(spacing: 2) {
-                    ForEach(models) { model in
-                        Capsule().fill(model.tint)
-                            .frame(width: max(2, geo.size.width * max(0, model.percent) / total))
-                    }
-                }
-            }
-            .frame(height: 8)
-            // Wraps so four or more models still fit the 300pt panel.
-            FlowRow(spacing: 12) {
-                ForEach(models) { model in
-                    legend(model)
-                }
-            }
-            .font(.caption2)
-            .foregroundStyle(.secondary)
+            stack
+            legend
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Model mix")
-        .accessibilityValue(models.map { "\($0.displayName) \(Int($0.percent.rounded()))%" }
-            .joined(separator: ", "))
+        .accessibilityValue(models.map {
+            "\($0.displayName) \(Int((share($0) * 100).rounded()))%"
+        }.joined(separator: ", "))
     }
 
-    private func legend(_ model: ModelUsage) -> some View {
-        HStack(spacing: 4) {
-            Circle().fill(model.tint).frame(width: 7, height: 7)
-            Text(verbatim: model.displayName)
-            Text(verbatim: "\(Int(model.percent.rounded()))%").monospacedDigit()
-        }
-    }
-}
-
-/// Minimal wrapping HStack — the legend can hold an unknown number of models.
-struct FlowRow: Layout {
-    var spacing: CGFloat = 8
-    var lineSpacing: CGFloat = 3
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let rows = layout(subviews, width: proposal.width ?? .infinity)
-        let height = rows.map(\.height).reduce(0, +) + lineSpacing * CGFloat(max(0, rows.count - 1))
-        return CGSize(width: proposal.width ?? rows.map(\.width).max() ?? 0, height: height)
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize,
-                       subviews: Subviews, cache: inout ()) {
-        var y = bounds.minY
-        for row in layout(subviews, width: bounds.width) {
-            var x = bounds.minX
-            for index in row.indices {
-                let size = subviews[index].sizeThatFits(.unspecified)
-                subviews[index].place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
-                x += size.width + spacing
+    private var stack: some View {
+        GeometryReader { geo in
+            let gap: CGFloat = 2
+            let available = max(0, geo.size.width - gap * CGFloat(max(0, models.count - 1)))
+            HStack(spacing: gap) {
+                ForEach(models) { model in
+                    let width = max(6, available * share(model))
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(model.tint)
+                        .frame(width: width)
+                        .overlay {
+                            // Only label a segment wide enough to hold the text.
+                            if width >= 30 {
+                                Text(verbatim: "\(Int((share(model) * 100).rounded()))%")
+                                    .font(.caption2.weight(.semibold).monospacedDigit())
+                                    .foregroundStyle(.white)
+                            }
+                        }
+                }
             }
-            y += row.height + lineSpacing
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .frame(height: barHeight)
     }
 
-    private struct Row { var indices: [Int] = []; var width: CGFloat = 0; var height: CGFloat = 0 }
-
-    private func layout(_ subviews: Subviews, width limit: CGFloat) -> [Row] {
-        var rows: [Row] = []
-        var row = Row()
-        for index in subviews.indices {
-            let size = subviews[index].sizeThatFits(.unspecified)
-            let needed = row.indices.isEmpty ? size.width : row.width + spacing + size.width
-            if !row.indices.isEmpty, needed > limit {
-                rows.append(row)
-                row = Row()
+    /// One line, whatever the number of models: the per-model bars above already
+    /// carry each model's own utilization, so the legend only has to name the
+    /// colours. Shrinks rather than wraps, to stay a single row.
+    private var legend: some View {
+        HStack(spacing: 8) {
+            ForEach(models) { model in
+                HStack(spacing: 4) {
+                    Circle().fill(model.tint).frame(width: 6, height: 6)
+                    Text(verbatim: model.displayName)
+                    Text(verbatim: "\(Int((share(model) * 100).rounded()))%")
+                        .monospacedDigit()
+                }
             }
-            row.width = row.indices.isEmpty ? size.width : row.width + spacing + size.width
-            row.height = max(row.height, size.height)
-            row.indices.append(index)
+            Spacer(minLength: 0)
         }
-        if !row.indices.isEmpty { rows.append(row) }
-        return rows
+        .font(.caption2)
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
     }
 }

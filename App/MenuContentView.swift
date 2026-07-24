@@ -65,19 +65,27 @@ struct MenuContentView: View {
     private func loaded(_ s: UsageSnapshot) -> some View {
         let settings = AppSettings.shared.settings
         let fmt = settings.resetDisplay
+        let history = HistoryStore.load()
+        func runsOut(_ current: Double, _ value: @escaping (HistoryPoint) -> Double?) -> Date? {
+            UsageForecast.runsOut(history: history, current: current,
+                                  currentAt: s.fetchedAt, value: value)
+        }
         return VStack(alignment: .leading, spacing: 14) {
             UsageBar(title: "Current session (5h)",
                      percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
-                     resetFormat: fmt)
+                     resetFormat: fmt, windowHours: 5,
+                     runsOutAt: runsOut(s.sessionPercent) { $0.session })
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
-                     resetFormat: fmt, windowHours: 168)
+                     resetFormat: fmt, windowHours: 168,
+                     runsOutAt: runsOut(s.weeklyPercent) { $0.weekly })
             // Empty unless the model rows are switched on, so no extra guard here.
             let models = s.visibleModels(settings)
             ForEach(models) { model in
                 UsageBar(title: "Weekly · \(model.displayName) (7d)",
                          percent: model.percent, resetsAt: model.resetsAt,
-                         resetFormat: fmt, windowHours: 168)
+                         resetFormat: fmt, windowHours: 168,
+                         runsOutAt: runsOut(model.percent) { $0.models[model.key] })
             }
             if models.count > 1, models.contains(where: { $0.percent > 0 }) {
                 ModelMixBar(models: models)
@@ -89,7 +97,7 @@ struct MenuContentView: View {
                     Text(spend).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
                 }
             }
-            sparkline
+            sparkline(history)
             Text("Updated \(s.fetchedAt.formatted(date: .omitted, time: .shortened))")
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -97,8 +105,7 @@ struct MenuContentView: View {
     }
 
     @ViewBuilder
-    private var sparkline: some View {
-        let history = HistoryStore.load()
+    private func sparkline(_ history: [HistoryPoint]) -> some View {
         if history.count >= 2 {
             // Scale the y-axis to the data (rounded up to a "nice" bound) instead of a
             // fixed 0–100, so low usage isn't squashed into a flat line at the bottom.

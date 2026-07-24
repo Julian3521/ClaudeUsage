@@ -121,6 +121,12 @@ struct UsageWidgetEntryView: View {
     /// The one model that fits next to the session/weekly rings.
     private var leadModel: ModelUsage? { entry.models.first }
 
+    private func runsOut(_ current: Double, _ value: @escaping (HistoryPoint) -> Double?) -> Date? {
+        guard let fetchedAt = entry.snapshot?.fetchedAt else { return nil }
+        return UsageForecast.runsOut(history: entry.history, current: current,
+                                     currentAt: fetchedAt, value: value)
+    }
+
     var body: some View {
         if !entry.loggedIn {
             signedOut
@@ -189,10 +195,12 @@ struct UsageWidgetEntryView: View {
 
             UsageBar(title: "Current session (5h)",
                      percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
-                     resetFormat: entry.resetFormat)
+                     resetFormat: entry.resetFormat, windowHours: 5,
+                     runsOutAt: runsOut(s.sessionPercent) { $0.session })
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
-                     resetFormat: entry.resetFormat)
+                     resetFormat: entry.resetFormat, windowHours: 168,
+                     runsOutAt: runsOut(s.weeklyPercent) { $0.weekly })
             // Cap the rows so the large widget can't overflow once several
             // models are reported; the lead model already has a ring above.
             ForEach(Array(entry.models.dropFirst().prefix(2))) { model in
