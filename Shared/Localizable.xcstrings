@@ -4,6 +4,28 @@
     "%@ min": {},
     "%@%%": {},
     "%@.": {},
+    "%lld days": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Tage"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld días"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld jours"
+          }
+        }
+      }
+    },
     "%lld min": {
       "extractionState": "stale",
       "localizations": {
@@ -92,28 +114,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Alerter à"
-          }
-        }
-      }
-    },
-    "Anthropic reports a separate weekly window per model. Models your account doesn't have yet stay hidden until they appear — they then show up automatically.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anthropic meldet pro Modell ein eigenes Wochenfenster. Modelle, die dein Konto noch nicht hat, bleiben ausgeblendet, bis sie auftauchen — danach erscheinen sie automatisch."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anthropic communique une fenêtre hebdomadaire distincte par modèle. Les modèles dont votre compte ne dispose pas encore restent masqués jusqu'à leur apparition, puis s'affichent automatiquement."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anthropic informa de una ventana semanal por modelo. Los modelos que tu cuenta aún no tiene permanecen ocultos hasta que aparecen; después se muestran automáticamente."
           }
         }
       }
@@ -227,6 +227,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Barre"
+          }
+        }
+      }
+    },
+    "Budget": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Budget"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presupuesto"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Budget"
           }
         }
       }
@@ -634,6 +656,28 @@
         }
       }
     },
+    "Daily budget warnings are under Budget.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warnungen zum Tagesbudget findest du unter „Budget“."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los avisos del presupuesto diario están en Presupuesto."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les alertes du budget quotidien se trouvent sous Budget."
+          }
+        }
+      }
+    },
     "Date + time": {
       "localizations": {
         "de": {
@@ -768,24 +812,46 @@
         }
       }
     },
-    "Flexible (what's left ÷ days to reset)": {
+    "Fixed": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Flexibel (Rest ÷ Tage bis Reset)"
+            "value": "Fest"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Flexible (restante ÷ días hasta el reinicio)"
+            "value": "Fijo"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Flexible (reste ÷ jours avant réinitialisation)"
+            "value": "Fixe"
+          }
+        }
+      }
+    },
+    "Flexible": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flexibel"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flexible"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flexible"
           }
         }
       }
@@ -903,6 +969,28 @@
         }
       }
     },
+    "Left": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Übrig"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restante"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restant"
+          }
+        }
+      }
+    },
     "Marker = even usage across the window": {
       "localizations": {
         "de": {
@@ -988,6 +1076,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Panneau du menu et widgets"
+          }
+        }
+      }
+    },
+    "New models show up here once your account reports them.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Modelle erscheinen hier, sobald dein Konto sie meldet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los modelos nuevos aparecen aquí en cuanto tu cuenta los informa."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les nouveaux modèles apparaissent ici dès que votre compte les signale."
           }
         }
       }
@@ -1078,6 +1188,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Désactivé"
+          }
+        }
+      }
+    },
+    "One notification at %lld%% of the day's budget, another when it's used up.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eine Mitteilung bei %lld %% des Tagesbudgets, eine weitere, wenn es aufgebraucht ist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un aviso al %lld %% del presupuesto del día y otro cuando se agote."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une notification à %lld %% du budget du jour, une autre lorsqu'il est épuisé."
           }
         }
       }
@@ -1875,6 +2007,50 @@
         }
       }
     },
+    "Shown in the panel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Im Menü-Panel anzeigen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrado en el panel"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affiché dans le panneau"
+          }
+        }
+      }
+    },
+    "Shown once usage has been loaded.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erscheint, sobald Nutzungsdaten geladen sind."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se muestra cuando se haya cargado el uso."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affiché une fois l'utilisation chargée."
+          }
+        }
+      }
+    },
     "Sign in": {
       "localizations": {
         "de": {
@@ -2076,24 +2252,46 @@
         }
       }
     },
-    "Splits the weekly limit into a daily allowance, so one long day can't eat the whole week. Flexible spreads what's left over the days until the reset, so a quiet day leaves more for the next. Counts usage since midnight.": {
+    "Splits the weekly limit into a daily allowance, so one long day can't use up the whole week.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Teilt das Wochenlimit in ein Tagesbudget auf, damit ein langer Tag nicht die ganze Woche aufbraucht. Flexibel verteilt den Rest auf die Tage bis zum Reset – ein ruhiger Tag lässt mehr für die nächsten übrig. Gezählt wird ab Mitternacht."
+            "value": "Teilt das Wochenlimit in ein Tagesbudget auf, damit ein langer Tag nicht die ganze Woche aufbraucht."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reparte el límite semanal en un presupuesto diario, para que un día largo no agote toda la semana. Flexible reparte lo que queda entre los días hasta el reinicio: un día tranquilo deja más para los siguientes. Cuenta desde medianoche."
+            "value": "Reparte el límite semanal en un presupuesto diario, para que un día largo no agote toda la semana."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Répartit la limite hebdomadaire en un budget quotidien, pour qu'une longue journée n'épuise pas toute la semaine. Flexible répartit le reste sur les jours avant la réinitialisation : une journée calme en laisse davantage pour les suivantes. Compté depuis minuit."
+            "value": "Répartit la limite hebdomadaire en un budget quotidien, pour qu'une longue journée n'épuise pas toute la semaine."
+          }
+        }
+      }
+    },
+    "Spread the week over": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Woche verteilen auf"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repartir la semana en"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répartir la semaine sur"
           }
         }
       }
@@ -2165,24 +2363,24 @@
         }
       }
     },
-    "These apply to the menu panel. Each widget is configured separately — right-click it and choose Edit Widget. Weekday and Date include the day for the weekly window.": {
+    "The same share every day; unused budget doesn't carry over. Counts from midnight.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gilt fürs Menü-Panel. Jedes Widget wird separat konfiguriert — Rechtsklick darauf, dann „Widget bearbeiten“. Wochentag und Datum zeigen beim Wochenfenster den Tag."
+            "value": "Jeden Tag derselbe Anteil; nicht Genutztes verfällt. Gezählt wird ab Mitternacht."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Se aplican al panel del menú. Cada widget se configura por separado: haz clic derecho y elige «Editar widget». Día y Fecha incluyen el día en la ventana semanal."
+            "value": "La misma parte cada día; lo no usado no se acumula. Cuenta desde medianoche."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "S’appliquent au panneau du menu. Chaque widget se configure séparément — clic droit puis « Modifier le widget ». Jour et Date affichent le jour pour la fenêtre hebdomadaire."
+            "value": "La même part chaque jour ; le budget non utilisé n'est pas reporté. Compté depuis minuit."
           }
         }
       }
@@ -2227,6 +2425,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aujourd'hui (budget quotidien)"
+          }
+        }
+      }
+    },
+    "Today — share of the weekly limit": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute – Anteil am Wochenlimit"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoy — parte del límite semanal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aujourd'hui — part de la limite hebdo"
           }
         }
       }
@@ -2362,6 +2582,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Limite presque atteinte"
+          }
+        }
+      }
+    },
+    "Used": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbraucht"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisé"
           }
         }
       }
@@ -2589,6 +2831,28 @@
         }
       }
     },
+    "Weekly · %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Woche · %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semanal · %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hebdo · %@"
+          }
+        }
+      }
+    },
     "Weekly · %@ (7d)": {
       "localizations": {
         "de": {
@@ -2634,24 +2898,24 @@
         }
       }
     },
-    "Weekly ÷ %lld": {
+    "What's left of the week, spread over the days until it resets — a quiet day leaves more for the next. Counts from midnight.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wochenlimit ÷ %lld"
+            "value": "Der Rest der Woche, verteilt auf die Tage bis zum Reset – ein ruhiger Tag lässt mehr für die nächsten. Gezählt wird ab Mitternacht."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Límite semanal ÷ %lld"
+            "value": "Lo que queda de la semana, repartido entre los días hasta el reinicio: un día tranquilo deja más para los siguientes. Cuenta desde medianoche."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Limite hebdo ÷ %lld"
+            "value": "Le reste de la semaine, réparti sur les jours avant la réinitialisation : une journée calme en laisse davantage pour les suivantes. Compté depuis minuit."
           }
         }
       }
@@ -2675,6 +2939,50 @@
           "stringUnit": {
             "state": "translated",
             "value": "Widget"
+          }
+        }
+      }
+    },
+    "Widgets have their own options: right-click a widget and choose Edit Widget.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widgets haben eigene Optionen: Rechtsklick auf ein Widget → „Widget bearbeiten“."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los widgets tienen sus propias opciones: clic derecho en un widget → Editar widget."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les widgets ont leurs propres options : clic droit sur un widget → Modifier le widget."
+          }
+        }
+      }
+    },
+    "Your plan has no 5-hour window, so the session options are hidden.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Abo hat kein 5-Stunden-Fenster, daher sind die Session-Optionen ausgeblendet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu plan no tiene ventana de 5 horas, así que las opciones de sesión están ocultas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Votre forfait n'a pas de fenêtre de 5 heures : les options de session sont masquées."
           }
         }
       }
@@ -2720,28 +3028,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "restant aujourd'hui"
-          }
-        }
-      }
-    },
-    "not reported yet": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "noch nicht gemeldet"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pas encore signalé"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "aún no informado"
           }
         }
       }

@@ -52,7 +52,7 @@ struct UsageProvider: TimelineProvider {
         return UsageEntry(date: Date(),
                           snapshot: snapshot,
                           loggedIn: TokenStore.load() != nil,
-                          showSecondary: settings.showSecondary,
+                          showSecondary: true,
                           resetFormat: settings.resetDisplay,
                           history: history,
                           hiddenModels: settings.hiddenModels,

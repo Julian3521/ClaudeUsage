@@ -85,7 +85,7 @@ struct MenuContentView: View {
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
                      resetFormat: fmt, windowHours: 168,
                      runsOutAt: runsOut(s.weeklyPercent) { $0.weekly })
-            // Empty unless the model rows are switched on, so no extra guard here.
+            // Only the models switched on under Menu panel.
             let models = s.visibleModels(settings)
             ForEach(models) { model in
                 UsageBar(title: "Weekly · \(model.displayName) (7d)",
@@ -93,7 +93,7 @@ struct MenuContentView: View {
                          resetFormat: fmt, windowHours: 168,
                          runsOutAt: runsOut(model.percent) { $0.models[model.key] })
             }
-            if settings.showSecondary, settings.showSpend, let spend = s.spendText {
+            if settings.showSpend, let spend = s.spendText {
                 HStack {
                     Text("Extra usage").font(.subheadline.weight(.semibold))
                     Spacer()

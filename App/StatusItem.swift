@@ -222,12 +222,14 @@ final class StatusItemController {
         guard let button = statusItem.button else { return }
         let settings = AppSettings.shared.settings
         if let snapshot = viewModel.snapshot {
-            let values = settings.menuBarStyle == .combinedRing
+            let style = settings.shownStyle(hasSession: snapshot.hasSession)
+            let values = style == .combinedRing
                 ? [snapshot.sessionPercent, snapshot.weeklyPercent]
-                : settings.menuBarMetric.values(snapshot, today: viewModel.dailyBudget)
+                : settings.shownMetric(hasSession: snapshot.hasSession)
+                    .values(snapshot, today: viewModel.dailyBudget)
             button.image = StatusItemRenderer.image(
                 values: values,
-                style: settings.menuBarStyle,
+                style: style,
                 showPercent: settings.menuBarShowPercent,
                 rateLimited: viewModel.isRateLimited)
             button.toolTip = "Claude Usage"

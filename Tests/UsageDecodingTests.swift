@@ -129,8 +129,31 @@ final class UsageDecodingTests: XCTestCase {
         settings.hiddenModels = ["opus"]
         XCTAssertEqual(UsageSnapshot.sample.visibleModels(settings).map(\.key),
                        ["fable", "sonnet"])
-        settings.showSecondary = false
-        XCTAssertTrue(UsageSnapshot.sample.visibleModels(settings).isEmpty)
+    }
+
+    /// The old master switch, when off, carries over as every row switched off.
+    func testLegacyShowSecondaryMigrates() throws {
+        let off = try JSONDecoder().decode(Settings.self, from: Data(#"{"showSecondary":false}"#.utf8))
+        XCTAssertTrue(UsageSnapshot.sample.visibleModels(off).isEmpty)
+        XCTAssertFalse(off.showSpend)
+        let on = try JSONDecoder().decode(Settings.self, from: Data(#"{"showSecondary":true}"#.utf8))
+        XCTAssertEqual(on.hiddenModels, [])
+        XCTAssertTrue(on.showSpend)
+    }
+
+    /// The menu bar never claims a choice it can't show.
+    func testShownMenuBarMetric() {
+        var s = Settings()
+        XCTAssertEqual(s.shownMetric(hasSession: true), .highest)
+        XCTAssertEqual(s.shownMetric(hasSession: false), .weekly)
+        XCTAssertFalse(s.menuBarMetrics(hasSession: false).contains(.both))
+        s.menuBarMetric = .today
+        XCTAssertEqual(s.shownMetric(hasSession: true), .weekly)   // no budget set
+        s.dailyBudget = .flexible
+        XCTAssertEqual(s.shownMetric(hasSession: false), .today)
+        s.menuBarStyle = .combinedRing
+        XCTAssertEqual(s.shownStyle(hasSession: false), .ring)
+        XCTAssertEqual(s.shownStyle(hasSession: true), .combinedRing)
     }
 
     // MARK: - Current response shape (`limits` array)

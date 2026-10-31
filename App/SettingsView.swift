@@ -8,14 +8,16 @@ struct SettingsView: View {
                 .tabItem { Label("Account", systemImage: "person.crop.circle") }
             GeneralSettings()
                 .tabItem { Label("General", systemImage: "gearshape") }
+            BudgetSettings()
+                .tabItem { Label("Budget", systemImage: "calendar") }
             MenuBarSettings()
                 .tabItem { Label("Menu bar", systemImage: "menubar.rectangle") }
             DisplaySettings()
-                .tabItem { Label("Display", systemImage: "rectangle.grid.1x2") }
+                .tabItem { Label("Menu panel", systemImage: "rectangle.grid.1x2") }
             AboutSettings()
                 .tabItem { Label("About", systemImage: "info.circle") }
         }
-        .frame(width: 470, height: 410)
+        .frame(width: 500, height: 430)
     }
 }
 
@@ -109,6 +111,7 @@ private struct AccountSettings: View {
 
 private struct GeneralSettings: View {
     @Bindable private var settings = AppSettings.shared
+    private let viewModel = UsageViewModel.shared
 
     var body: some View {
         Form {
@@ -119,35 +122,24 @@ private struct GeneralSettings: View {
                 }
             }
 
-            Section("Notifications") {
+            Section {
                 Toggle("Notify near limit", isOn: $settings.settings.notifyAtHighUsage)
                 Picker("Alert at", selection: $settings.settings.notifyThreshold) {
                     ForEach(Settings.thresholdOptions, id: \.self) { Text(verbatim: "\($0)%").tag($0) }
                 }
                 .disabled(!settings.settings.notifyAtHighUsage)
-            }
-
-            Section {
-                Picker("Daily budget", selection: $settings.settings.dailyBudget) {
-                    Text("Off").tag(DailyBudgetMode.off)
-                    Text("Flexible (what's left ÷ days to reset)").tag(DailyBudgetMode.flexible)
-                    ForEach(Settings.dailyBudgetDays, id: \.self) { days in
-                        (Text("Weekly ÷ \(days)") + Text(verbatim: " (\(Int((100 / Double(days)).rounded()))%)"))
-                            .tag(DailyBudgetMode.even(days: days))
-                    }
-                }
-                Toggle("Warn when nearly or fully used up", isOn: $settings.settings.notifyDailyBudget)
-                    .disabled(settings.settings.dailyBudget == .off)
             } header: {
-                Text("Daily budget")
+                Text("Notifications")
             } footer: {
-                Text("Splits the weekly limit into a daily allowance, so one long day can't eat the whole week. Flexible spreads what's left over the days until the reset, so a quiet day leaves more for the next. Counts usage since midnight.")
+                Text("Daily budget warnings are under Budget.")
             }
 
             // Plans without a 5-hour window (Max 20x) have no sessions to open.
-            if UsageViewModel.shared.snapshot?.hasSession ?? true {
+            if viewModel.snapshot?.hasSession ?? true {
                 Section {
                     Toggle("Auto-open new sessions", isOn: $settings.settings.autoOpenSession)
+                } header: {
+                    Text("Session windows")
                 } footer: {
                     Text("Sends a tiny request about a minute after each 5-hour reset, so a fresh window opens immediately and keeps rolling. Uses minimal quota.")
                 }
@@ -164,10 +156,104 @@ private struct GeneralSettings: View {
         .onChange(of: settings.settings.notifyAtHighUsage) { _, on in
             if on { UsageNotifier.requestAuthorization() }
         }
+    }
+}
+
+private struct BudgetSettings: View {
+    @Bindable private var settings = AppSettings.shared
+    private let viewModel = UsageViewModel.shared
+
+    private enum Kind: Hashable { case off, fixed, flexible }
+
+    /// Off / fixed / flexible as one segmented choice; the day count for a
+    /// fixed budget sits in its own picker below.
+    private var kind: Binding<Kind> {
+        Binding(
+            get: {
+                switch settings.settings.dailyBudget {
+                case .off: .off
+                case .even: .fixed
+                case .flexible: .flexible
+                }
+            },
+            set: { kind in
+                switch kind {
+                case .off: settings.settings.dailyBudget = .off
+                case .fixed: if case .even = settings.settings.dailyBudget {} else {
+                    settings.settings.dailyBudget = .even(days: 7)
+                }
+                case .flexible: settings.settings.dailyBudget = .flexible
+                }
+            })
+    }
+
+    private var days: Binding<Int> {
+        Binding(
+            get: { if case .even(let days) = settings.settings.dailyBudget { days } else { 7 } },
+            set: { settings.settings.dailyBudget = .even(days: $0) })
+    }
+
+    private var explanation: LocalizedStringKey {
+        switch settings.settings.dailyBudget {
+        case .off:
+            "Splits the weekly limit into a daily allowance, so one long day can't use up the whole week."
+        case .even:
+            "The same share every day; unused budget doesn't carry over. Counts from midnight."
+        case .flexible:
+            "What's left of the week, spread over the days until it resets — a quiet day leaves more for the next. Counts from midnight."
+        }
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                Picker("Daily budget", selection: kind) {
+                    Text("Off").tag(Kind.off)
+                    Text("Fixed").tag(Kind.fixed)
+                    Text("Flexible").tag(Kind.flexible)
+                }
+                .pickerStyle(.segmented)
+                if case .even = settings.settings.dailyBudget {
+                    Picker("Spread the week over", selection: days) {
+                        ForEach(Settings.dailyBudgetDays, id: \.self) { days in
+                            (Text("\(days) days") + Text(verbatim: " · \(Int((100 / Double(days)).rounded()))%"))
+                                .tag(days)
+                        }
+                    }
+                }
+            } footer: {
+                Text(explanation)
+            }
+
+            if settings.settings.dailyBudget != .off {
+                Section("Today — share of the weekly limit") {
+                    if let daily = viewModel.dailyBudget {
+                        LabeledContent("Budget", value: Self.percent(daily.budget))
+                        LabeledContent("Used", value: Self.percent(daily.used))
+                        LabeledContent("Left", value: Self.percent(daily.remaining))
+                    } else {
+                        Text("Shown once usage has been loaded.")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Section {
+                    Toggle("Warn when nearly or fully used up", isOn: $settings.settings.notifyDailyBudget)
+                } footer: {
+                    Text("One notification at \(Int(UsageNotifier.dailyWarningShare * 100))% of the day's budget, another when it's used up.")
+                }
+            }
+        }
+        .formStyle(.grouped)
         .onChange(of: settings.settings.dailyBudget) { _, mode in
             if mode != .off, settings.settings.notifyDailyBudget { UsageNotifier.requestAuthorization() }
         }
+        .onChange(of: settings.settings.notifyDailyBudget) { _, on in
+            if on { UsageNotifier.requestAuthorization() }
+        }
     }
+
+    private static func percent(_ value: Double) -> String { "\(Int(value.rounded()))%" }
 }
 
 private struct MenuBarSettings: View {
@@ -176,29 +262,31 @@ private struct MenuBarSettings: View {
 
     private var hasSession: Bool { viewModel.snapshot?.hasSession ?? true }
 
-    /// Session metrics only where the plan has a 5-hour window — but always the
-    /// current choice, so the picker never shows an empty selection.
-    private var metrics: [MenuBarMetric] {
-        MenuBarMetric.allCases.filter {
-            hasSession || !$0.needsSession || $0 == settings.settings.menuBarMetric
-        }
-    }
-
     var body: some View {
         Form {
             Section("Preview") { preview }
             Section {
-                Picker("Show", selection: $settings.settings.menuBarMetric) {
-                    ForEach(metrics, id: \.self) {
+                // Bound to what the menu bar really shows, so a choice the plan
+                // can't back never sits in the picker as if it applied.
+                Picker("Show", selection: Binding(
+                    get: { settings.settings.shownMetric(hasSession: hasSession) },
+                    set: { settings.settings.menuBarMetric = $0 })) {
+                    ForEach(settings.settings.menuBarMetrics(hasSession: hasSession), id: \.self) {
                         Text(LocalizedStringKey($0.label)).tag($0)
                     }
                 }
-                Picker("Style", selection: $settings.settings.menuBarStyle) {
-                    ForEach(MenuBarStyle.allCases, id: \.self) {
+                Picker("Style", selection: Binding(
+                    get: { settings.settings.shownStyle(hasSession: hasSession) },
+                    set: { settings.settings.menuBarStyle = $0 })) {
+                    ForEach(MenuBarStyle.allCases.filter { hasSession || $0 != .combinedRing }, id: \.self) {
                         Text(LocalizedStringKey($0.label)).tag($0)
                     }
                 }
                 Toggle("Percentage", isOn: $settings.settings.menuBarShowPercent)
+            } footer: {
+                if !hasSession {
+                    Text("Your plan has no 5-hour window, so the session options are hidden.")
+                }
             }
         }
         .formStyle(.grouped)
@@ -207,13 +295,14 @@ private struct MenuBarSettings: View {
     private var preview: some View {
         let s = settings.settings
         let sample = UsageSnapshot.sample.withSession(hasSession)
-        let values = s.menuBarStyle == .combinedRing
+        let style = s.shownStyle(hasSession: hasSession)
+        let values = style == .combinedRing
             ? [sample.sessionPercent, sample.weeklyPercent]
-            : s.menuBarMetric.values(sample, today: s.dailyBudget == .off ? nil : .sample)
+            : s.shownMetric(hasSession: hasSession).values(sample, today: .sample)
         return HStack {
             Spacer()
             Image(nsImage: StatusItemRenderer.image(values: values,
-                                                    style: s.menuBarStyle,
+                                                    style: style,
                                                     showPercent: s.menuBarShowPercent))
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
@@ -227,60 +316,45 @@ private struct DisplaySettings: View {
     @Bindable private var settings = AppSettings.shared
     private let viewModel = UsageViewModel.shared
 
-    /// The models to offer: whatever the account currently reports, plus the
-    /// ones we know of — so a limit can be switched on before it first appears.
+    /// The models the account reports; before the first fetch, the ones we
+    /// know of. Anything new shows up by default once it's reported.
     private var modelKeys: [String] {
         let reported = viewModel.snapshot?.models.map(\.key) ?? []
-        return ModelUsage.sorted(Set(reported + ModelUsage.knownOrder)
-            .map { ModelUsage(key: $0, percent: 0, resetsAt: nil) }).map(\.key)
+        return reported.isEmpty ? ModelUsage.knownOrder : reported
     }
 
     var body: some View {
         Form {
             Section {
-                Toggle("Show per-model limits & spend", isOn: $settings.settings.showSecondary)
+                ForEach(modelKeys, id: \.self) { key in
+                    let model = ModelUsage(key: key, percent: 0, resetsAt: nil)
+                    Toggle(isOn: modelBinding(key)) {
+                        HStack(spacing: 6) {
+                            Circle().fill(model.tint).frame(width: 8, height: 8)
+                            Text("Weekly · \(model.displayName)")
+                        }
+                    }
+                }
+                Toggle("Extra usage (spend)", isOn: $settings.settings.showSpend)
+            } header: {
+                Text("Shown in the panel")
+            } footer: {
+                Text("New models show up here once your account reports them.")
+            }
+
+            Section {
                 Picker("Reset display", selection: $settings.settings.resetDisplay) {
                     ForEach(ResetFormat.allCases, id: \.self) {
                         Text(LocalizedStringKey($0.label)).tag($0)
                     }
                 }
-            } header: {
-                Text("Menu panel")
             } footer: {
-                Text("These apply to the menu panel. Each widget is configured separately — right-click it and choose Edit Widget. Weekday and Date include the day for the weekly window.")
-            }
-
-            Section {
-                ForEach(modelKeys, id: \.self) { key in
-                    Toggle(isOn: modelBinding(key)) {
-                        HStack(spacing: 6) {
-                            Circle().fill(ModelUsage(key: key, percent: 0, resetsAt: nil).tint)
-                                .frame(width: 8, height: 8)
-                            Text(verbatim: ModelUsage(key: key, percent: 0, resetsAt: nil).displayName)
-                            if viewModel.snapshot != nil, !reports(key) {
-                                Text("not reported yet")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    .disabled(!settings.settings.showSecondary)
-                }
-                Toggle("Extra usage (spend)", isOn: $settings.settings.showSpend)
-                    .disabled(!settings.settings.showSecondary)
-            } header: {
-                Text("Weekly limits per model")
-            } footer: {
-                Text("Anthropic reports a separate weekly window per model. Models your account doesn't have yet stay hidden until they appear — they then show up automatically.")
+                Text("Widgets have their own options: right-click a widget and choose Edit Widget.")
             }
 
             Section("Preview") { preview }
         }
         .formStyle(.grouped)
-    }
-
-    private func reports(_ key: String) -> Bool {
-        viewModel.snapshot?.models.contains { $0.key == key } ?? false
     }
 
     private func modelBinding(_ key: String) -> Binding<Bool> {
@@ -294,10 +368,14 @@ private struct DisplaySettings: View {
     }
 
     private var preview: some View {
+        let hasSession = viewModel.snapshot?.hasSession ?? true
         let snapshot = UsageSnapshot.sample
         let fmt = settings.settings.resetDisplay
         return VStack(alignment: .leading, spacing: 10) {
-            if viewModel.snapshot?.hasSession ?? true {
+            if settings.settings.dailyBudget != .off {
+                DailyBudgetBar(budget: .sample, resetFormat: fmt)
+            }
+            if hasSession {
                 UsageBar(title: "Session", percent: snapshot.sessionPercent,
                          resetsAt: snapshot.sessionResetsAt, resetFormat: fmt)
             }

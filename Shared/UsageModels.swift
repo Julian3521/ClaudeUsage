@@ -265,7 +265,7 @@ struct UsageSnapshot: Codable, Equatable {
 
     /// The model rows to show, honouring the per-model toggles in Settings.
     func visibleModels(_ settings: Settings) -> [ModelUsage] {
-        settings.showSecondary ? models.filter { settings.showsModel($0.key) } : []
+        models.filter { settings.showsModel($0.key) }
     }
 
     /// Formatted spend, e.g. "€0.00 / €10.00", when a limit is present.

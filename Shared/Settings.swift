@@ -16,8 +16,9 @@ enum MenuBarMetric: String, Codable, CaseIterable, Sendable {
         }
     }
 
-    /// Only meaningful on plans with a 5-hour window.
-    var needsSession: Bool { self == .session || self == .both }
+    /// Only meaningful on plans with a 5-hour window ("highest of both" is
+    /// just weekly without one).
+    var needsSession: Bool { self == .session || self == .both || self == .highest }
 
     /// The percentage value(s) to display for this metric (1 or 2). `.today`
     /// shows the share of today's budget used, and the weekly value while no
@@ -88,7 +89,6 @@ struct Settings: Codable, Equatable, Sendable {
     var menuBarMetric: MenuBarMetric = .highest
     var menuBarStyle: MenuBarStyle = .bar
     var menuBarShowPercent = true
-    var showSecondary = true          // master switch for the per-model + spend rows
     /// Per-model rows switched off individually (keys as reported by the API,
     /// e.g. "opus", "fable"). Storing what's *hidden* means a model Anthropic
     /// adds later shows up by default instead of silently staying off.
@@ -114,16 +114,36 @@ struct Settings: Codable, Equatable, Sendable {
     init() {}
 
     /// Whether the weekly row for `key` ("opus", "fable", …) is shown.
-    func showsModel(_ key: String) -> Bool { showSecondary && !hiddenModels.contains(key) }
+    func showsModel(_ key: String) -> Bool { !hiddenModels.contains(key) }
+
+    /// Menu-bar choices that mean something right now: the session ones need a
+    /// 5-hour window, "Today" needs a daily budget.
+    func menuBarMetrics(hasSession: Bool) -> [MenuBarMetric] {
+        MenuBarMetric.allCases.filter {
+            (hasSession || !$0.needsSession) && ($0 != .today || dailyBudget != .off)
+        }
+    }
+
+    /// What the menu bar really shows: a choice the plan or the settings can't
+    /// back falls back to weekly.
+    func shownMetric(hasSession: Bool) -> MenuBarMetric {
+        menuBarMetrics(hasSession: hasSession).contains(menuBarMetric) ? menuBarMetric : .weekly
+    }
+
+    /// The combined ring overlays session on weekly — a plain ring without one.
+    func shownStyle(hasSession: Bool) -> MenuBarStyle {
+        menuBarStyle == .combinedRing && !hasSession ? .ring : menuBarStyle
+    }
 
     enum CodingKeys: String, CodingKey {
-        case menuBarMetric, menuBarStyle, menuBarShowPercent, showSecondary
+        case menuBarMetric, menuBarStyle, menuBarShowPercent
         case hiddenModels, showSpend
         case refreshMinutes, notifyAtHighUsage, notifyThreshold
         case resetDisplay, autoOpenSession
         case dailyBudget, notifyDailyBudget
         case menuBarShowBar      // legacy (Bool) — migrated to menuBarStyle
         case showAbsoluteReset   // legacy (Bool) — migrated to resetDisplay
+        case showSecondary       // legacy (Bool) — migrated to hiddenModels + showSpend
     }
 
     // Lenient decoding so older stored settings keep working.
@@ -136,9 +156,14 @@ struct Settings: Codable, Equatable, Sendable {
             menuBarStyle = ((try? c.decode(Bool.self, forKey: .menuBarShowBar)) ?? true) ? .bar : .none
         }
         menuBarShowPercent = (try? c.decode(Bool.self, forKey: .menuBarShowPercent)) ?? true
-        showSecondary = (try? c.decode(Bool.self, forKey: .showSecondary)) ?? true
         hiddenModels = (try? c.decode(Set<String>.self, forKey: .hiddenModels)) ?? []
         showSpend = (try? c.decode(Bool.self, forKey: .showSpend)) ?? true
+        // The master switch over the model rows + spend is gone; "off" carries
+        // over as each of those rows switched off.
+        if (try? c.decode(Bool.self, forKey: .showSecondary)) == false {
+            hiddenModels.formUnion(ModelUsage.knownOrder)
+            showSpend = false
+        }
         let storedRefresh = (try? c.decode(Int.self, forKey: .refreshMinutes)) ?? 30
         refreshMinutes = Settings.refreshOptions.contains(storedRefresh) ? storedRefresh : 30
         notifyAtHighUsage = (try? c.decode(Bool.self, forKey: .notifyAtHighUsage)) ?? false
@@ -164,7 +189,6 @@ struct Settings: Codable, Equatable, Sendable {
         try c.encode(menuBarMetric, forKey: .menuBarMetric)
         try c.encode(menuBarStyle, forKey: .menuBarStyle)
         try c.encode(menuBarShowPercent, forKey: .menuBarShowPercent)
-        try c.encode(showSecondary, forKey: .showSecondary)
         try c.encode(hiddenModels, forKey: .hiddenModels)
         try c.encode(showSpend, forKey: .showSpend)
         try c.encode(refreshMinutes, forKey: .refreshMinutes)
