@@ -16,6 +16,20 @@ enum UsageNotifier {
         }
     }
 
+    /// Once per day, when today's usage reaches the daily budget.
+    static func checkDaily(_ daily: DailyBudget, now: Date = Date()) {
+        guard daily.used >= daily.budget else { return }
+        let flagKey = "notified.dailyBudget"
+        let day = Calendar.current.startOfDay(for: now).timeIntervalSince1970
+        let defaults = UserDefaults.standard
+        guard defaults.double(forKey: flagKey) != day else { return }
+        defaults.set(day, forKey: flagKey)
+        let used = "\(Int(daily.used.rounded()))%"
+        let budget = "\(Int(daily.budget.rounded()))%"
+        post(title: String(localized: "Daily budget used up"),
+             body: String(localized: "Used today: \(used) of the weekly limit (budget \(budget))"))
+    }
+
     private static func evaluate(_ key: String, _ name: String,
                                  _ percent: Double, _ threshold: Double) {
         let flagKey = "notified.\(key)"

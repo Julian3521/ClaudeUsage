@@ -180,6 +180,67 @@ struct UsageBar: View {
     }
 }
 
+/// Today's usage against the daily budget: the bar fills toward the budget,
+/// not toward the weekly limit, and empties again at midnight.
+struct DailyBudgetBar: View {
+    let budget: DailyBudget
+    var resetFormat: ResetFormat = .relative
+
+    private var nextDay: Date {
+        let calendar = Calendar.current
+        return calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: Date())) ?? Date()
+    }
+
+    private var usedText: String {
+        "\(Int(budget.used.rounded()))% / \(Int(budget.budget.rounded()))%"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("Today (daily budget)").font(.subheadline.weight(.semibold))
+                Spacer()
+                Text(verbatim: usedText)
+                    .font(.subheadline.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.secondary.opacity(0.2))
+                    Capsule()
+                        .fill(UsageFormat.color(for: budget.percent))
+                        .frame(width: max(4, geo.size.width * min(1, budget.percent / 100)))
+                }
+            }
+            .frame(height: 8)
+            HStack(spacing: 6) {
+                Text(UsageFormat.resetLabel(nextDay, format: resetFormat))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Spacer(minLength: 4)
+                caption.font(.caption2.weight(.medium))
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Today (daily budget)")
+        .accessibilityValue(Text(verbatim: "\(usedText), \(UsageFormat.resetLabel(nextDay, format: resetFormat))"))
+    }
+
+    @ViewBuilder
+    private var caption: some View {
+        let left = Int(budget.remaining.rounded())
+        let over = Int((budget.used - budget.budget).rounded())
+        if left > 0 {
+            (Text(verbatim: "\(left)% ") + Text("left today"))
+                .foregroundStyle(UsageFormat.color(for: budget.percent))
+        } else if over > 0 {
+            (Text(verbatim: "\(over)% ") + Text("over budget")).foregroundStyle(.red)
+        } else {
+            Text("Budget used up").foregroundStyle(.red)
+        }
+    }
+}
+
 extension ModelUsage {
     /// Stable colour per model, so the mix bar and its legend always agree.
     var tint: Color {

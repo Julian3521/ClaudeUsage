@@ -128,6 +128,22 @@ private struct GeneralSettings: View {
             }
 
             Section {
+                Picker("Daily budget", selection: $settings.settings.dailyBudgetDays) {
+                    Text("Off").tag(0)
+                    ForEach(Settings.dailyBudgetOptions, id: \.self) { days in
+                        (Text("Weekly ÷ \(days)") + Text(verbatim: " (\(Int((100 / Double(days)).rounded()))%)"))
+                            .tag(days)
+                    }
+                }
+                Toggle("Notify when used up", isOn: $settings.settings.notifyDailyBudget)
+                    .disabled(settings.settings.dailyBudgetDays == 0)
+            } header: {
+                Text("Daily budget")
+            } footer: {
+                Text("Splits the weekly limit into a daily allowance, so one long day can't eat the whole week. Counts usage since midnight; the menu shows what's left today.")
+            }
+
+            Section {
                 Toggle("Auto-open new sessions", isOn: $settings.settings.autoOpenSession)
             } footer: {
                 Text("Sends a tiny request about a minute after each 5-hour reset, so a fresh window opens immediately and keeps rolling. Uses minimal quota.")
@@ -143,6 +159,9 @@ private struct GeneralSettings: View {
         .formStyle(.grouped)
         .onChange(of: settings.settings.notifyAtHighUsage) { _, on in
             if on { UsageNotifier.requestAuthorization() }
+        }
+        .onChange(of: settings.settings.dailyBudgetDays) { _, days in
+            if days > 0, settings.settings.notifyDailyBudget { UsageNotifier.requestAuthorization() }
         }
     }
 }
@@ -174,7 +193,7 @@ private struct MenuBarSettings: View {
         let s = settings.settings
         let values = s.menuBarStyle == .combinedRing
             ? [UsageSnapshot.sample.sessionPercent, UsageSnapshot.sample.weeklyPercent]
-            : s.menuBarMetric.values(.sample)
+            : s.menuBarMetric.values(.sample, today: .sample)
         return HStack {
             Spacer()
             Image(nsImage: StatusItemRenderer.image(values: values,

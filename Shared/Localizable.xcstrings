@@ -231,6 +231,28 @@
         }
       }
     },
+    "Budget used up": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Budget aufgebraucht"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presupuesto agotado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Budget épuisé"
+          }
+        }
+      }
+    },
     "Cancel": {
       "extractionState": "stale",
       "localizations": {
@@ -542,6 +564,50 @@
           "stringUnit": {
             "state": "translated",
             "value": "Session actuelle (5 h)"
+          }
+        }
+      }
+    },
+    "Daily budget": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagesbudget"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presupuesto diario"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Budget quotidien"
+          }
+        }
+      }
+    },
+    "Daily budget used up": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagesbudget aufgebraucht"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presupuesto diario agotado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Budget quotidien épuisé"
           }
         }
       }
@@ -946,6 +1012,50 @@
           "stringUnit": {
             "state": "translated",
             "value": "Notifier près de la limite"
+          }
+        }
+      }
+    },
+    "Notify when used up": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benachrichtigen, wenn aufgebraucht"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avisar al agotarse"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifier une fois épuisé"
+          }
+        }
+      }
+    },
+    "Off": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desactivado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Désactivé"
           }
         }
       }
@@ -1944,6 +2054,28 @@
         }
       }
     },
+    "Splits the weekly limit into a daily allowance, so one long day can't eat the whole week. Counts usage since midnight; the menu shows what's left today.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teilt das Wochenlimit in ein Tagesbudget auf, damit ein langer Tag nicht die ganze Woche aufbraucht. Gezählt wird ab Mitternacht; das Menü zeigt, was heute noch übrig ist."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reparte el límite semanal en un presupuesto diario, para que un día largo no agote toda la semana. Cuenta desde medianoche; el menú muestra lo que queda hoy."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répartit la limite hebdomadaire en un budget quotidien, pour qu'une longue journée n'épuise pas toute la semaine. Compté depuis minuit ; le menu indique ce qu'il reste aujourd'hui."
+          }
+        }
+      }
+    },
     "Start session window now": {
       "extractionState": "stale",
       "localizations": {
@@ -2029,6 +2161,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "S’appliquent au panneau du menu. Chaque widget se configure séparément — clic droit puis « Modifier le widget ». Jour et Date affichent le jour pour la fenêtre hebdomadaire."
+          }
+        }
+      }
+    },
+    "Today (daily budget)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute (Tagesbudget)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoy (presupuesto diario)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aujourd'hui (budget quotidien)"
           }
         }
       }
@@ -2164,6 +2318,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Limite presque atteinte"
+          }
+        }
+      }
+    },
+    "Used today: %@ of the weekly limit (budget %@)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute verbraucht: %@ des Wochenlimits (Budget %@)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usado hoy: %@ del límite semanal (presupuesto %@)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisé aujourd'hui : %@ de la limite hebdo (budget %@)"
           }
         }
       }
@@ -2392,6 +2568,28 @@
         }
       }
     },
+    "Weekly ÷ %lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wochenlimit ÷ %lld"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Límite semanal ÷ %lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limite hebdo ÷ %lld"
+          }
+        }
+      }
+    },
     "Widget": {
       "extractionState": "stale",
       "localizations": {
@@ -2434,6 +2632,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vos limites de session et hebdomadaires en un coup d’œil."
+          }
+        }
+      }
+    },
+    "left today": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "heute übrig"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "restante hoy"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "restant aujourd'hui"
           }
         }
       }
@@ -2501,6 +2721,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "dans les temps"
+          }
+        }
+      }
+    },
+    "over budget": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "über Budget"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "por encima del presupuesto"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "au-delà du budget"
           }
         }
       }

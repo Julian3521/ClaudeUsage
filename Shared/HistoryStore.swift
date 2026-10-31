@@ -91,10 +91,81 @@ enum UsageForecast {
     }
 }
 
+/// Today's slice of the weekly limit against a fixed daily allowance, so one
+/// long day can't burn through the whole week. The endpoint only reports the
+/// weekly total, so the day's usage is diffed out of the history.
+struct DailyBudget: Equatable, Sendable {
+    /// Weekly percentage points used since local midnight.
+    var used: Double
+    /// Weekly percentage points allowed per day.
+    var budget: Double
+    /// What the weekly limit itself still has room for.
+    var weeklyLeft: Double
+
+    /// Share of today's budget used: 100 = budget reached, above = over it.
+    var percent: Double { budget > 0 ? used / budget * 100 : 0 }
+
+    /// Points left today — never more than the weekly limit still allows.
+    var remaining: Double { min(max(0, budget - used), weeklyLeft) }
+
+    /// `nil` while no daily budget is set (`days` == 0).
+    static func today(history: [HistoryPoint], snapshot: UsageSnapshot, days: Int,
+                      now: Date = Date(), calendar: Calendar = .current) -> DailyBudget? {
+        guard days > 0 else { return nil }
+        var series: [UsageForecast.Sample] = history.map { ($0.date, $0.weekly) }
+        if series.last?.date ?? .distantPast < snapshot.fetchedAt {
+            series.append((snapshot.fetchedAt, snapshot.weeklyPercent))
+        }
+        return DailyBudget(used: usedToday(series, now: now, calendar: calendar),
+                           budget: 100 / Double(days),
+                           weeklyLeft: max(0, 100 - snapshot.weeklyPercent))
+    }
+
+    /// Weekly points used since the start of `now`'s day. The level at midnight
+    /// is interpolated between the samples around it — the Mac is often asleep
+    /// then, and a reading from days ago must not count wholly as today. A drop
+    /// of more than 1pp is a weekly reset: the new window counts from zero.
+    static func usedToday(_ series: [UsageForecast.Sample], now: Date,
+                          calendar: Calendar = .current) -> Double {
+        let midnight = calendar.startOfDay(for: now)
+        let today = series.filter { $0.date >= midnight && $0.date <= now }
+        guard let first = today.first else { return 0 }
+
+        var level = first.percent
+        if let before = series.last(where: { $0.date < midnight }) {
+            if first.percent < before.percent - 1 {
+                level = 0      // reset overnight: all of today's reading is new
+            } else {
+                let span = first.date.timeIntervalSince(before.date)
+                let t = span > 0 ? midnight.timeIntervalSince(before.date) / span : 1
+                level = before.percent + (first.percent - before.percent) * t
+            }
+        }
+
+        var used = 0.0
+        for sample in today {
+            if sample.percent < level - 1 {
+                used += sample.percent
+                level = sample.percent
+            } else {
+                used += max(0, sample.percent - level)
+                level = max(level, sample.percent)
+            }
+        }
+        return used
+    }
+
+    /// Distinct values for settings previews.
+    static let sample = DailyBudget(used: 9, budget: 100 / 7, weeklyLeft: 32)
+}
+
 /// A rolling history of usage points, persisted in the shared Keychain group.
 enum HistoryStore {
     private static let account = "history"
-    static let maxPoints = 96   // ~32h at a 20-minute interval
+    /// Two days, so the daily budget still finds the last reading before
+    /// midnight on a day of frequent refreshes.
+    static let retention: TimeInterval = 48 * 3600
+    static let maxPoints = 400   // hard cap — 48h at a ~7-minute average
 
     static func load() -> [HistoryPoint] {
         guard let data = Keychain.load(baseQuery()),
@@ -111,6 +182,7 @@ enum HistoryStore {
             weekly: snapshot.weeklyPercent,
             models: Dictionary(snapshot.models.map { ($0.key, $0.percent) },
                                uniquingKeysWith: { a, _ in a })))
+        points.removeAll { snapshot.fetchedAt.timeIntervalSince($0.date) > retention }
         if points.count > maxPoints { points.removeFirst(points.count - maxPoints) }
         save(points)
     }

@@ -71,6 +71,10 @@ struct MenuContentView: View {
                                   currentAt: s.fetchedAt, value: value)
         }
         return VStack(alignment: .leading, spacing: 14) {
+            if let daily = DailyBudget.today(history: history, snapshot: s,
+                                             days: settings.dailyBudgetDays) {
+                DailyBudgetBar(budget: daily, resetFormat: fmt)
+            }
             UsageBar(title: "Current session (5h)",
                      percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
                      resetFormat: fmt, windowHours: 5,

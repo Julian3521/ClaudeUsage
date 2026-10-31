@@ -224,7 +224,7 @@ final class StatusItemController {
         if let snapshot = viewModel.snapshot {
             let values = settings.menuBarStyle == .combinedRing
                 ? [snapshot.sessionPercent, snapshot.weeklyPercent]
-                : settings.menuBarMetric.values(snapshot)
+                : settings.menuBarMetric.values(snapshot, today: viewModel.dailyBudget)
             button.image = StatusItemRenderer.image(
                 values: values,
                 style: settings.menuBarStyle,

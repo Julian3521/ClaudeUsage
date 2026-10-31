@@ -274,6 +274,93 @@ final class UsageDecodingTests: XCTestCase {
         XCTAssertEqual(points.first?.models, [:])
     }
 
+    // MARK: - Daily budget
+
+    /// A fixed UTC day, so the tests don't depend on the machine's time zone.
+    private var utc: Calendar {
+        var c = Calendar(identifier: .gregorian)
+        c.timeZone = TimeZone(identifier: "UTC")!
+        return c
+    }
+
+    /// 2026-10-31 00:00 UTC, offset by `hours`.
+    private func at(_ hours: Double) -> Date {
+        Date(timeIntervalSince1970: 1_793_404_800 + hours * 3600)
+    }
+
+    private func usedToday(_ points: [(Double, Double)], nowHours: Double = 20) -> Double {
+        DailyBudget.usedToday(points.map { (at($0.0), $0.1) }, now: at(nowHours), calendar: utc)
+    }
+
+    func testDailyUsageCountsSinceMidnight() {
+        XCTAssertEqual(usedToday([(-1, 20), (9, 20), (12, 26)]), 6)
+    }
+
+    /// Overnight growth is split at midnight, not booked wholly to today.
+    func testDailyUsageInterpolatesAcrossMidnight() {
+        XCTAssertEqual(usedToday([(-2, 20), (2, 24)]), 2, accuracy: 0.001)
+        // Mac off for three days: only the share after midnight counts.
+        XCTAssertEqual(usedToday([(-72, 20), (8, 60)]), 4, accuracy: 0.001)
+    }
+
+    /// A weekly reset during the day: the new window counts from zero.
+    func testDailyUsageAcrossReset() {
+        XCTAssertEqual(usedToday([(0, 90), (8, 95), (10, 2), (12, 5)]), 10)
+        // Reset overnight: everything read today is today's.
+        XCTAssertEqual(usedToday([(-1, 90), (9, 3)]), 3)
+    }
+
+    /// Rounding wobble is neither a reset nor counted twice.
+    func testDailyUsageIgnoresNoise() {
+        XCTAssertEqual(usedToday([(0, 20), (1, 19.5), (2, 20), (3, 21)]), 1)
+    }
+
+    func testDailyUsageWithoutTodaysSamplesIsZero() {
+        XCTAssertEqual(usedToday([(-5, 20), (-1, 30)]), 0)
+        XCTAssertEqual(usedToday([]), 0)
+    }
+
+    func testDailyBudgetFromSnapshot() throws {
+        let history = [HistoryPoint(date: at(-1), session: 0, weekly: 40),
+                       HistoryPoint(date: at(9), session: 0, weekly: 40)]
+        let snapshot = UsageSnapshot(sessionPercent: 0, sessionResetsAt: nil,
+                                     weeklyPercent: 47, weeklyResetsAt: nil, fetchedAt: at(11))
+        XCTAssertNil(DailyBudget.today(history: history, snapshot: snapshot, days: 0,
+                                       now: at(12), calendar: utc))
+        let daily = try XCTUnwrap(DailyBudget.today(history: history, snapshot: snapshot,
+                                                    days: 5, now: at(12), calendar: utc))
+        XCTAssertEqual(daily.used, 7)
+        XCTAssertEqual(daily.budget, 20)
+        XCTAssertEqual(daily.remaining, 13)
+        XCTAssertEqual(daily.percent, 35)
+    }
+
+    /// What's left today never exceeds what the weekly limit still allows.
+    func testDailyRemainingCappedByWeekly() {
+        XCTAssertEqual(DailyBudget(used: 3, budget: 100 / 7, weeklyLeft: 5).remaining, 5)
+        XCTAssertEqual(DailyBudget(used: 20, budget: 100 / 7, weeklyLeft: 50).remaining, 0)
+    }
+
+    func testTodayMetricFallsBackToWeekly() {
+        let s = UsageSnapshot.sample
+        XCTAssertEqual(MenuBarMetric.today.values(s), [s.weeklyPercent])
+        XCTAssertEqual(MenuBarMetric.today.values(s, today: DailyBudget(used: 7, budget: 14, weeklyLeft: 50)),
+                       [50])
+    }
+
+    /// Older settings have no daily budget; unknown values fall back to off.
+    func testDailyBudgetSettingDecodes() throws {
+        let legacy = try JSONDecoder().decode(Settings.self, from: Data("{}".utf8))
+        XCTAssertEqual(legacy.dailyBudgetDays, 0)
+        XCTAssertTrue(legacy.notifyDailyBudget)
+        let odd = try JSONDecoder().decode(Settings.self, from: Data(#"{"dailyBudgetDays":3}"#.utf8))
+        XCTAssertEqual(odd.dailyBudgetDays, 0)
+        var s = Settings()
+        s.dailyBudgetDays = 7
+        let round = try JSONDecoder().decode(Settings.self, from: JSONEncoder().encode(s))
+        XCTAssertEqual(round.dailyBudgetDays, 7)
+    }
+
     func testFractionUtilizationClamped() throws {
         // A 0...1 style value should still be treated as a percent (clamped 0...100).
         let r = try JSONDecoder().decode(UsageResponse.self,

@@ -44,6 +44,13 @@ final class UsageViewModel {
         return nil
     }
 
+    /// Today's slice of the weekly limit, while a daily budget is set.
+    var dailyBudget: DailyBudget? {
+        let days = AppSettings.shared.settings.dailyBudgetDays
+        guard days > 0, let snapshot else { return nil }
+        return DailyBudget.today(history: HistoryStore.load(), snapshot: snapshot, days: days)
+    }
+
     func onAppear() {
         guard isLoggedIn else { state = .loggedOut; return }
         if let cached = SnapshotStore.load() { state = .loaded(cached) }
@@ -187,6 +194,9 @@ final class UsageViewModel {
             let settings = AppSettings.shared.settings
             if settings.notifyAtHighUsage {
                 UsageNotifier.check(snapshot, threshold: Double(settings.notifyThreshold))
+            }
+            if settings.notifyDailyBudget, let daily = dailyBudget {
+                UsageNotifier.checkDaily(daily)
             }
             scheduleAutoOpen(snapshot)
         }
