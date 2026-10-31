@@ -16,15 +16,19 @@ enum MenuBarMetric: String, Codable, CaseIterable, Sendable {
         }
     }
 
+    /// Only meaningful on plans with a 5-hour window.
+    var needsSession: Bool { self == .session || self == .both }
+
     /// The percentage value(s) to display for this metric (1 or 2). `.today`
     /// shows the share of today's budget used, and the weekly value while no
-    /// daily budget is set.
+    /// daily budget is set; the session ones fall back to weekly on plans
+    /// without a 5-hour window.
     func values(_ s: UsageSnapshot, today: DailyBudget? = nil) -> [Double] {
         switch self {
-        case .session: return [s.sessionPercent]
+        case .session: return [s.hasSession ? s.sessionPercent : s.weeklyPercent]
         case .weekly: return [s.weeklyPercent]
         case .highest: return [max(s.sessionPercent, s.weeklyPercent)]
-        case .both: return [s.sessionPercent, s.weeklyPercent]
+        case .both: return s.hasSession ? [s.sessionPercent, s.weeklyPercent] : [s.weeklyPercent]
         case .today: return [today?.percent ?? s.weeklyPercent]
         }
     }
@@ -70,6 +74,16 @@ enum MenuBarStyle: String, Codable, CaseIterable, Sendable {
     }
 }
 
+/// How the weekly limit is split into a daily allowance.
+enum DailyBudgetMode: Hashable, Codable, Sendable {
+    case off
+    /// The weekly limit ÷ `days`, the same every day.
+    case even(days: Int)
+    /// What's left of the week ÷ the days until it resets, so a quiet day
+    /// leaves more for the ones after it.
+    case flexible
+}
+
 struct Settings: Codable, Equatable, Sendable {
     var menuBarMetric: MenuBarMetric = .highest
     var menuBarStyle: MenuBarStyle = .bar
@@ -85,17 +99,17 @@ struct Settings: Codable, Equatable, Sendable {
     var notifyThreshold = 90          // alert when any limit reaches this %
     var resetDisplay: ResetFormat = .relative   // countdown / weekday / date
     var autoOpenSession = false       // auto-ping ~1 min after each 5h reset
-    var dailyBudgetDays = 0           // weekly limit ÷ this per day; 0 = no daily budget
-    var notifyDailyBudget = true      // alert once a day when the budget is used up
+    var dailyBudget: DailyBudgetMode = .off
+    var notifyDailyBudget = true      // alert at 80% and when the day's budget is used up
 
     /// Allowed refresh intervals (minutes). The usage endpoint rate-limits hard,
     /// so 15 min is the lowest interval that reliably avoids 429s.
     static let refreshOptions = [15, 30, 60, 120]
     /// Selectable alert thresholds (%).
     static let thresholdOptions = [70, 75, 80, 85, 90, 95]
-    /// Selectable daily budgets, as the days the weekly limit is split over:
+    /// Selectable even splits, as the days the weekly limit is spread over:
     /// 7 → 14% a day, 5 → 20% for a five-day week, …
-    static let dailyBudgetOptions = [10, 7, 6, 5, 4]
+    static let dailyBudgetDays = [10, 7, 6, 5, 4]
 
     init() {}
 
@@ -107,7 +121,7 @@ struct Settings: Codable, Equatable, Sendable {
         case hiddenModels, showSpend
         case refreshMinutes, notifyAtHighUsage, notifyThreshold
         case resetDisplay, autoOpenSession
-        case dailyBudgetDays, notifyDailyBudget
+        case dailyBudget, notifyDailyBudget
         case menuBarShowBar      // legacy (Bool) — migrated to menuBarStyle
         case showAbsoluteReset   // legacy (Bool) — migrated to resetDisplay
     }
@@ -137,8 +151,11 @@ struct Settings: Codable, Equatable, Sendable {
             resetDisplay = .relative
         }
         autoOpenSession = (try? c.decode(Bool.self, forKey: .autoOpenSession)) ?? false
-        let storedDays = (try? c.decode(Int.self, forKey: .dailyBudgetDays)) ?? 0
-        dailyBudgetDays = Settings.dailyBudgetOptions.contains(storedDays) ? storedDays : 0
+        switch try? c.decode(DailyBudgetMode.self, forKey: .dailyBudget) {
+        case .even(let days) where Settings.dailyBudgetDays.contains(days): dailyBudget = .even(days: days)
+        case .flexible: dailyBudget = .flexible
+        default: dailyBudget = .off
+        }
         notifyDailyBudget = (try? c.decode(Bool.self, forKey: .notifyDailyBudget)) ?? true
     }
 
@@ -155,7 +172,7 @@ struct Settings: Codable, Equatable, Sendable {
         try c.encode(notifyThreshold, forKey: .notifyThreshold)
         try c.encode(resetDisplay, forKey: .resetDisplay)
         try c.encode(autoOpenSession, forKey: .autoOpenSession)
-        try c.encode(dailyBudgetDays, forKey: .dailyBudgetDays)
+        try c.encode(dailyBudget, forKey: .dailyBudget)
         try c.encode(notifyDailyBudget, forKey: .notifyDailyBudget)
     }
 }

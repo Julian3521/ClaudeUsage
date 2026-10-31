@@ -46,9 +46,9 @@ final class UsageViewModel {
 
     /// Today's slice of the weekly limit, while a daily budget is set.
     var dailyBudget: DailyBudget? {
-        let days = AppSettings.shared.settings.dailyBudgetDays
-        guard days > 0, let snapshot else { return nil }
-        return DailyBudget.today(history: HistoryStore.load(), snapshot: snapshot, days: days)
+        let mode = AppSettings.shared.settings.dailyBudget
+        guard mode != .off, let snapshot else { return nil }
+        return DailyBudget.today(history: HistoryStore.load(), snapshot: snapshot, mode: mode)
     }
 
     func onAppear() {

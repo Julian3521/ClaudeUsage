@@ -77,8 +77,15 @@ struct UsageResponse: Decodable {
         func limit(_ kind: String) -> UsageWindow? {
             limits.first { $0.kind == kind && $0.scope?.model == nil }?.window
         }
-        fiveHour = (try? c.decode(UsageWindow.self, forKey: AnyKey("five_hour")))
-            ?? limit("session")
+        // Some plans (Max 20x) no longer have a 5-hour window. Where `limits`
+        // lists the account-wide windows, a missing `session` entry means
+        // exactly that, whatever the legacy `five_hour` key still carries.
+        let legacyFiveHour = try? c.decode(UsageWindow.self, forKey: AnyKey("five_hour"))
+        if limits.contains(where: { $0.scope?.model == nil }) {
+            fiveHour = limit("session").map { legacyFiveHour ?? $0 }
+        } else {
+            fiveHour = legacyFiveHour
+        }
         sevenDay = (try? c.decode(UsageWindow.self, forKey: AnyKey("seven_day")))
             ?? limit("weekly_all")
 
@@ -228,6 +235,8 @@ struct ModelUsage: Codable, Equatable, Identifiable, Sendable {
 struct UsageSnapshot: Codable, Equatable {
     var sessionPercent: Double      // 5h window, 0...100
     var sessionResetsAt: Date?
+    /// False on plans without a 5-hour window (Max 20x): session rows hide.
+    var hasSession = true
     var weeklyPercent: Double       // 7d window, 0...100
     var weeklyResetsAt: Date?
     /// Per-model weekly windows (Opus, Sonnet, Fable, …), in display order.
@@ -241,6 +250,7 @@ struct UsageSnapshot: Codable, Equatable {
         UsageSnapshot(
             sessionPercent: r.fiveHour?.percentUsed ?? 0,
             sessionResetsAt: r.fiveHour?.resetsAt,
+            hasSession: r.fiveHour != nil,
             weeklyPercent: r.sevenDay?.percentUsed ?? 0,
             weeklyResetsAt: r.sevenDay?.resetsAt,
             models: r.models,
@@ -280,6 +290,14 @@ struct UsageSnapshot: Codable, Equatable {
         ([sessionPercent, weeklyPercent] + models.map(\.percent)).max() ?? 0
     }
 
+    /// The same snapshot on a plan without a 5-hour window (settings previews).
+    func withSession(_ has: Bool) -> UsageSnapshot {
+        var copy = self
+        copy.hasSession = has
+        if !has { copy.sessionPercent = 0; copy.sessionResetsAt = nil }
+        return copy
+    }
+
     static let placeholder = UsageSnapshot(
         sessionPercent: 8, sessionResetsAt: Date().addingTimeInterval(2.5 * 3600),
         weeklyPercent: 12, weeklyResetsAt: Date().addingTimeInterval(7 * 3600 + 600),
@@ -302,7 +320,7 @@ struct UsageSnapshot: Codable, Equatable {
 // Codable lives in an extension so the memberwise initializer stays available.
 extension UsageSnapshot {
     enum CodingKeys: String, CodingKey {
-        case sessionPercent, sessionResetsAt, weeklyPercent, weeklyResetsAt
+        case sessionPercent, sessionResetsAt, hasSession, weeklyPercent, weeklyResetsAt
         case models, spendUsed, spendLimit, spendCurrency, fetchedAt
         case opusPercent, opusResetsAt      // legacy — folded into `models`
         case sonnetPercent, sonnetResetsAt  // legacy
@@ -314,6 +332,7 @@ extension UsageSnapshot {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         sessionPercent = (try? c.decode(Double.self, forKey: .sessionPercent)) ?? 0
         sessionResetsAt = try? c.decode(Date.self, forKey: .sessionResetsAt)
+        hasSession = (try? c.decode(Bool.self, forKey: .hasSession)) ?? true
         weeklyPercent = (try? c.decode(Double.self, forKey: .weeklyPercent)) ?? 0
         weeklyResetsAt = try? c.decode(Date.self, forKey: .weeklyResetsAt)
         if let stored = try? c.decode([ModelUsage].self, forKey: .models) {
@@ -340,6 +359,7 @@ extension UsageSnapshot {
         var c = encoder.container(keyedBy: CodingKeys.self)
         try c.encode(sessionPercent, forKey: .sessionPercent)
         try c.encodeIfPresent(sessionResetsAt, forKey: .sessionResetsAt)
+        try c.encode(hasSession, forKey: .hasSession)
         try c.encode(weeklyPercent, forKey: .weeklyPercent)
         try c.encodeIfPresent(weeklyResetsAt, forKey: .weeklyResetsAt)
         try c.encode(models, forKey: .models)

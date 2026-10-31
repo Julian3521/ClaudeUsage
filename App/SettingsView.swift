@@ -128,25 +128,29 @@ private struct GeneralSettings: View {
             }
 
             Section {
-                Picker("Daily budget", selection: $settings.settings.dailyBudgetDays) {
-                    Text("Off").tag(0)
-                    ForEach(Settings.dailyBudgetOptions, id: \.self) { days in
+                Picker("Daily budget", selection: $settings.settings.dailyBudget) {
+                    Text("Off").tag(DailyBudgetMode.off)
+                    Text("Flexible (what's left ÷ days to reset)").tag(DailyBudgetMode.flexible)
+                    ForEach(Settings.dailyBudgetDays, id: \.self) { days in
                         (Text("Weekly ÷ \(days)") + Text(verbatim: " (\(Int((100 / Double(days)).rounded()))%)"))
-                            .tag(days)
+                            .tag(DailyBudgetMode.even(days: days))
                     }
                 }
-                Toggle("Notify when used up", isOn: $settings.settings.notifyDailyBudget)
-                    .disabled(settings.settings.dailyBudgetDays == 0)
+                Toggle("Warn when nearly or fully used up", isOn: $settings.settings.notifyDailyBudget)
+                    .disabled(settings.settings.dailyBudget == .off)
             } header: {
                 Text("Daily budget")
             } footer: {
-                Text("Splits the weekly limit into a daily allowance, so one long day can't eat the whole week. Counts usage since midnight; the menu shows what's left today.")
+                Text("Splits the weekly limit into a daily allowance, so one long day can't eat the whole week. Flexible spreads what's left over the days until the reset, so a quiet day leaves more for the next. Counts usage since midnight.")
             }
 
-            Section {
-                Toggle("Auto-open new sessions", isOn: $settings.settings.autoOpenSession)
-            } footer: {
-                Text("Sends a tiny request about a minute after each 5-hour reset, so a fresh window opens immediately and keeps rolling. Uses minimal quota.")
+            // Plans without a 5-hour window (Max 20x) have no sessions to open.
+            if UsageViewModel.shared.snapshot?.hasSession ?? true {
+                Section {
+                    Toggle("Auto-open new sessions", isOn: $settings.settings.autoOpenSession)
+                } footer: {
+                    Text("Sends a tiny request about a minute after each 5-hour reset, so a fresh window opens immediately and keeps rolling. Uses minimal quota.")
+                }
             }
 
             Section("Updates") {
@@ -160,21 +164,32 @@ private struct GeneralSettings: View {
         .onChange(of: settings.settings.notifyAtHighUsage) { _, on in
             if on { UsageNotifier.requestAuthorization() }
         }
-        .onChange(of: settings.settings.dailyBudgetDays) { _, days in
-            if days > 0, settings.settings.notifyDailyBudget { UsageNotifier.requestAuthorization() }
+        .onChange(of: settings.settings.dailyBudget) { _, mode in
+            if mode != .off, settings.settings.notifyDailyBudget { UsageNotifier.requestAuthorization() }
         }
     }
 }
 
 private struct MenuBarSettings: View {
     @Bindable private var settings = AppSettings.shared
+    private let viewModel = UsageViewModel.shared
+
+    private var hasSession: Bool { viewModel.snapshot?.hasSession ?? true }
+
+    /// Session metrics only where the plan has a 5-hour window — but always the
+    /// current choice, so the picker never shows an empty selection.
+    private var metrics: [MenuBarMetric] {
+        MenuBarMetric.allCases.filter {
+            hasSession || !$0.needsSession || $0 == settings.settings.menuBarMetric
+        }
+    }
 
     var body: some View {
         Form {
             Section("Preview") { preview }
             Section {
                 Picker("Show", selection: $settings.settings.menuBarMetric) {
-                    ForEach(MenuBarMetric.allCases, id: \.self) {
+                    ForEach(metrics, id: \.self) {
                         Text(LocalizedStringKey($0.label)).tag($0)
                     }
                 }
@@ -191,9 +206,10 @@ private struct MenuBarSettings: View {
 
     private var preview: some View {
         let s = settings.settings
+        let sample = UsageSnapshot.sample.withSession(hasSession)
         let values = s.menuBarStyle == .combinedRing
-            ? [UsageSnapshot.sample.sessionPercent, UsageSnapshot.sample.weeklyPercent]
-            : s.menuBarMetric.values(.sample, today: .sample)
+            ? [sample.sessionPercent, sample.weeklyPercent]
+            : s.menuBarMetric.values(sample, today: s.dailyBudget == .off ? nil : .sample)
         return HStack {
             Spacer()
             Image(nsImage: StatusItemRenderer.image(values: values,
@@ -281,8 +297,10 @@ private struct DisplaySettings: View {
         let snapshot = UsageSnapshot.sample
         let fmt = settings.settings.resetDisplay
         return VStack(alignment: .leading, spacing: 10) {
-            UsageBar(title: "Session", percent: snapshot.sessionPercent,
-                     resetsAt: snapshot.sessionResetsAt, resetFormat: fmt)
+            if viewModel.snapshot?.hasSession ?? true {
+                UsageBar(title: "Session", percent: snapshot.sessionPercent,
+                         resetsAt: snapshot.sessionResetsAt, resetFormat: fmt)
+            }
             UsageBar(title: "Weekly", percent: snapshot.weeklyPercent,
                      resetsAt: snapshot.weeklyResetsAt, resetFormat: fmt)
             ForEach(snapshot.visibleModels(settings.settings)) { model in

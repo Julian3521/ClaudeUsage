@@ -15,6 +15,8 @@ struct UsageEntry: TimelineEntry {
     /// per-model choice; the widget's own toggle only switches the group off).
     var hiddenModels: Set<String> = []
     var showSpend = true
+    /// Today's slice of the weekly limit, while the app has a daily budget set.
+    var daily: DailyBudget? = nil
 
     /// Per-model windows this widget should show, in display order.
     var models: [ModelUsage] {
@@ -46,14 +48,18 @@ struct UsageProvider: TimelineProvider {
 
     private func entry(snapshot: UsageSnapshot?) -> UsageEntry {
         let settings = SettingsStore.load()
+        let history = HistoryStore.load()
         return UsageEntry(date: Date(),
                           snapshot: snapshot,
                           loggedIn: TokenStore.load() != nil,
                           showSecondary: settings.showSecondary,
                           resetFormat: settings.resetDisplay,
-                          history: HistoryStore.load(),
+                          history: history,
                           hiddenModels: settings.hiddenModels,
-                          showSpend: settings.showSpend)
+                          showSpend: settings.showSpend,
+                          daily: snapshot.flatMap {
+                              DailyBudget.today(history: history, snapshot: $0, mode: settings.dailyBudget)
+                          })
     }
 }
 
@@ -101,14 +107,18 @@ struct ConfigurableUsageProvider: AppIntentTimelineProvider {
         // Which models to show is a global choice (Display settings); whether the
         // group appears at all stays per-widget.
         let settings = SettingsStore.load()
+        let history = HistoryStore.load()
         return UsageEntry(date: Date(),
                           snapshot: snapshot,
                           loggedIn: TokenStore.load() != nil,
                           showSecondary: config.showSecondary,
                           resetFormat: config.resetDisplay,
-                          history: HistoryStore.load(),
+                          history: history,
                           hiddenModels: settings.hiddenModels,
-                          showSpend: settings.showSpend)
+                          showSpend: settings.showSpend,
+                          daily: snapshot.flatMap {
+                              DailyBudget.today(history: history, snapshot: $0, mode: settings.dailyBudget)
+                          })
     }
 }
 
@@ -120,6 +130,26 @@ struct UsageWidgetEntryView: View {
 
     /// The one model that fits next to the session/weekly rings.
     private var leadModel: ModelUsage? { entry.models.first }
+
+    /// Three rings fit: today, session and weekly take precedence over the
+    /// lead model, which gets a ring only while one of the first two is absent.
+    private func ringModel(_ s: UsageSnapshot) -> ModelUsage? {
+        entry.daily != nil && s.hasSession ? nil : leadModel
+    }
+
+    @ViewBuilder
+    private func rings(_ s: UsageSnapshot) -> some View {
+        if let daily = entry.daily {
+            ringColumn("Today", percent: daily.percent, resetsAt: DailyBudget.endOfDay(entry.date))
+        }
+        if s.hasSession {
+            ringColumn("Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
+        }
+        ringColumn("Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
+        if let model = ringModel(s) {
+            ringColumn("\(model.displayName)", percent: model.percent, resetsAt: model.resetsAt)
+        }
+    }
 
     private func runsOut(_ current: Double, _ value: @escaping (HistoryPoint) -> Double?) -> Date? {
         guard let fetchedAt = entry.snapshot?.fetchedAt else { return nil }
@@ -148,23 +178,26 @@ struct UsageWidgetEntryView: View {
             Label("Claude", systemImage: "gauge.with.dots.needle.67percent")
                 .font(.caption.bold())
                 .foregroundStyle(.secondary)
-            UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
-                     resetFormat: entry.resetFormat)
+            if let daily = entry.daily {
+                DailyBudgetBar(budget: daily, title: "Today", resetFormat: entry.resetFormat,
+                               showsReset: false)
+            } else if s.hasSession {
+                UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
+                         resetFormat: entry.resetFormat)
+            }
             UsageBar(title: "Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
                      resetFormat: entry.resetFormat)
+            if entry.daily == nil, !s.hasSession, let model = leadModel {
+                UsageBar(title: "\(model.displayName)", percent: model.percent,
+                         resetsAt: model.resetsAt, resetFormat: entry.resetFormat)
+            }
         }
     }
 
     // Home-screen medium: rings, centered vertically.
     private func mediumView(_ s: UsageSnapshot) -> some View {
-        HStack(spacing: 24) {
-            ringColumn("Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
-            ringColumn("Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
-            if let model = leadModel {
-                ringColumn("\(model.displayName)", percent: model.percent, resetsAt: model.resetsAt)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        HStack(spacing: 24) { rings(s) }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func ringColumn(_ title: LocalizedStringKey, percent: Double, resetsAt: Date?) -> some View {
@@ -181,29 +214,30 @@ struct UsageWidgetEntryView: View {
     // Large: rings on top (with breathing room), bars below.
     private func largeView(_ s: UsageSnapshot) -> some View {
         VStack(spacing: 14) {
-            HStack(spacing: 28) {
-                ringColumn("Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt)
-                ringColumn("Weekly", percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt)
-                if let model = leadModel {
-                    ringColumn("\(model.displayName)", percent: model.percent, resetsAt: model.resetsAt)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.top, 4)
+            HStack(spacing: 28) { rings(s) }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 4)
 
             Divider()
 
-            UsageBar(title: "Current session (5h)",
-                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
-                     resetFormat: entry.resetFormat, windowHours: 5,
-                     runsOutAt: runsOut(s.sessionPercent) { $0.session })
+            if let daily = entry.daily {
+                DailyBudgetBar(budget: daily, resetFormat: entry.resetFormat)
+            }
+            if s.hasSession {
+                UsageBar(title: "Current session (5h)",
+                         percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
+                         resetFormat: entry.resetFormat, windowHours: 5,
+                         runsOutAt: runsOut(s.sessionPercent) { $0.session })
+            }
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
                      resetFormat: entry.resetFormat, windowHours: 168,
                      runsOutAt: runsOut(s.weeklyPercent) { $0.weekly })
-            // Cap the rows so the large widget can't overflow once several
-            // models are reported; the lead model already has a ring above.
-            ForEach(Array(entry.models.dropFirst().prefix(2))) { model in
+            // Cap the rows at four so the large widget can't overflow once
+            // several models are reported; a model with a ring above is skipped.
+            let fixedRows = 1 + (entry.daily != nil ? 1 : 0) + (s.hasSession ? 1 : 0)
+            let rows = entry.models.filter { $0.key != ringModel(s)?.key }.prefix(max(0, 4 - fixedRows))
+            ForEach(Array(rows)) { model in
                 UsageBar(title: "Weekly · \(model.displayName) (7d)",
                          percent: model.percent, resetsAt: model.resetsAt,
                          resetFormat: entry.resetFormat)

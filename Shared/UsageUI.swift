@@ -184,12 +184,12 @@ struct UsageBar: View {
 /// not toward the weekly limit, and empties again at midnight.
 struct DailyBudgetBar: View {
     let budget: DailyBudget
+    var title: LocalizedStringKey = "Today (daily budget)"
     var resetFormat: ResetFormat = .relative
+    /// The reset is always midnight — narrow layouts drop it for the caption.
+    var showsReset = true
 
-    private var nextDay: Date {
-        let calendar = Calendar.current
-        return calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: Date())) ?? Date()
-    }
+    private var nextDay: Date { DailyBudget.endOfDay() }
 
     private var usedText: String {
         "\(Int(budget.used.rounded()))% / \(Int(budget.budget.rounded()))%"
@@ -198,7 +198,7 @@ struct DailyBudgetBar: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text("Today (daily budget)").font(.subheadline.weight(.semibold))
+                Text(title).font(.subheadline.weight(.semibold))
                 Spacer()
                 Text(verbatim: usedText)
                     .font(.subheadline.monospacedDigit())
@@ -214,15 +214,17 @@ struct DailyBudgetBar: View {
             }
             .frame(height: 8)
             HStack(spacing: 6) {
-                Text(UsageFormat.resetLabel(nextDay, format: resetFormat))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                if showsReset {
+                    Text(UsageFormat.resetLabel(nextDay, format: resetFormat))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
                 Spacer(minLength: 4)
                 caption.font(.caption2.weight(.medium))
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Today (daily budget)")
+        .accessibilityLabel(title)
         .accessibilityValue(Text(verbatim: "\(usedText), \(UsageFormat.resetLabel(nextDay, format: resetFormat))"))
     }
 

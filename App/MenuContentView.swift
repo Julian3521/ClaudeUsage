@@ -72,13 +72,15 @@ struct MenuContentView: View {
         }
         return VStack(alignment: .leading, spacing: 14) {
             if let daily = DailyBudget.today(history: history, snapshot: s,
-                                             days: settings.dailyBudgetDays) {
+                                             mode: settings.dailyBudget) {
                 DailyBudgetBar(budget: daily, resetFormat: fmt)
             }
-            UsageBar(title: "Current session (5h)",
-                     percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
-                     resetFormat: fmt, windowHours: 5,
-                     runsOutAt: runsOut(s.sessionPercent) { $0.session })
+            if s.hasSession {
+                UsageBar(title: "Current session (5h)",
+                         percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
+                         resetFormat: fmt, windowHours: 5,
+                         runsOutAt: runsOut(s.sessionPercent) { $0.session })
+            }
             UsageBar(title: "Weekly · all models (7d)",
                      percent: s.weeklyPercent, resetsAt: s.weeklyResetsAt,
                      resetFormat: fmt, windowHours: 168,
@@ -98,7 +100,7 @@ struct MenuContentView: View {
                     Text(spend).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
                 }
             }
-            sparkline(history)
+            sparkline(history, showsSession: s.hasSession)
             Text("Updated \(s.fetchedAt.formatted(date: .omitted, time: .shortened))")
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -106,16 +108,16 @@ struct MenuContentView: View {
     }
 
     @ViewBuilder
-    private func sparkline(_ history: [HistoryPoint]) -> some View {
+    private func sparkline(_ history: [HistoryPoint], showsSession: Bool) -> some View {
         if history.count >= 2 {
             // Scale the y-axis to the data (rounded up to a "nice" bound) instead of a
             // fixed 0–100, so low usage isn't squashed into a flat line at the bottom.
-            let peak = history.flatMap { [$0.session, $0.weekly] }.max() ?? 0
+            let peak = history.flatMap { showsSession ? [$0.session, $0.weekly] : [$0.weekly] }.max() ?? 0
             let top = max(5, (peak / 5).rounded(.up) * 5)
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
                     Text("History").font(.caption2).foregroundStyle(.secondary)
-                    legendDot(.blue.opacity(0.6), "Session")
+                    if showsSession { legendDot(.blue.opacity(0.6), "Session") }
                     legendDot(.orange, "Weekly")
                     Spacer()
                     Text(verbatim: "↑ \(Int(peak.rounded()))%")
@@ -128,11 +130,13 @@ struct MenuContentView: View {
                                  series: .value("Series", "weekly"))
                             .foregroundStyle(.orange)
                     }
-                    ForEach(history) { point in
-                        LineMark(x: .value("Time", point.date),
-                                 y: .value("Usage", point.session),
-                                 series: .value("Series", "session"))
-                            .foregroundStyle(.blue.opacity(0.5))
+                    if showsSession {
+                        ForEach(history) { point in
+                            LineMark(x: .value("Time", point.date),
+                                     y: .value("Usage", point.session),
+                                     series: .value("Series", "session"))
+                                .foregroundStyle(.blue.opacity(0.5))
+                        }
                     }
                 }
                 .chartXAxis(.hidden)
@@ -182,9 +186,11 @@ struct MenuContentView: View {
 
             Menu {
                 if viewModel.isLoggedIn {
-                    Button {
-                        Task { await viewModel.startSessionWindow() }
-                    } label: { Label("Start session window now", systemImage: "bolt") }
+                    if viewModel.snapshot?.hasSession ?? true {
+                        Button {
+                            Task { await viewModel.startSessionWindow() }
+                        } label: { Label("Start session window now", systemImage: "bolt") }
+                    }
                     Link(destination: Config.usagePageURL) {
                         Label("Open usage on claude.ai", systemImage: "arrow.up.right.square")
                     }

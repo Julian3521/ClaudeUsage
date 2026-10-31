@@ -108,17 +108,50 @@ struct DailyBudget: Equatable, Sendable {
     /// Points left today — never more than the weekly limit still allows.
     var remaining: Double { min(max(0, budget - used), weeklyLeft) }
 
-    /// `nil` while no daily budget is set (`days` == 0).
-    static func today(history: [HistoryPoint], snapshot: UsageSnapshot, days: Int,
+    /// `nil` while no daily budget is set.
+    static func today(history: [HistoryPoint], snapshot: UsageSnapshot, mode: DailyBudgetMode,
                       now: Date = Date(), calendar: Calendar = .current) -> DailyBudget? {
-        guard days > 0 else { return nil }
         var series: [UsageForecast.Sample] = history.map { ($0.date, $0.weekly) }
         if series.last?.date ?? .distantPast < snapshot.fetchedAt {
             series.append((snapshot.fetchedAt, snapshot.weeklyPercent))
         }
-        return DailyBudget(used: usedToday(series, now: now, calendar: calendar),
-                           budget: 100 / Double(days),
+        let used = usedToday(series, now: now, calendar: calendar)
+        let budget: Double
+        switch mode {
+        case .off:
+            return nil
+        case .even(let days):
+            budget = 100 / Double(max(1, days))
+        case .flexible:
+            budget = flexibleBudget(weekly: snapshot.weeklyPercent, usedToday: used,
+                                    resetsAt: snapshot.weeklyResetsAt, now: now, calendar: calendar)
+        }
+        return DailyBudget(used: used, budget: budget,
                            weeklyLeft: max(0, 100 - snapshot.weeklyPercent))
+    }
+
+    /// What was left of the week this morning, spread over the days until the
+    /// reset (today included, a partial last day counted as such — so on the
+    /// reset day itself everything left is today's). Fixed for the whole day:
+    /// it only moves when a new day starts.
+    static func flexibleBudget(weekly: Double, usedToday: Double, resetsAt: Date?,
+                               now: Date, calendar: Calendar = .current) -> Double {
+        let midnight = calendar.startOfDay(for: now)
+        // After a reset today, `weekly - usedToday` goes negative: the fresh
+        // window is what's left.
+        let leftThisMorning = 100 - max(0, weekly - usedToday)
+        let days: Double
+        if let resetsAt, resetsAt > now {
+            days = max(1, resetsAt.timeIntervalSince(midnight) / 86400)
+        } else {
+            days = 7
+        }
+        return leftThisMorning / days
+    }
+
+    /// Midnight at the end of `now`'s day, when the budget starts over.
+    static func endOfDay(_ now: Date = Date(), calendar: Calendar = .current) -> Date {
+        calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) ?? now
     }
 
     /// Weekly points used since the start of `now`'s day. The level at midnight

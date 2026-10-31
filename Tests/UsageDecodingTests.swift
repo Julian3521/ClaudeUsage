@@ -325,10 +325,10 @@ final class UsageDecodingTests: XCTestCase {
                        HistoryPoint(date: at(9), session: 0, weekly: 40)]
         let snapshot = UsageSnapshot(sessionPercent: 0, sessionResetsAt: nil,
                                      weeklyPercent: 47, weeklyResetsAt: nil, fetchedAt: at(11))
-        XCTAssertNil(DailyBudget.today(history: history, snapshot: snapshot, days: 0,
+        XCTAssertNil(DailyBudget.today(history: history, snapshot: snapshot, mode: .off,
                                        now: at(12), calendar: utc))
         let daily = try XCTUnwrap(DailyBudget.today(history: history, snapshot: snapshot,
-                                                    days: 5, now: at(12), calendar: utc))
+                                                    mode: .even(days: 5), now: at(12), calendar: utc))
         XCTAssertEqual(daily.used, 7)
         XCTAssertEqual(daily.budget, 20)
         XCTAssertEqual(daily.remaining, 13)
@@ -351,14 +351,79 @@ final class UsageDecodingTests: XCTestCase {
     /// Older settings have no daily budget; unknown values fall back to off.
     func testDailyBudgetSettingDecodes() throws {
         let legacy = try JSONDecoder().decode(Settings.self, from: Data("{}".utf8))
-        XCTAssertEqual(legacy.dailyBudgetDays, 0)
+        XCTAssertEqual(legacy.dailyBudget, .off)
         XCTAssertTrue(legacy.notifyDailyBudget)
-        let odd = try JSONDecoder().decode(Settings.self, from: Data(#"{"dailyBudgetDays":3}"#.utf8))
-        XCTAssertEqual(odd.dailyBudgetDays, 0)
-        var s = Settings()
-        s.dailyBudgetDays = 7
-        let round = try JSONDecoder().decode(Settings.self, from: JSONEncoder().encode(s))
-        XCTAssertEqual(round.dailyBudgetDays, 7)
+        let odd = try JSONDecoder().decode(Settings.self,
+                                           from: Data(#"{"dailyBudget":{"even":{"days":3}}}"#.utf8))
+        XCTAssertEqual(odd.dailyBudget, .off)
+        for mode in [DailyBudgetMode.even(days: 7), .flexible] {
+            var s = Settings()
+            s.dailyBudget = mode
+            let round = try JSONDecoder().decode(Settings.self, from: JSONEncoder().encode(s))
+            XCTAssertEqual(round.dailyBudget, mode)
+        }
+    }
+
+    /// Flexible: this morning's remainder over the days to the reset.
+    func testFlexibleBudget() {
+        // 60% left at midnight, reset in exactly 6 days → 10% a day.
+        XCTAssertEqual(DailyBudget.flexibleBudget(weekly: 45, usedToday: 5, resetsAt: at(6 * 24),
+                                                  now: at(12), calendar: utc), 10, accuracy: 0.001)
+        // Reset this afternoon: everything left is today's.
+        XCTAssertEqual(DailyBudget.flexibleBudget(weekly: 70, usedToday: 0, resetsAt: at(15),
+                                                  now: at(12), calendar: utc), 30, accuracy: 0.001)
+        // Reset already happened today: the fresh window is what's left.
+        XCTAssertEqual(DailyBudget.flexibleBudget(weekly: 3, usedToday: 8, resetsAt: at(7 * 24),
+                                                  now: at(12), calendar: utc), 100 / 7.0, accuracy: 0.001)
+        // No reset time known: assume a full week.
+        XCTAssertEqual(DailyBudget.flexibleBudget(weekly: 30, usedToday: 0, resetsAt: nil,
+                                                  now: at(12), calendar: utc), 10, accuracy: 0.001)
+    }
+
+    func testFlexibleBudgetFromSnapshot() throws {
+        let snapshot = UsageSnapshot(sessionPercent: 0, sessionResetsAt: nil, weeklyPercent: 40,
+                                     weeklyResetsAt: at(4 * 24), fetchedAt: at(11))
+        let daily = try XCTUnwrap(DailyBudget.today(history: [], snapshot: snapshot, mode: .flexible,
+                                                    now: at(12), calendar: utc))
+        XCTAssertEqual(daily.budget, 15, accuracy: 0.001)   // 60% left ÷ 4 days
+    }
+
+    // MARK: - Plans without a 5-hour window
+
+    /// Max 20x: `limits` lists the account windows but no session — even if the
+    /// legacy `five_hour` key still carries something.
+    func testNoSessionWhenLimitsOmitIt() throws {
+        let json = """
+        {"five_hour":{"utilization":0,"resets_at":null},
+         "seven_day":{"utilization":40,"resets_at":"2026-07-26T03:00:00+00:00"},
+         "limits":[{"kind":"weekly_all","percent":40,"scope":null}]}
+        """
+        let r = try JSONDecoder().decode(UsageResponse.self, from: Data(json.utf8))
+        XCTAssertNil(r.fiveHour)
+        let snapshot = UsageSnapshot.from(r, fetchedAt: Date())
+        XCTAssertFalse(snapshot.hasSession)
+        XCTAssertEqual(snapshot.weeklyPercent, 40)
+    }
+
+    func testSessionPresentByDefault() throws {
+        XCTAssertTrue(UsageSnapshot.from(try decodeLimits(), fetchedAt: Date()).hasSession)
+        XCTAssertTrue(UsageSnapshot.from(try decode(), fetchedAt: Date()).hasSession)
+        // A null legacy key without `limits` means no window either.
+        let r = try JSONDecoder().decode(UsageResponse.self,
+                                         from: Data(#"{"five_hour":null,"seven_day":{"utilization":5}}"#.utf8))
+        XCTAssertFalse(UsageSnapshot.from(r, fetchedAt: Date()).hasSession)
+        // Snapshots cached before the flag existed keep their session rows.
+        let cached = try JSONDecoder().decode(UsageSnapshot.self,
+                                              from: Data(#"{"sessionPercent":10,"weeklyPercent":20}"#.utf8))
+        XCTAssertTrue(cached.hasSession)
+    }
+
+    func testSessionMetricsFallBackToWeekly() {
+        let s = UsageSnapshot.sample.withSession(false)
+        XCTAssertEqual(MenuBarMetric.session.values(s), [s.weeklyPercent])
+        XCTAssertEqual(MenuBarMetric.both.values(s), [s.weeklyPercent])
+        XCTAssertEqual(MenuBarMetric.highest.values(s), [s.weeklyPercent])
+        XCTAssertEqual(MenuBarMetric.both.values(.sample).count, 2)
     }
 
     func testFractionUtilizationClamped() throws {

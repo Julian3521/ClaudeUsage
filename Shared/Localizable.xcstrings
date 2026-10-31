@@ -590,6 +590,28 @@
         }
       }
     },
+    "Daily budget almost used up": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagesbudget fast aufgebraucht"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presupuesto diario casi agotado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Budget quotidien presque épuisé"
+          }
+        }
+      }
+    },
     "Daily budget used up": {
       "localizations": {
         "de": {
@@ -742,6 +764,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Uso adicional (gasto)"
+          }
+        }
+      }
+    },
+    "Flexible (what's left ÷ days to reset)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flexibel (Rest ÷ Tage bis Reset)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flexible (restante ÷ días hasta el reinicio)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flexible (reste ÷ jours avant réinitialisation)"
           }
         }
       }
@@ -1012,28 +1056,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Notifier près de la limite"
-          }
-        }
-      }
-    },
-    "Notify when used up": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Benachrichtigen, wenn aufgebraucht"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Avisar al agotarse"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Notifier une fois épuisé"
           }
         }
       }
@@ -2054,24 +2076,24 @@
         }
       }
     },
-    "Splits the weekly limit into a daily allowance, so one long day can't eat the whole week. Counts usage since midnight; the menu shows what's left today.": {
+    "Splits the weekly limit into a daily allowance, so one long day can't eat the whole week. Flexible spreads what's left over the days until the reset, so a quiet day leaves more for the next. Counts usage since midnight.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Teilt das Wochenlimit in ein Tagesbudget auf, damit ein langer Tag nicht die ganze Woche aufbraucht. Gezählt wird ab Mitternacht; das Menü zeigt, was heute noch übrig ist."
+            "value": "Teilt das Wochenlimit in ein Tagesbudget auf, damit ein langer Tag nicht die ganze Woche aufbraucht. Flexibel verteilt den Rest auf die Tage bis zum Reset – ein ruhiger Tag lässt mehr für die nächsten übrig. Gezählt wird ab Mitternacht."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reparte el límite semanal en un presupuesto diario, para que un día largo no agote toda la semana. Cuenta desde medianoche; el menú muestra lo que queda hoy."
+            "value": "Reparte el límite semanal en un presupuesto diario, para que un día largo no agote toda la semana. Flexible reparte lo que queda entre los días hasta el reinicio: un día tranquilo deja más para los siguientes. Cuenta desde medianoche."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Répartit la limite hebdomadaire en un budget quotidien, pour qu'une longue journée n'épuise pas toute la semaine. Compté depuis minuit ; le menu indique ce qu'il reste aujourd'hui."
+            "value": "Répartit la limite hebdomadaire en un budget quotidien, pour qu'une longue journée n'épuise pas toute la semaine. Flexible répartit le reste sur les jours avant la réinitialisation : une journée calme en laisse davantage pour les suivantes. Compté depuis minuit."
           }
         }
       }
@@ -2161,6 +2183,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "S’appliquent au panneau du menu. Chaque widget se configure séparément — clic droit puis « Modifier le widget ». Jour et Date affichent le jour pour la fenêtre hebdomadaire."
+          }
+        }
+      }
+    },
+    "Today": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoy"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aujourd'hui"
           }
         }
       }
@@ -2429,6 +2473,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "En attente du navigateur…"
+          }
+        }
+      }
+    },
+    "Warn when nearly or fully used up": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warnen, wenn fast oder ganz aufgebraucht"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avisar cuando esté casi o totalmente agotado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avertir quand presque ou totalement épuisé"
           }
         }
       }

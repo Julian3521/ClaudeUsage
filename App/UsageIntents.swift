@@ -6,7 +6,7 @@ import Foundation
 struct CheckClaudeUsageIntent: AppIntent {
     static let title: LocalizedStringResource = "Check Claude Usage"
     static let description = IntentDescription(
-        "Reports your current Claude session (5h) and weekly (7d) usage.")
+        "Reports your current Claude usage: today's budget, session (5h) and weekly (7d).")
     static let openAppWhenRun = false
 
     func perform() async throws -> some IntentResult & ProvidesDialog & ReturnsValue<String> {
@@ -18,8 +18,14 @@ struct CheckClaudeUsageIntent: AppIntent {
             return .result(value: "No data yet",
                            dialog: "No usage data yet — open Claude Usage once.")
         }
-        let session = Int(s.sessionPercent.rounded())
-        let weekly = Int(s.weeklyPercent.rounded())
+        var parts: [String] = []
+        if let daily = DailyBudget.today(history: HistoryStore.load(), snapshot: s,
+                                         mode: SettingsStore.load().dailyBudget) {
+            parts.append("today \(Int(daily.used.rounded()))% of \(Int(daily.budget.rounded()))%")
+        }
+        if s.hasSession { parts.append("session \(Int(s.sessionPercent.rounded()))%") }
+        parts.append("weekly \(Int(s.weeklyPercent.rounded()))%")
+        let summary = parts.joined(separator: ", ")
         // The snapshot can be hours old (Mac asleep, rate-limit backoff). Saying
         // so is better than reporting a stale number as the current one.
         let age = Date().timeIntervalSince(s.fetchedAt)
@@ -27,8 +33,8 @@ struct CheckClaudeUsageIntent: AppIntent {
             ? " as of \(s.fetchedAt.formatted(date: .omitted, time: .shortened))"
             : ""
         return .result(
-            value: "Session \(session)%, weekly \(weekly)%\(asOf)",
-            dialog: "Claude usage — session \(session) percent, weekly \(weekly) percent\(asOf).")
+            value: summary.prefix(1).uppercased() + summary.dropFirst() + asOf,
+            dialog: "Claude usage — \(summary)\(asOf).")
     }
 }
 
