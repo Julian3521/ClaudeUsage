@@ -30,6 +30,9 @@ security warning. It lives in the menu bar (no Dock icon) — click the gauge, t
 - **Widgets** (Small/Medium/Large) incl. a **histogram** of utilization over time.
 - **Per-model weekly limits** (Opus, Sonnet, Fable, …) — each can be shown or
   hidden individually; new models appear automatically once your account has them.
+- **Daily budget** — splits the weekly limit into a daily allowance (e.g. ÷ 7 ≈
+  14 % a day, or ÷ 5 for a work week), shows what's left today in the panel or
+  the menu bar, and notifies once the day's share is used up.
 - **Notifications** near a limit, **launch at login**, configurable refresh, and
   optional **auto-open** of new 5-hour windows.
 - **Update checks** (Sparkle) — the app checks in the background and offers new
