@@ -364,6 +364,14 @@ final class UsageDecodingTests: XCTestCase {
         XCTAssertEqual(DailyBudget(used: 20, budget: 100 / 7, weeklyLeft: 50).remaining, 0)
     }
 
+    /// The panel reads relative to the budget: 4 of 16 points = 25% used, 75% left.
+    func testDailyBudgetRelativeShares() {
+        let daily = DailyBudget(used: 4, budget: 16, weeklyLeft: 90)
+        XCTAssertEqual(daily.percent, 25)
+        XCTAssertEqual(daily.remainingPercent, 75)
+        XCTAssertEqual(DailyBudget(used: 3, budget: 16, weeklyLeft: 4).remainingPercent, 25)
+    }
+
     func testTodayMetricFallsBackToWeekly() {
         let s = UsageSnapshot.sample
         XCTAssertEqual(MenuBarMetric.today.values(s), [s.weeklyPercent])

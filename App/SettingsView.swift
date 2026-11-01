@@ -226,11 +226,15 @@ private struct BudgetSettings: View {
             }
 
             if settings.settings.dailyBudget != .off {
-                Section("Today — share of the weekly limit") {
+                // Same reading as the panel: the budget as a share of the week,
+                // used and left as shares of the budget.
+                Section("Today") {
                     if let daily = viewModel.dailyBudget {
-                        LabeledContent("Budget", value: Self.percent(daily.budget))
-                        LabeledContent("Used", value: Self.percent(daily.used))
-                        LabeledContent("Left", value: Self.percent(daily.remaining))
+                        LabeledContent("Budget") {
+                            Text("\(Self.percent(daily.budget)) of weekly limit")
+                        }
+                        LabeledContent("Used", value: Self.percent(daily.percent))
+                        LabeledContent("Left", value: Self.percent(daily.remainingPercent))
                     } else {
                         Text("Shown once usage has been loaded.")
                             .foregroundStyle(.secondary)

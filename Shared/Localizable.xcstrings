@@ -2,6 +2,28 @@
   "sourceLanguage": "en",
   "strings": {
     "%@ min": {},
+    "%@ of weekly limit": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ des Wochenlimits"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ del límite semanal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ de la limite hebdo"
+          }
+        }
+      }
+    },
     "%@%%": {},
     "%@.": {},
     "%lld days": {
@@ -2425,28 +2447,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aujourd'hui (budget quotidien)"
-          }
-        }
-      }
-    },
-    "Today — share of the weekly limit": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Heute – Anteil am Wochenlimit"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hoy — parte del límite semanal"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aujourd'hui — part de la limite hebdo"
           }
         }
       }

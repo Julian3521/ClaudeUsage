@@ -180,27 +180,37 @@ struct UsageBar: View {
     }
 }
 
-/// Today's usage against the daily budget: the bar fills toward the budget,
-/// not toward the weekly limit, and empties again at midnight.
+/// Today's usage against the daily budget. The budget's size, as a share of
+/// the weekly limit, sits next to the title; everything else — the number on
+/// the right, the bar, the caption — is relative to that budget, so 100%
+/// means today's share is used up.
 struct DailyBudgetBar: View {
     let budget: DailyBudget
-    var title: LocalizedStringKey = "Today (daily budget)"
     var resetFormat: ResetFormat = .relative
-    /// The reset is always midnight — narrow layouts drop it for the caption.
-    var showsReset = true
+    /// Narrow layouts (small widget): a short budget label and no reset time —
+    /// it's always midnight anyway.
+    var compact = false
 
     private var nextDay: Date { DailyBudget.endOfDay() }
-
-    private var usedText: String {
-        "\(Int(budget.used.rounded()))% / \(Int(budget.budget.rounded()))%"
-    }
+    private var budgetShare: String { "\(Int(budget.budget.rounded()))%" }
+    private var usedShare: String { "\(Int(budget.percent.rounded()))%" }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(title).font(.subheadline.weight(.semibold))
-                Spacer()
-                Text(verbatim: usedText)
+            HStack(spacing: 4) {
+                Text("Today").font(.subheadline.weight(.semibold))
+                Group {
+                    if compact {
+                        Text(verbatim: "· \(budgetShare)")
+                    } else {
+                        Text(verbatim: "· ") + Text("\(budgetShare) of weekly limit")
+                    }
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                Spacer(minLength: 4)
+                Text(verbatim: usedShare)
                     .font(.subheadline.monospacedDigit())
                     .foregroundStyle(.secondary)
             }
@@ -214,7 +224,7 @@ struct DailyBudgetBar: View {
             }
             .frame(height: 8)
             HStack(spacing: 6) {
-                if showsReset {
+                if !compact {
                     Text(UsageFormat.resetLabel(nextDay, format: resetFormat))
                         .font(.caption2)
                         .foregroundStyle(.secondary)
@@ -224,14 +234,14 @@ struct DailyBudgetBar: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(title)
-        .accessibilityValue(Text(verbatim: "\(usedText), \(UsageFormat.resetLabel(nextDay, format: resetFormat))"))
+        .accessibilityLabel(Text("Today") + Text(verbatim: ", ") + Text("\(budgetShare) of weekly limit"))
+        .accessibilityValue(Text(verbatim: "\(usedShare), \(UsageFormat.resetLabel(nextDay, format: resetFormat))"))
     }
 
     @ViewBuilder
     private var caption: some View {
-        let left = Int(budget.remaining.rounded())
-        let over = Int((budget.used - budget.budget).rounded())
+        let left = Int(budget.remainingPercent.rounded())
+        let over = Int((budget.percent - 100).rounded())
         if left > 0 {
             (Text(verbatim: "\(left)% ") + Text("left today"))
                 .foregroundStyle(UsageFormat.color(for: budget.percent))

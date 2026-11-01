@@ -179,8 +179,7 @@ struct UsageWidgetEntryView: View {
                 .font(.caption.bold())
                 .foregroundStyle(.secondary)
             if let daily = entry.daily {
-                DailyBudgetBar(budget: daily, title: "Today", resetFormat: entry.resetFormat,
-                               showsReset: false)
+                DailyBudgetBar(budget: daily, resetFormat: entry.resetFormat, compact: true)
             } else if s.hasSession {
                 UsageBar(title: "Session", percent: s.sessionPercent, resetsAt: s.sessionResetsAt,
                          resetFormat: entry.resetFormat)

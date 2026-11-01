@@ -108,6 +108,9 @@ struct DailyBudget: Equatable, Sendable {
     /// Points left today — never more than the weekly limit still allows.
     var remaining: Double { min(max(0, budget - used), weeklyLeft) }
 
+    /// `remaining` as a share of today's budget (100 = untouched).
+    var remainingPercent: Double { budget > 0 ? remaining / budget * 100 : 0 }
+
     /// `nil` while no daily budget is set.
     static func today(history: [HistoryPoint], snapshot: UsageSnapshot, mode: DailyBudgetMode,
                       now: Date = Date(), calendar: Calendar = .current) -> DailyBudget? {
