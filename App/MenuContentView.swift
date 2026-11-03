@@ -100,7 +100,7 @@ struct MenuContentView: View {
                     Text(spend).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
                 }
             }
-            sparkline(history, showsSession: s.hasSession)
+            sparkline(HistoryStore.recent(history), showsSession: s.hasSession)
             Text("Updated \(s.fetchedAt.formatted(date: .omitted, time: .shortened))")
                 .font(.caption)
                 .foregroundStyle(.secondary)

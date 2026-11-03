@@ -97,13 +97,17 @@ enum UsageForecast {
 struct DailyBudget: Equatable, Sendable {
     /// Weekly percentage points used since local midnight.
     var used: Double
-    /// Weekly percentage points allowed per day.
+    /// Weekly percentage points allowed today.
     var budget: Double
     /// What the weekly limit itself still has room for.
     var weeklyLeft: Double
+    /// Points earlier days went over and today pays for — already taken off
+    /// `budget`.
+    var carried: Double = 0
 
-    /// Share of today's budget used: 100 = budget reached, above = over it.
-    var percent: Double { budget > 0 ? used / budget * 100 : 0 }
+    /// Share of today's budget used: 100 = budget reached, above = over it. A
+    /// day whose whole budget went to earlier overruns starts used up.
+    var percent: Double { budget > 0 ? used / budget * 100 : 100 }
 
     /// Points left today — never more than the weekly limit still allows.
     var remaining: Double { min(max(0, budget - used), weeklyLeft) }
@@ -120,17 +124,40 @@ struct DailyBudget: Equatable, Sendable {
         }
         let used = usedToday(series, now: now, calendar: calendar)
         let budget: Double
+        var carried = 0.0
         switch mode {
         case .off:
             return nil
         case .even(let days):
-            budget = 100 / Double(max(1, days))
+            let perDay = 100 / Double(max(1, days))
+            carried = carriedOver(series, perDay: perDay, resetsAt: snapshot.weeklyResetsAt,
+                                  now: now, calendar: calendar)
+            budget = max(0, perDay - carried)
         case .flexible:
             budget = flexibleBudget(weekly: snapshot.weeklyPercent, usedToday: used,
                                     resetsAt: snapshot.weeklyResetsAt, now: now, calendar: calendar)
         }
         return DailyBudget(used: used, budget: budget,
-                           weeklyLeft: max(0, 100 - snapshot.weeklyPercent))
+                           weeklyLeft: max(0, 100 - snapshot.weeklyPercent), carried: carried)
+    }
+
+    /// What earlier days of this week went over a fixed allowance and today
+    /// still owes. An overrun comes off the next day, and whatever that day
+    /// can't absorb off the one after; a day under its allowance pays the debt
+    /// back. Savings aren't carried — a day never gets more than `perDay`. A
+    /// weekly reset clears the debt.
+    static func carriedOver(_ series: [UsageForecast.Sample], perDay: Double, resetsAt: Date?,
+                            now: Date, calendar: Calendar = .current) -> Double {
+        guard let resetsAt, resetsAt > now else { return 0 }
+        let midnight = calendar.startOfDay(for: now)
+        var dayStart = resetsAt.addingTimeInterval(-7 * 86400)   // when this week began
+        var owed = 0.0
+        while dayStart < midnight {
+            let dayEnd = min(endOfDay(dayStart, calendar: calendar), midnight)
+            owed = max(0, owed + used(series, from: dayStart, to: dayEnd) - perDay)
+            dayStart = dayEnd
+        }
+        return owed
     }
 
     /// What was left of the week this morning, spread over the days until the
@@ -157,38 +184,56 @@ struct DailyBudget: Equatable, Sendable {
         calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) ?? now
     }
 
-    /// Weekly points used since the start of `now`'s day. The level at midnight
-    /// is interpolated between the samples around it — the Mac is often asleep
-    /// then, and a reading from days ago must not count wholly as today. A drop
-    /// of more than 1pp is a weekly reset: the new window counts from zero.
+    /// Weekly points used since the start of `now`'s day.
     static func usedToday(_ series: [UsageForecast.Sample], now: Date,
                           calendar: Calendar = .current) -> Double {
-        let midnight = calendar.startOfDay(for: now)
-        let today = series.filter { $0.date >= midnight && $0.date <= now }
-        guard let first = today.first else { return 0 }
+        used(series, from: calendar.startOfDay(for: now), to: now)
+    }
 
-        var level = first.percent
-        if let before = series.last(where: { $0.date < midnight }) {
-            if first.percent < before.percent - 1 {
-                level = 0      // reset overnight: all of today's reading is new
-            } else {
-                let span = first.date.timeIntervalSince(before.date)
-                let t = span > 0 ? midnight.timeIntervalSince(before.date) / span : 1
-                level = before.percent + (first.percent - before.percent) * t
-            }
+    /// Weekly points used between `start` and `end`. The levels at both ends
+    /// are interpolated between the samples around them — the Mac is often
+    /// asleep at midnight, and a reading from days ago must not count wholly
+    /// as one day's. Without a sample before `start`, counting begins at the
+    /// first one inside. A drop of more than 1pp is a weekly reset: the new
+    /// window counts from zero.
+    static func used(_ series: [UsageForecast.Sample], from start: Date, to end: Date) -> Double {
+        let inside = series.filter { $0.date >= start && $0.date <= end }
+        var levels = inside.map(\.percent)
+
+        var level: Double
+        if let before = series.last(where: { $0.date < start }),
+           let after = series.first(where: { $0.date >= start }) {
+            // Reset in between: all of the new reading falls in the range.
+            level = after.percent < before.percent - 1 ? 0 : interpolate(before, after, at: start)
+        } else if let first = inside.first {
+            level = first.percent
+        } else {
+            return 0
+        }
+        if let last = series.last(where: { $0.date <= end }),
+           let after = series.first(where: { $0.date > end }),
+           after.percent >= last.percent - 1 {
+            levels.append(interpolate(last, after, at: end))
         }
 
         var used = 0.0
-        for sample in today {
-            if sample.percent < level - 1 {
-                used += sample.percent
-                level = sample.percent
+        for percent in levels {
+            if percent < level - 1 {
+                used += percent
+                level = percent
             } else {
-                used += max(0, sample.percent - level)
-                level = max(level, sample.percent)
+                used += max(0, percent - level)
+                level = max(level, percent)
             }
         }
         return used
+    }
+
+    private static func interpolate(_ a: UsageForecast.Sample, _ b: UsageForecast.Sample,
+                                    at date: Date) -> Double {
+        let span = b.date.timeIntervalSince(a.date)
+        let t = span > 0 ? date.timeIntervalSince(a.date) / span : 1
+        return a.percent + (b.percent - a.percent) * t
     }
 
     /// Distinct values for settings previews.
@@ -198,10 +243,13 @@ struct DailyBudget: Equatable, Sendable {
 /// A rolling history of usage points, persisted in the shared Keychain group.
 enum HistoryStore {
     private static let account = "history"
-    /// Two days, so the daily budget still finds the last reading before
-    /// midnight on a day of frequent refreshes.
-    static let retention: TimeInterval = 48 * 3600
-    static let maxPoints = 400   // hard cap — 48h at a ~7-minute average
+    /// The week plus a day, so a fixed daily budget can trace overruns back to
+    /// the week's first morning.
+    static let retention: TimeInterval = 8 * 86400
+    /// Newer points are all kept (charts, forecasts); older ones are thinned
+    /// to one an hour — enough to find the level at each midnight.
+    static let fullDetail: TimeInterval = 48 * 3600
+    static let maxPoints = 600   // hard cap — 48h at ~7 minutes plus six days hourly
 
     static func load() -> [HistoryPoint] {
         guard let data = Keychain.load(baseQuery()),
@@ -218,9 +266,24 @@ enum HistoryStore {
             weekly: snapshot.weeklyPercent,
             models: Dictionary(snapshot.models.map { ($0.key, $0.percent) },
                                uniquingKeysWith: { a, _ in a })))
-        points.removeAll { snapshot.fetchedAt.timeIntervalSince($0.date) > retention }
-        if points.count > maxPoints { points.removeFirst(points.count - maxPoints) }
-        save(points)
+        save(trimmed(points, now: snapshot.fetchedAt))
+    }
+
+    /// Drops points past `retention`, thins those past `fullDetail` to one an
+    /// hour, and caps the rest.
+    static func trimmed(_ points: [HistoryPoint], now: Date) -> [HistoryPoint] {
+        var kept: [HistoryPoint] = []
+        for point in points where now.timeIntervalSince(point.date) <= retention {
+            if now.timeIntervalSince(point.date) > fullDetail, let last = kept.last,
+               point.date.timeIntervalSince(last.date) < 3600 { continue }
+            kept.append(point)
+        }
+        return Array(kept.suffix(maxPoints))
+    }
+
+    /// The part of the history the charts show.
+    static func recent(_ points: [HistoryPoint], now: Date = Date()) -> [HistoryPoint] {
+        points.filter { now.timeIntervalSince($0.date) <= fullDetail }
     }
 
     private static func save(_ points: [HistoryPoint]) {

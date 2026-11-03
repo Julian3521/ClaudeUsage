@@ -183,7 +183,8 @@ struct UsageBar: View {
 /// Today's usage against the daily budget. The budget's size, as a share of
 /// the weekly limit, sits next to the title; everything else — the number on
 /// the right, the bar, the caption — is relative to that budget, so 100%
-/// means today's share is used up.
+/// means today's share is used up. When earlier overruns shrank the budget,
+/// the caption says by how much in place of the reset time.
 struct DailyBudgetBar: View {
     let budget: DailyBudget
     var resetFormat: ResetFormat = .relative
@@ -194,6 +195,10 @@ struct DailyBudgetBar: View {
     private var nextDay: Date { DailyBudget.endOfDay() }
     private var budgetShare: String { "\(Int(budget.budget.rounded()))%" }
     private var usedShare: String { "\(Int(budget.percent.rounded()))%" }
+    private var carriedShare: String? {
+        let points = Int(budget.carried.rounded())
+        return points > 0 ? "−\(points)%" : nil
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -225,16 +230,24 @@ struct DailyBudgetBar: View {
             .frame(height: 8)
             HStack(spacing: 6) {
                 if !compact {
-                    Text(UsageFormat.resetLabel(nextDay, format: resetFormat))
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                    Group {
+                        if let carriedShare {
+                            Text("\(carriedShare) from earlier days")
+                        } else {
+                            Text(UsageFormat.resetLabel(nextDay, format: resetFormat))
+                        }
+                    }
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 4)
                 caption.font(.caption2.weight(.medium))
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("Today") + Text(verbatim: ", ") + Text("\(budgetShare) of weekly limit"))
+        .accessibilityLabel(Text("Today") + Text(verbatim: ", ") + Text("\(budgetShare) of weekly limit")
+                            + (carriedShare.map { Text(verbatim: ", ") + Text("\($0) from earlier days") }
+                               ?? Text(verbatim: "")))
         .accessibilityValue(Text(verbatim: "\(usedShare), \(UsageFormat.resetLabel(nextDay, format: resetFormat))"))
     }
 

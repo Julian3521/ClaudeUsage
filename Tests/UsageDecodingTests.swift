@@ -419,6 +419,65 @@ final class UsageDecodingTests: XCTestCase {
         XCTAssertEqual(daily.budget, 15, accuracy: 0.001)   // 60% left ÷ 4 days
     }
 
+    // MARK: Carry-over
+
+    /// 20 a day, the week began three days ago: day one went 10 over, day two
+    /// paid it back, yesterday went 5 over — today gets 15.
+    func testFixedBudgetCarriesOverruns() throws {
+        let history = [(-72.0, 0.0), (-60, 30), (-48, 30), (-36, 35), (-24, 35), (-12, 60), (0, 60), (10, 64)]
+            .map { HistoryPoint(date: at($0.0), session: 0, weekly: $0.1) }
+        let snapshot = UsageSnapshot(sessionPercent: 0, sessionResetsAt: nil, weeklyPercent: 64,
+                                     weeklyResetsAt: at(4 * 24), fetchedAt: at(10))
+        let daily = try XCTUnwrap(DailyBudget.today(history: history, snapshot: snapshot,
+                                                    mode: .even(days: 5), now: at(12), calendar: utc))
+        XCTAssertEqual(daily.carried, 5, accuracy: 0.001)
+        XCTAssertEqual(daily.budget, 15, accuracy: 0.001)
+        XCTAssertEqual(daily.used, 4, accuracy: 0.001)
+    }
+
+    /// An overrun bigger than a day runs on into the next; a new week starts
+    /// clean; a quiet week owes nothing.
+    func testCarryOverLimits() {
+        func carried(_ points: [(Double, Double)], resetsAt: Double?) -> Double {
+            DailyBudget.carriedOver(points.map { (at($0.0), $0.1) }, perDay: 20,
+                                    resetsAt: resetsAt.map(at), now: at(12), calendar: utc)
+        }
+        // 30 over two days ago; yesterday's untouched 20 pays back only part.
+        XCTAssertEqual(carried([(-48, 0), (-24, 50), (0, 50)], resetsAt: 5 * 24), 10, accuracy: 0.001)
+        // The week began at 6 this morning: nothing before it counts.
+        XCTAssertEqual(carried([(-24, 0), (-12, 60), (6, 61)], resetsAt: 7 * 24 + 6), 0)
+        XCTAssertEqual(carried([(-48, 0), (-24, 5), (0, 10)], resetsAt: 5 * 24), 0)
+        XCTAssertEqual(carried([(-24, 0), (0, 50)], resetsAt: nil), 0)
+    }
+
+    /// A budget eaten up by earlier days starts used up instead of empty.
+    func testBudgetUsedUpByCarryOver() {
+        let daily = DailyBudget(used: 0, budget: 0, weeklyLeft: 50, carried: 20)
+        XCTAssertEqual(daily.percent, 100)
+        XCTAssertEqual(daily.remaining, 0)
+    }
+
+    /// A past day the Mac slept through gets its share of the growth around it.
+    func testUsageBetweenInterpolatesBothEnds() {
+        let series: [UsageForecast.Sample] = [(at(-36), 10), (at(12), 58)]
+        XCTAssertEqual(DailyBudget.used(series, from: at(-24), to: at(0)), 24, accuracy: 0.001)
+    }
+
+    /// Two days in full detail, then one point an hour, nothing past eight days.
+    func testHistoryTrimming() {
+        let now = at(0)
+        let points = stride(from: -9 * 24.0, through: 0, by: 0.25).map {
+            HistoryPoint(date: at($0), session: 0, weekly: 0)
+        }
+        let kept = HistoryStore.trimmed(points, now: now)
+        XCTAssertEqual(kept.first?.date, at(-8 * 24))
+        let old = kept.filter { now.timeIntervalSince($0.date) > HistoryStore.fullDetail }
+        XCTAssertEqual(old.count, 6 * 24)
+        XCTAssertEqual(kept.count - old.count, 48 * 4 + 1)
+        XCTAssertEqual(HistoryStore.recent(kept, now: now).count, 48 * 4 + 1)
+        XCTAssertLessThanOrEqual(kept.count, HistoryStore.maxPoints)
+    }
+
     // MARK: - Plans without a 5-hour window
 
     /// Max 20x: `limits` lists the account windows but no session — even if the

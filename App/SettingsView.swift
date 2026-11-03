@@ -198,9 +198,9 @@ private struct BudgetSettings: View {
         case .off:
             "Splits the weekly limit into a daily allowance, so one long day can't use up the whole week."
         case .even:
-            "The same share every day; unused budget doesn't carry over. Counts from midnight."
+            "The same share every day. Going over comes off the next days; unused budget doesn't carry over. Counts from midnight."
         case .flexible:
-            "What's left of the week, spread over the days until it resets — a quiet day leaves more for the next. Counts from midnight."
+            "What's left of the week, spread over the days until it resets — a quiet day leaves more for the next, a long one less. Counts from midnight."
         }
     }
 
@@ -232,6 +232,9 @@ private struct BudgetSettings: View {
                     if let daily = viewModel.dailyBudget {
                         LabeledContent("Budget") {
                             Text("\(Self.percent(daily.budget)) of weekly limit")
+                        }
+                        if daily.carried.rounded() > 0 {
+                            LabeledContent("From earlier days", value: "−\(Self.percent(daily.carried))")
                         }
                         LabeledContent("Used", value: Self.percent(daily.percent))
                         LabeledContent("Left", value: Self.percent(daily.remainingPercent))

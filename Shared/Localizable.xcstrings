@@ -1,6 +1,28 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ from earlier days": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ aus Vortagen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ de días anteriores"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ des jours précédents"
+          }
+        }
+      }
+    },
     "%@ min": {},
     "%@ of weekly limit": {
       "localizations": {
@@ -874,6 +896,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Flexible"
+          }
+        }
+      }
+    },
+    "From earlier days": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus Vortagen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De días anteriores"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des jours précédents"
           }
         }
       }
@@ -2385,24 +2429,24 @@
         }
       }
     },
-    "The same share every day; unused budget doesn't carry over. Counts from midnight.": {
+    "The same share every day. Going over comes off the next days; unused budget doesn't carry over. Counts from midnight.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Jeden Tag derselbe Anteil; nicht Genutztes verfällt. Gezählt wird ab Mitternacht."
+            "value": "Jeden Tag derselbe Anteil. Was du überziehst, geht von den nächsten Tagen ab; nicht Genutztes verfällt. Gezählt wird ab Mitternacht."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "La misma parte cada día; lo no usado no se acumula. Cuenta desde medianoche."
+            "value": "La misma parte cada día. Lo que te pases se descuenta de los días siguientes; lo no usado no se acumula. Cuenta desde medianoche."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "La même part chaque jour ; le budget non utilisé n'est pas reporté. Compté depuis minuit."
+            "value": "La même part chaque jour. Un dépassement est retiré des jours suivants ; le budget non utilisé n'est pas reporté. Compté depuis minuit."
           }
         }
       }
@@ -2898,24 +2942,24 @@
         }
       }
     },
-    "What's left of the week, spread over the days until it resets — a quiet day leaves more for the next. Counts from midnight.": {
+    "What's left of the week, spread over the days until it resets — a quiet day leaves more for the next, a long one less. Counts from midnight.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Der Rest der Woche, verteilt auf die Tage bis zum Reset – ein ruhiger Tag lässt mehr für die nächsten. Gezählt wird ab Mitternacht."
+            "value": "Der Rest der Woche, verteilt auf die Tage bis zum Reset – ein ruhiger Tag lässt mehr für die nächsten, ein langer weniger. Gezählt wird ab Mitternacht."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lo que queda de la semana, repartido entre los días hasta el reinicio: un día tranquilo deja más para los siguientes. Cuenta desde medianoche."
+            "value": "Lo que queda de la semana, repartido entre los días hasta el reinicio: un día tranquilo deja más para los siguientes, uno largo menos. Cuenta desde medianoche."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le reste de la semaine, réparti sur les jours avant la réinitialisation : une journée calme en laisse davantage pour les suivantes. Compté depuis minuit."
+            "value": "Le reste de la semaine, réparti sur les jours avant la réinitialisation : une journée calme en laisse davantage pour les suivantes, une longue journée moins. Compté depuis minuit."
           }
         }
       }

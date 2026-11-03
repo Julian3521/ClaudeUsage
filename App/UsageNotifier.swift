@@ -23,7 +23,10 @@ enum UsageNotifier {
 
     /// At most once per day each: a heads-up at 80% of the daily budget, and
     /// when it's used up. A jump straight past the budget skips the heads-up.
+    /// Nothing is said before today's first use, even when earlier overruns
+    /// left no budget.
     static func checkDaily(_ daily: DailyBudget, now: Date = Date()) {
+        guard daily.used > 0 else { return }
         let day = Calendar.current.startOfDay(for: now).timeIntervalSince1970
         let defaults = UserDefaults.standard
         let usedUpKey = "notified.dailyBudget", warningKey = "notified.dailyBudgetWarning"
